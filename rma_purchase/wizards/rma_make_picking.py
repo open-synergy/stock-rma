@@ -4,7 +4,7 @@
 # © 2013 Camptocamp
 # © 2009-2013 Akretion,
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
-from openerp import models, fields, exceptions, api, _
+from openerp import _, api, fields, models
 
 
 class RmaMakePicking(models.TransientModel):
