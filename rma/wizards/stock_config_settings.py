@@ -16,5 +16,5 @@ class StockConfigSettings(models.Model):
             "(Example: services companies)"),
         (1, 'Display 3 fields on rma: partner, invoice address, delivery '
             'address')
-        ], "Addresses",
+    ], "Addresses",
         implied_group='rma.group_rma_delivery_invoice_address')
