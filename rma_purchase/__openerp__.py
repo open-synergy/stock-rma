@@ -6,7 +6,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
 {
     'name': 'RMA Purchase',
-    'version': '9.0.1.0.0',
+    'version': '8.0.1.0.0',
     'category': 'RMA',
     'summary': 'RMA from PO',
     'description': """
@@ -18,6 +18,6 @@
     'data': ['views/rma_order_view.xml',
              'views/rma_order_line_view.xml',
              'wizards/rma_add_purchase.xml'],
-    'installable': True,
-    'auto_install': True,
+    'installable': False,
+    'auto_install': False,
 }

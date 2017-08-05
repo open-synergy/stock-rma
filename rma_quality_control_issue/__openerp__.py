@@ -4,7 +4,7 @@
 
 {
     "name": "RMA Quality Control Issue",
-    "version": "9.0.1.0.0",
+    "version": "8.0.1.0.0",
     "license": "LGPL-3",
     "category": "RMA",
     "summary": "Add the possibility to create RMAs from quality control "
@@ -17,6 +17,6 @@
         "wizard/qc_issue_make_supplier_rma_view.xml",
         "views/rma_order_line_view.xml",
     ],
-    "installable": True,
-    "auto_install": True,
+    "installable": False,
+    "auto_install": False,
 }
