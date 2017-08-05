@@ -7,7 +7,7 @@
 
 {
     'name': 'RMA (Return Merchandise Authorization)',
-    'version': '9.0.1.0.0',
+    'version': '8.0.1.0.0',
     'license': 'LGPL-3',
     'category': 'RMA',
     'summary': 'Introduces the return merchandise authorization (RMA) process '
@@ -35,6 +35,6 @@
              'wizards/stock_config_settings.xml',
              'wizards/rma_order_line_make_supplier_rma_view.xml',
              ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }
