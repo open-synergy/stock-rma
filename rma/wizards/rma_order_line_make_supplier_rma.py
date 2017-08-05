@@ -116,7 +116,7 @@ class RmaLineMakeSupplierRma(models.TransientModel):
             res.append(rma.id)
 
         return {
-            'domain': "[('id','in', ["+','.join(map(str, res))+"])]",
+            'domain': "[('id','in', [" + ','.join(map(str, res)) + "])]",
             'name': _('Supplier RMA'),
             'view_type': 'form',
             'view_mode': 'tree,form',

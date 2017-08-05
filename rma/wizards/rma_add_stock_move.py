@@ -5,7 +5,7 @@
 # © 2009-2013 Akretion,
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
 
-from openerp import models, fields, api, _
+from openerp import models, fields, api
 from openerp.exceptions import ValidationError
 
 
