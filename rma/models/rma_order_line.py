@@ -176,7 +176,6 @@ class RmaOrderLine(models.Model):
                               "when displaying the rma.")
     product_id = fields.Many2one('product.product', string='Product',
                                  ondelete='restrict', required=-True)
-    product_tracking = fields.Selection(related="product_id.tracking")
     lot_id = fields.Many2one(
         comodel_name="stock.production.lot", string="Lot/Serial Number",
         readonly=True, states={"new": [("readonly", False)]},
@@ -186,10 +185,10 @@ class RmaOrderLine(models.Model):
         digits=dp.get_precision('Product Unit of Measure'))
     uom_id = fields.Many2one('product.uom', string='Unit of Measure',
                              required=True)
-    price_unit = fields.Monetary(string='Price Unit', readonly=False,
-                                 states={'approved': [('readonly', True)],
-                                         'done': [('readonly', True)],
-                                         'to_approve': [('readonly', True)]})
+    price_unit = fields.Float(string='Price Unit', readonly=False,
+                              states={'approved': [('readonly', True)],
+                                      'done': [('readonly', True)],
+                                      'to_approve': [('readonly', True)]})
 
     procurement_count = fields.Integer(compute=_compute_procurement_count,
                                        string='# of Procurements', copy=False,
@@ -302,18 +301,6 @@ class RmaOrderLine(models.Model):
                 'rma.order.line.customer')
         return super(RmaOrderLine, self).create(vals)
 
-    @api.onchange('product_id')
-    def _onchange_product_id(self):
-        result = {}
-        if not self.product_id:
-            return result
-        self.product_qty = 1
-        self.uom_id = self.product_id.uom_id.id
-        self.price_unit = self.product_id.standard_price
-        self.operation_id = self.product_id.rma_operation_id or \
-            self.product_id.categ_id.rma_operation_id
-        return result
-
     @api.onchange('operation_id')
     def _onchange_operation_id(self):
         result = {}
@@ -341,6 +328,10 @@ class RmaOrderLine(models.Model):
     @api.onchange('product_id')
     def _onchange_product_id(self):
         self.uom_id = self.product_id.uom_id
+        self.product_qty = 1
+        self.price_unit = self.product_id.standard_price
+        self.operation_id = self.product_id.rma_operation_id or \
+            self.product_id.categ_id.rma_operation_id
         if self.lot_id.product_id != self.product_id:
             self.lot_id = False
         if self.product_id:

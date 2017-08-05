@@ -35,6 +35,6 @@
              'wizards/stock_config_settings.xml',
              'wizards/rma_order_line_make_supplier_rma_view.xml',
              ],
-    'installable': False,
-    'auto_install': False,
+    'installable': True,
+    'auto_install': True,
 }
