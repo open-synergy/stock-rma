@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="1">
+<openerp>
+<data noupdate="1">
     <record id="rma_operation_customer_replace" model="rma.operation">
         <field name="name">Replace After Receive</field>
         <field name="code">RPLC</field>
@@ -71,5 +72,5 @@
         <field name="type">supplier</field>
         <field name="out_route_id" ref="rma.route_rma_dropship"/>
     </record>
-
-</odoo>
+</data>
+</openerp>

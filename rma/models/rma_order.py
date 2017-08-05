@@ -58,7 +58,7 @@ class RmaOrder(models.Model):
     state = fields.Selection([('draft', 'Draft'), ('to_approve', 'To Approve'),
                               ('approved', 'Approved'),
                               ('done', 'Done')], string='State', index=True,
-                               default='draft')
+                             default='draft')
     date_rma = fields.Datetime(string='Order Date', index=True, copy=False)
     partner_id = fields.Many2one('res.partner', string='Partner',
                                  required=True, readonly=True,
