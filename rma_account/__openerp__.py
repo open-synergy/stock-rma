@@ -7,7 +7,7 @@
 
 {
     'name': 'RMA Account',
-    'version': '9.0.1.0.0',
+    'version': '8.0.1.0.0',
     'license': 'LGPL-3',
     'category': 'RMA',
     'summary': 'Integrates RMA with Invoice Processing',
@@ -23,6 +23,6 @@
              'wizards/rma_add_invoice.xml',
              'wizards/rma_refund.xml',
              ],
-    'installable': True,
-    'auto_install': True,
+    'installable': False,
+    'auto_install': False,
 }
