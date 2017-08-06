@@ -5,8 +5,7 @@
 # © 2009-2013 Akretion,
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
 
-import time
-from openerp import _, api, fields, models
+from openerp import api, fields, models
 from openerp.exceptions import ValidationError
 
 
@@ -48,11 +47,10 @@ class RmaAddPurchase(models.TransientModel):
         string='Purcahse Order Lines')
 
     def _prepare_rma_line_from_po_line(self, line):
-        operation = line.product_id.rma_operation_id and \
-                    line.product_id.rma_operation_id.id or False
+        operation = line.product_id.rma_operation_id or False
         if not operation:
             operation = line.product_id.categ_id.rma_operation_id and \
-                        line.product_id.categ_id.rma_operation_id.id or False
+                line.product_id.categ_id.rma_operation_id.id or False
         data = {
             'purchase_order_line_id': line.id,
             'product_id': line.product_id.id,
@@ -60,8 +58,9 @@ class RmaAddPurchase(models.TransientModel):
             'uom_id': line.product_uom.id,
             'operation_id': operation,
             'product_qty': line.product_qty,
-            'price_unit': line.currency_id.compute(
-                line.price_unit, line.currency_id, round=False),
+            'price_unit': line.price_unit,
+            # 'price_unit': line.currency_id.compute(
+            #     line.price_unit, line.currency_id, round=False),
             'rma_id': self.rma_id.id
         }
         if not operation:
@@ -78,11 +77,13 @@ class RmaAddPurchase(models.TransientModel):
             {'in_route_id': operation.in_route_id.id or route,
              'out_route_id': operation.out_route_id.id or route,
              'receipt_policy': operation.receipt_policy,
-             'location_id': operation.location_id.id or \
-                            self.env.ref('stock.stock_location_stock').id,
+             'location_id': operation.location_id.id or
+             self.env.ref('stock.stock_location_stock').id,
              'operation_id': operation.id,
              'refund_policy': operation.refund_policy,
-             'delivery_policy': operation.delivery_policy
+             'delivery_policy': operation.delivery_policy,
+             'out_warehouse_id': operation.out_warehouse_id.id,
+             'in_warehouse_id': operation.in_warehouse_id.id,
              })
         return data
 
