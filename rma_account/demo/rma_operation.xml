@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="1">
+<openerp>
+<data noupdate="1">
 
     <record id="rma.rma_operation_customer_replace" model="rma.operation">
         <field name="refund_policy">no</field>
@@ -40,5 +41,6 @@
     <record id="rma.rma_operation_ds_replace_supplier" model="rma.operation">
         <field name="refund_policy">no</field>
     </record>
-
-</odoo>
+    
+</data>
+</openerp>
