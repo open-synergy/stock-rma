@@ -332,13 +332,13 @@
         <menuitem id="menu_customer_rma"
             name="Customer RMA"
             groups="rma.group_rma_customer_user,rma.group_rma_supplier_user"
-            sequence="30"
+            sequence="14"
             parent="stock.menu_stock_root"/>
 
         <menuitem id="menu_supplier_rma"
             name="Supplier RMA"
             groups="rma.group_rma_customer_user,rma.group_rma_supplier_user"
-            sequence="31"
+            sequence="14"
             parent="stock.menu_stock_root"/>
 
         <menuitem
