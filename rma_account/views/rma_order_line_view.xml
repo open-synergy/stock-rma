@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
+<openerp>
     <data>
         <record id="view_rma_line_supplier_form" model="ir.ui.view">
             <field name="name">rma.order.line.supplier.form</field>
@@ -86,4 +86,4 @@
         </record>
 
     </data>
-</odoo>
+</openerp>
