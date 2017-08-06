@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<odoo>
+<openerp>
+<data>
     <record id="view_rma_add_invoice" model="ir.ui.view">
         <field name="name">rma.add.invoice</field>
         <field name="model">rma_add_invoice</field>
@@ -25,11 +26,11 @@
                         <field name="name"/>
                         <field name="account_id" groups="account.group_account_user"/>
                         <field name="quantity"/>
-                        <field name="uom_id" groups="product.group_uom"/>
+                        <!-- <field name="uom_id" groups="product.group_uom"/> -->
                         <field name="price_unit"/>
                         <field name="discount" groups="sale.group_discount_per_so_line"/>
                         <field name="price_subtotal"/>
-                        <field name="currency_id" invisible="1"/>
+                        <!-- <field name="currency_id" invisible="1"/> -->
                     </tree>
                 </field>
                 <footer>
@@ -86,5 +87,5 @@
         </field>
     </record>
 
-
-</odoo>
+</data>
+</openerp>
