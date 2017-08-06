@@ -173,7 +173,7 @@ class RmaMakePicking(models.TransientModel):
             action = procurements.do_view_pickings()
         else:
             action = self.env.ref(
-                'procurement.procurement_order_action_exceptions')
+                'procurement.procurement_exceptions')
             action = action.read()[0]
             # choose the view_mode accordingly
             procurement_ids = procurements.ids
