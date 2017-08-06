@@ -3,6 +3,7 @@
 <data noupdate="1">
     <record id="rma_operation_customer_replace" model="rma.operation">
         <field name="name">Replace After Receive</field>
+        <field name="active" eval="1"/>
         <field name="code">RPLC</field>
         <field name="refund_policy">no</field>
         <field name="receipt_policy">ordered</field>
@@ -14,6 +15,7 @@
 
     <record id="rma_operation_supplier_replace" model="rma.operation">
         <field name="name">Replace</field>
+        <field name="active" eval="1"/>
         <field name="code">RPLS</field>
         <field name="refund_policy">no</field>
         <field name="receipt_policy">ordered</field>
@@ -25,6 +27,7 @@
 
     <record id="rma_operation_customer_refund" model="rma.operation">
         <field name="name">Refund before receive</field>
+        <field name="active" eval="1"/>
         <field name="code">RFC</field>
         <field name="refund_policy">ordered</field>
         <field name="receipt_policy">no</field>
@@ -35,6 +38,7 @@
 
     <record id="rma_operation_supplier_refund" model="rma.operation">
         <field name="name">Refund only</field>
+        <field name="active" eval="1"/>
         <field name="code">RFS</field>
         <field name="refund_policy">ordered</field>
         <field name="receipt_policy">no</field>
@@ -45,6 +49,7 @@
 
     <record id="rma_operation_ds_replace" model="rma.operation">
         <field name="name">Replace deliver to vendor</field>
+        <field name="active" eval="1"/>
         <field name="code">DSRPLB</field>
         <field name="refund_policy">no</field>
         <field name="receipt_policy">ordered</field>
@@ -55,6 +60,7 @@
 
     <record id="rma_operation_ds_replace_customer" model="rma.operation">
         <field name="name">Replace receive in vendor</field>
+        <field name="active" eval="1"/>
         <field name="code">DSRPLV</field>
         <field name="refund_policy">no</field>
         <field name="receipt_policy">no</field>
@@ -65,6 +71,7 @@
 
     <record id="rma_operation_ds_replace_supplier" model="rma.operation">
         <field name="name">Replace deliver to customer</field>
+        <field name="active" eval="1"/>
         <field name="code">DSRPC</field>
         <field name="refund_policy">no</field>
         <field name="receipt_policy">no</field>

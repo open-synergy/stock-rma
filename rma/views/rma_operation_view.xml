@@ -25,6 +25,7 @@
                             <field name="code"/>
                             <field name="name"/>
                             <field name="type"/>
+                            <field name="active"/>
                         </group>
                         <group name="policies"
                                string="Policies">
