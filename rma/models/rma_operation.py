@@ -28,6 +28,11 @@ class RmaOperation(models.Model):
         return self.env.ref('stock.stock_location_suppliers') or False
 
     name = fields.Char('Description', required=True)
+    active = fields.Boolean(
+        string="Active",
+        required=True,
+        default=True,
+        )
     code = fields.Char('Code', required=True)
     refund_policy = fields.Selection([
         ('no', 'No refund'), ('ordered', 'Based on Ordered Quantities'),
