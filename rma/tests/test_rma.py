@@ -28,9 +28,13 @@ class TestRma(common.TransactionCase):
         self.product_3 = self.env.ref('product.product_product_33')
         self.uom_unit = self.env.ref('product.product_uom_unit')
         # assign an operation
-        self.product_1.write({'rma_operation_id': self.rma_op_id.id})
-        self.product_2.write({'rma_operation_id': self.rma_op_id.id})
-        self.product_3.write({'rma_operation_id': self.rma_op_id.id})
+        product_value = {
+            "rma_operation_id": self.rma_op_id.id,
+            "supplier_rma_operation_id": self.rma_op_id.id,
+            }
+        self.product_1.write(product_value)
+        self.product_2.write(product_value)
+        self.product_3.write(product_value)
         self.partner_id = self.env.ref('base.res_partner_12')
         self.stock_location = self.env.ref('stock.stock_location_stock')
         self.stock_rma_location = self.env.ref('rma.location_rma')

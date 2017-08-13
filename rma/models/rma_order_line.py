@@ -330,8 +330,12 @@ class RmaOrderLine(models.Model):
         self.uom_id = self.product_id.uom_id
         self.product_qty = 1
         self.price_unit = self.product_id.standard_price
-        self.operation_id = self.product_id.rma_operation_id or \
-            self.product_id.categ_id.rma_operation_id
+        if self.type == "customer":
+            self.operation_id = self.product_id.rma_operation_id or \
+                self.product_id.categ_id.rma_operation_id
+        else:
+            self.operation_id = self.product_id.supplier_rma_operation_id or \
+                self.product_id.categ_id.supplier_rma_operation_id
         if self.lot_id.product_id != self.product_id:
             self.lot_id = False
         if self.product_id:
