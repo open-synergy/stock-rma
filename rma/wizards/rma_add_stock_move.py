@@ -43,8 +43,12 @@ class RmaAddStockMove(models.TransientModel):
                                 domain="[('state', '=', 'done')]")
 
     def _prepare_rma_line_from_stock_move(self, sm, lot=False):
-        operation = sm.product_id.rma_operation_id or \
-            sm.product_id.categ_id.rma_operation_id
+        if self.rma_id.type == "customer":
+            operation = sm.product_id.rma_operation_id or \
+                sm.product_id.categ_id.rma_operation_id
+        else:
+            operation = sm.product_id.supplier_rma_operation_id or \
+                sm.product_id.categ_id.supplier_rma_operation_id
         data = {
             'reference_move_id': sm.id,
             'product_id': sm.product_id.id,
