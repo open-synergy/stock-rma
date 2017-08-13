@@ -17,4 +17,6 @@ class ProductCategory(models.Model):
              "* Two steps: A RMA containing a product within a category with "
              "this policy will request the RMA manager approval.")
     rma_operation_id = fields.Many2one(
-        comodel_name="rma.operation", string="RMA Operation")
+        comodel_name="rma.operation", string="Customer RMA Operation")
+    supplier_rma_operation_id = fields.Many2one(
+        comodel_name="rma.operation", string="Supplier RMA Operation")
