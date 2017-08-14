@@ -9,9 +9,6 @@
     "version": "8.0.1.0.0",
     "category": "RMA",
     "summary": "RMA from PO",
-    "description": """
-    RMA from PO
-""",
     "author": "Eficent",
     "website": "http://www.github.com/eficent/stock-rma",
     "depends": [

@@ -8,12 +8,12 @@ from openerp import api, fields, models
 
 
 class RmaMakePicking(models.TransientModel):
-    _inherit = 'rma_make_picking.wizard'
+    _inherit = "rma_make_picking.wizard"
 
-    @api.returns('rma.order.line')
+    @api.returns("rma.order.line")
     def _prepare_item(self, line):
         res = super(RmaMakePicking, self)._prepare_item(line)
-        res['purchase_order_line_id'] = line.purchase_order_line_id.id
+        res["purchase_order_line_id"] = line.purchase_order_line_id.id
         return res
 
     @api.model
@@ -24,9 +24,9 @@ class RmaMakePicking(models.TransientModel):
                     procurement.purchase_id.id:
                 po_list.append(procurement.purchase_id.id)
         if len(po_list):
-            action = self.env.ref('purchase.purchase_rfq')
+            action = self.env.ref("purchase.purchase_rfq")
             result = action.read()[0]
-            result['domain'] = [('id', 'in', po_list)]
+            result["domain"] = [("id", "in", po_list)]
             return result
         else:
             action = super(RmaMakePicking, self)._get_action(pickings,
@@ -37,5 +37,7 @@ class RmaMakePicking(models.TransientModel):
 class RmaMakePickingItem(models.TransientModel):
     _inherit = "rma_make_picking.wizard.item"
 
-    purchase_order_line_id = fields.Many2one('purchase.order.line',
-                                             string='Purchase Line')
+    purchase_order_line_id = fields.Many2one(
+        comodel_name="purchase.order.line",
+        string="Purchase Line",
+    )
