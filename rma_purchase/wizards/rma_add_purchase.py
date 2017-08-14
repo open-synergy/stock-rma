@@ -55,13 +55,14 @@ class RmaAddPurchase(models.TransientModel):
     )
 
     def _prepare_rma_line_from_po_line(self, line):
-        operation = line.product_id.rma_operation_id or False
+        product = line.product_id
+        operation = product.supplier_rma_operation_id or False
         if not operation:
-            operation = line.product_id.categ_id.rma_operation_id and \
-                line.product_id.categ_id.rma_operation_id.id or False
+            operation = product.categ_id.supplier_rma_operation_id and \
+                product.categ_id.rma_operation_id.id or False
         data = {
             "purchase_order_line_id": line.id,
-            "product_id": line.product_id.id,
+            "product_id": product.id,
             "origin": line.order_id.name,
             "uom_id": line.product_uom.id,
             "operation_id": operation,
