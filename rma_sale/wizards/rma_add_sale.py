@@ -3,94 +3,105 @@
 # © 2015 Eezee-It, MONK Software, Vauxoo
 # © 2013 Camptocamp
 # © 2009-2013 Akretion,
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import _, api, fields, models
+from openerp import api, fields, models
 from openerp.exceptions import ValidationError
 
 
 class RmaAddSale(models.TransientModel):
-    _name = 'rma_add_sale'
-    _description = 'Wizard to add rma lines'
+    _name = "rma_add_sale"
+    _description = "Wizard to add rma lines"
 
     @api.model
     def default_get(self, fields):
         res = super(RmaAddSale, self).default_get(fields)
-        rma_obj = self.env['rma.order']
-        rma_id = self.env.context['active_ids'] or []
-        active_model = self.env.context['active_model']
+        rma_obj = self.env["rma.order"]
+        rma_id = self.env.context["active_ids"] or []
+        active_model = self.env.context["active_model"]
         if not rma_id:
             return res
-        assert active_model == 'rma.order', 'Bad context propagation'
+        assert active_model == "rma.order", "Bad context propagation"
 
         rma = rma_obj.browse(rma_id)
-        res['rma_id'] = rma.id
-        res['partner_id'] = rma.partner_id.id
-        res['sale_id'] = False
-        res['sale_line_ids'] = False
+        res["rma_id"] = rma.id
+        res["partner_id"] = rma.partner_id.id
+        res["sale_id"] = False
+        res["sale_line_ids"] = False
         return res
 
-    rma_id = fields.Many2one('rma.order',
-                             string='RMA Order',
-                             readonly=True,
-                             ondelete='cascade')
-
-    partner_id = fields.Many2one(comodel_name='res.partner', string='Partner',
-                                 readonly=True)
-    sale_id = fields.Many2one(comodel_name='sale.order', string='Order')
-    sale_line_ids = fields.Many2many('sale.order.line',
-                                     'rma_add_sale_add_line_rel',
-                                     'sale_line_id', 'rma_add_sale_id',
-                                     readonly=False,
-                                     string='Sale Lines')
+    rma_id = fields.Many2one(
+        comodel_name="rma.order",
+        string="RMA Order",
+        readonly=True,
+        ondelete="cascade",
+    )
+    partner_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="Partner",
+        readonly=True,
+    )
+    sale_id = fields.Many2one(
+        comodel_name="sale.order",
+        string="Order",
+    )
+    sale_line_ids = fields.Many2many(
+        comodel_name="sale.order.line",
+        relation="rma_add_sale_add_line_rel",
+        column1="sale_line_id",
+        column2="rma_add_sale_id",
+        readonly=False,
+        string="Sale Lines",
+    )
 
     def _prepare_rma_line_from_sale_order_line(self, line):
-        operation = line.product_id.rma_operation_id and \
-                    line.product_id.rma_operation_id.id or False
+        operation = line.product_id.rma_operation_id
         if not operation:
-            operation = line.product_id.categ_id.rma_operation_id and \
-                        line.product_id.categ_id.rma_operation_id.id or False
+            operation = line.product_id.categ_id.rma_operation_id
         data = {
-            'sale_line_id': line.id,
-            'product_id': line.product_id.id,
-            'origin': line.order_id.name,
-            'uom_id': line.product_uom.id,
-            'operation_id': operation,
-            'product_qty': line.product_uom_qty,
-            'delivery_address_id': self.sale_id.partner_id.id,
-            'invoice_address_id': self.sale_id.partner_id.id,
-            'price_unit': line.currency_id.compute(
-                line.price_unit, line.currency_id, round=False),
-            'rma_id': self.rma_id.id
+            "sale_line_id": line.id,
+            "product_id": line.product_id.id,
+            "origin": line.order_id.name,
+            "uom_id": line.product_uom.id,
+            "operation_id": operation.id,
+            "product_qty": line.product_uom_qty,
+            "delivery_address_id": self.sale_id.partner_id.id,
+            "invoice_address_id": self.sale_id.partner_id.id,
+            # "price_unit": line.currency_id.compute(
+            #     line.price_unit, line.currency_id, round=False),
+            "price_unit": line.price_unit,
+            "rma_id": self.rma_id.id
         }
         if not operation:
-            operation = self.env['rma.operation'].search(
-                [('type', '=', self.rma_id.type)], limit=1)
+            operation = self.env["rma.operation"].search(
+                [("type", "=", self.rma_id.type)], limit=1)
             if not operation:
                 raise ValidationError("Please define an operation first")
         if not operation.in_route_id or not operation.out_route_id:
-            route = self.env['stock.location.route'].search(
-                [('rma_selectable', '=', True)], limit=1)
+            route = self.env["stock.location.route"].search(
+                [("rma_selectable", "=", True)], limit=1)
             if not route:
                 raise ValidationError("Please define an rma route")
         data.update(
-            {'in_route_id': operation.in_route_id.id or route,
-             'out_route_id': operation.out_route_id.id or route,
-             'receipt_policy': operation.receipt_policy,
-             'location_id': operation.location_id.id or
-                            self.env.ref('stock.stock_location_stock').id,
-             'operation_id': operation.id,
-             'refund_policy': operation.refund_policy,
-             'delivery_policy': operation.delivery_policy
+            {"in_route_id": operation.in_route_id.id or route,
+             "out_route_id": operation.out_route_id.id or route,
+             "receipt_policy": operation.receipt_policy,
+             "location_id": operation.location_id.id or
+             self.env.ref("stock.stock_location_stock").id,
+             "operation_id": operation.id,
+             "refund_policy": operation.refund_policy,
+             "delivery_policy": operation.delivery_policy,
+             "out_warehouse_id": operation.out_warehouse_id.id,
+             "in_warehouse_id": operation.in_warehouse_id.id,
              })
         return data
 
     @api.model
     def _get_rma_data(self):
         data = {
-            'date_rma': fields.Datetime.now(),
-            'delivery_address_id': self.sale_id.partner_id.id,
-            'invoice_address_id': self.sale_id.partner_id.id
+            "date_rma": fields.Datetime.now(),
+            "delivery_address_id": self.sale_id.partner_id.id,
+            "invoice_address_id": self.sale_id.partner_id.id
         }
         return data
 
@@ -103,7 +114,7 @@ class RmaAddSale(models.TransientModel):
 
     @api.multi
     def add_lines(self):
-        rma_line_obj = self.env['rma.order.line']
+        rma_line_obj = self.env["rma.order.line"]
         existing_sale_lines = self._get_existing_sale_lines()
         for line in self.sale_line_ids:
             # Load a PO line only once
@@ -113,4 +124,4 @@ class RmaAddSale(models.TransientModel):
         rma = self.rma_id
         data_rma = self._get_rma_data()
         rma.write(data_rma)
-        return {'type': 'ir.actions.act_window_close'}
+        return {"type": "ir.actions.act_window_close"}

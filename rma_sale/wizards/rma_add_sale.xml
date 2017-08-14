@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<odoo>
+<openerp>
+<data>
     <record id="view_rma_add_sale" model="ir.ui.view">
         <field name="name">rma.add.sale</field>
         <field name="model">rma_add_sale</field>
@@ -29,11 +30,9 @@
                         <field name="name"/>
                         <field name="salesman_id"/>
                         <field name="product_uom_qty" string="Qty"/>
-                        <field name="qty_delivered"/>
-                        <field name="qty_invoiced"/>
-                        <field name="qty_to_invoice"/>
                         <field name="product_uom" string="Unit of Measure" groups="product.group_uom"/>
                         <field name="price_subtotal" sum="Total" widget="monetary"/>
+                        <field name="state" invisible="1"/>
                     </tree>
 
                 </field>
@@ -76,5 +75,5 @@
             </button>
         </field>
     </record>
-
-</odoo>
+</data>
+</openerp>

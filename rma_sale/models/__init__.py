@@ -3,7 +3,7 @@
 # © 2015 Eezee-It, MONK Software, Vauxoo
 # © 2013 Camptocamp
 # © 2009-2013 Akretion,
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from . import sale_order_line
 from . import rma_order_line
 from . import rma_order
