@@ -32,7 +32,7 @@ class RmaOperation(models.Model):
         string="Active",
         required=True,
         default=True,
-        )
+    )
     code = fields.Char('Code', required=True)
     refund_policy = fields.Selection([
         ('no', 'No refund'), ('ordered', 'Based on Ordered Quantities'),

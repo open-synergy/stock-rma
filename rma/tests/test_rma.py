@@ -31,7 +31,7 @@ class TestRma(common.TransactionCase):
         product_value = {
             "rma_operation_id": self.rma_op_id.id,
             "supplier_rma_operation_id": self.rma_op_id.id,
-            }
+        }
         self.product_1.write(product_value)
         self.product_2.write(product_value)
         self.product_3.write(product_value)
