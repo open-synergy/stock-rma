@@ -3,12 +3,12 @@
 # © 2015 Eezee-It, MONK Software, Vauxoo
 # © 2013 Camptocamp
 # © 2009-2013 Akretion,
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
     'name': 'RMA (Return Merchandise Authorization)',
     'version': '8.0.1.0.0',
-    'license': 'LGPL-3',
+    'license': 'AGPL-3',
     'category': 'RMA',
     'summary': 'Introduces the return merchandise authorization (RMA) process '
                'in Odoo',
