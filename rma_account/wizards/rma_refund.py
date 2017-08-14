@@ -157,8 +157,8 @@ class RmaRefund(models.TransientModel):
             "type": order.type == "customer" and "out_refund" or "in_refund",
             "partner_id": partner.id,
             "currency_id": self.env.user.company_id.currency_id.id,
-            "payment_term_id": False,
-            "fiscal_position_id":
+            "payment_term": False,
+            "fiscal_position":
                 partner.property_account_position.id,
         }
         for line in self.item_ids:
