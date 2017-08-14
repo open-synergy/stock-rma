@@ -25,7 +25,6 @@ class RmaMakePicking(models.TransientModel):
                   'qty_to_deliver': line.qty_to_deliver,
                   'line_id': line.id,
                   'rma_id': line.rma_id.id,
-                  'wiz_id': self.env.context['active_id'],
                   }
         return values
 
