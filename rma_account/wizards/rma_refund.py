@@ -34,7 +34,7 @@ class RmaRefund(models.TransientModel):
                   "invoice_address_id": line.invoice_address_id.id,
                   "line_id": line.id,
                   "rma_id": line.rma_id.id,
-                  "wiz_id": self.env.context["active_id"]}
+                  }
         return values
 
     @api.model
