@@ -119,11 +119,11 @@ class BaseCase(TransactionCase):
         move.action_done()
 
     def _check_quantity(self,
-            rma_line,
-            qty_to_receive=False, qty_incoming=False,
-            qty_received=False, qty_to_deliver=False,
-            qty_outgoing=False, qty_delivered=False,
-            qty_to_supplier_rma=False, qty_in_supplier_rma=False):
+                        rma_line,
+                        qty_to_receive=False, qty_incoming=False,
+                        qty_received=False, qty_to_deliver=False,
+                        qty_outgoing=False, qty_delivered=False,
+                        qty_to_supplier_rma=False, qty_in_supplier_rma=False):
         if qty_to_receive:
             self.assertEqual(
                 qty_to_receive,
