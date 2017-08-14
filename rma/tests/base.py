@@ -117,3 +117,42 @@ class BaseCase(TransactionCase):
 
     def _process_move(self, move):
         move.action_done()
+
+    def _check_quantity(self,
+            rma_line,
+            qty_to_receive=False, qty_incoming=False,
+            qty_received=False, qty_to_deliver=False,
+            qty_outgoing=False, qty_delivered=False,
+            qty_to_supplier_rma=False, qty_in_supplier_rma=False):
+        if qty_to_receive:
+            self.assertEqual(
+                qty_to_receive,
+                rma_line.qty_to_receive)
+        if qty_incoming:
+            self.assertEqual(
+                qty_incoming,
+                rma_line.qty_incoming)
+        if qty_received:
+            self.assertEqual(
+                qty_received,
+                rma_line.qty_received)
+        if qty_to_deliver:
+            self.assertEqual(
+                qty_to_deliver,
+                rma_line.qty_to_deliver)
+        if qty_outgoing:
+            self.assertEqual(
+                qty_outgoing,
+                rma_line.qty_outgoing)
+        if qty_delivered:
+            self.assertEqual(
+                qty_delivered,
+                rma_line.qty_delivered)
+        if qty_to_supplier_rma:
+            self.assertEqual(
+                qty_to_supplier_rma,
+                rma_line.qty_to_supplier_rma)
+        if qty_in_supplier_rma:
+            self.assertEqual(
+                qty_in_supplier_rma,
+                rma_line.qty_in_supplier_rma)
