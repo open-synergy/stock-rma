@@ -34,7 +34,7 @@ class RmaOrderLine(models.Model):
                 lambda i: i.invoice_id.state != "cancel").mapped(
                 "quantity"))
 
-    @api.one
+    @api.multi
     @api.depends(
         "refund_line_ids",
         "refund_line_ids.invoice_id.state",
@@ -44,12 +44,13 @@ class RmaOrderLine(models.Model):
         "type",
     )
     def _compute_qty_to_refund(self):
-        qty = 0.0
-        if self.refund_policy == "ordered":
-            qty = self.product_qty - self.qty_refunded
-        elif self.refund_policy == "received":
-            qty = self.qty_received - self.qty_refunded
-        self.qty_to_refund = qty
+        for rec in self:
+            qty = 0.0
+            if rec.refund_policy == "ordered":
+                qty = rec.product_qty - rec.qty_refunded
+            elif rec.refund_policy == "received":
+                qty = rec.qty_received - rec.qty_refunded
+            rec.qty_to_refund = qty
 
     @api.multi
     def _compute_refund_count(self):
