@@ -25,7 +25,7 @@ class RmaOrderLine(models.Model):
         default=lambda self: self._default_sale_type(),
     )
 
-    @api.one
+    @api.multi
     @api.depends(
         "sale_line_ids",
         "sale_type",
@@ -33,18 +33,19 @@ class RmaOrderLine(models.Model):
         "sale_line_ids.state",
     )
     def _compute_qty_to_sell(self):
-        if self.sale_type == "no":
-            self.qty_to_sell = 0.0
-        elif self.sale_type == "ordered":
-            qty = self._get_rma_sold_qty()
-            self.qty_to_sell = self.product_qty - qty
-        elif self.sale_type == "received":
-            qty = self._get_rma_sold_qty()
-            self.qty_to_sell = self.qty_received - qty
-        else:
-            self.qty_to_sell = 0.0
+        for line in self:
+            if line.sale_type == "no":
+                line.qty_to_sell = 0.0
+            elif line.sale_type == "ordered":
+                qty = line._get_rma_sold_qty()
+                line.qty_to_sell = line.product_qty - qty
+            elif line.sale_type == "received":
+                qty = line._get_rma_sold_qty()
+                line.qty_to_sell = line.qty_received - qty
+            else:
+                line.qty_to_sell = 0.0
 
-    @api.one
+    @api.multi
     @api.depends(
         "sale_line_ids",
         "sale_type",
@@ -52,14 +53,19 @@ class RmaOrderLine(models.Model):
         "sale_line_ids.state",
     )
     def _compute_qty_sold(self):
-        self.qty_sold = self._get_rma_sold_qty()
+        for line in self:
+            line.qty_sold = line._get_rma_sold_qty()
 
-    @api.one
+    @api.multi
+    @api.depends(
+        "sale_line_ids",
+    )
     def _compute_sales_count(self):
-        sales_list = []
-        for sale_order_line in self.sale_line_ids:
-            sales_list.append(sale_order_line.order_id.id)
-        self.sales_count = len(list(set(sales_list)))
+        for line in self:
+            sales_list = []
+            for sale_order_line in line.sale_line_ids:
+                sales_list.append(sale_order_line.order_id.id)
+            line.sales_count = len(list(set(sales_list)))
 
     sale_line_id = fields.Many2one(
         comodel_name="sale.order.line",
@@ -113,6 +119,7 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     def action_view_sale_order(self):
+        # TODO: Review
         action = self.env.ref("sale.action_quotations")
         result = action.read()[0]
         order_ids = []
