@@ -19,6 +19,7 @@ class SaleOrderLine(models.Model):
 
     @api.multi
     def _prepare_order_line_procurement(self, group_id=False):
+        # TODO: Review
         vals = super(SaleOrderLine, self)._prepare_order_line_procurement(
             group_id=group_id)
         vals.update({
