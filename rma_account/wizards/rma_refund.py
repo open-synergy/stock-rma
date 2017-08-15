@@ -185,7 +185,7 @@ class RmaRefundItem(models.TransientModel):
     wiz_id = fields.Many2one(
         comodel_name="rma.refund",
         string="Wizard",
-        required=True,
+        required=False,
     )
     line_id = fields.Many2one(
         comodel_name="rma.order.line",
