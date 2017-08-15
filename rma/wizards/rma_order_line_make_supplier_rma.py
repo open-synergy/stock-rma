@@ -133,7 +133,7 @@ class RmaLineMakeRmaOrderItem(models.TransientModel):
 
     wiz_id = fields.Many2one(
         'rma.order.line.make.supplier.rma',
-        string='Wizard', required=True, ondelete='cascade',
+        string='Wizard', required=False, ondelete='cascade',
         readonly=True)
     line_id = fields.Many2one('rma.order.line',
                               string='RMA Line',
