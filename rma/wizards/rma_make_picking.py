@@ -211,7 +211,7 @@ class RmaMakePickingItem(models.TransientModel):
 
     wiz_id = fields.Many2one(
         'rma_make_picking.wizard',
-        string='Wizard', required=True)
+        string='Wizard', required=False)
     line_id = fields.Many2one('rma.order.line',
                               string='RMA order Line',
                               readonly=True,
