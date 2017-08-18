@@ -148,14 +148,130 @@ class RmaOrder(models.Model):
     )
 
     @api.model
-    def create(self, vals):
-        if self.env.context.get("supplier"):
-            vals["name"] = self.env["ir.sequence"].next_by_code(
+    def _create_sequence(self, values):
+        obj_sequence = self.env["ir.sequence"]
+        if values["type"] == "supplier":
+            name = obj_sequence.next_by_code(
                 "rma.order.supplier")
         else:
-            vals["name"] = self.env["ir.sequence"].next_by_code(
+            name = obj_sequence.next_by_code(
                 "rma.order.customer")
-        return super(RmaOrder, self).create(vals)
+        return name
+
+    @api.model
+    def _prepare_create_data(self, values):
+        name = values.get("name", False)
+        if not name or name == "/":
+            values["name"] = self._create_sequence(values)
+        return values
+
+    @api.model
+    def create(self, vals):
+        new_values = self._prepare_create_data(vals)
+        return super(RmaOrder, self).create(new_values)
+
+    @api.multi
+    def _prepare_to_approve_data(self):
+        self.ensure_one()
+        return {
+            "state": "to_approve",
+        }
+
+    @api.multi
+    def action_rma_to_approve(self):
+        for rec in self:
+            rec.write(self._prepare_to_approve_data())
+            # TODO:
+            pols = rec.mapped("rma_line_ids.product_id.rma_approval_policy")
+            if not any(x != "one_step" for x in pols):
+                rec.write({"assigned_to": self.env.uid})
+                rec.action_rma_approve()
+        return True
+
+    @api.multi
+    def _prepare_draft_data(self):
+        self.ensure_one()
+        return {
+            "state": "draft",
+        }
+
+    @api.multi
+    def action_rma_draft(self):
+        for rec in self:
+            rec.write(rec._prepare_draft_data())
+        return True
+
+    @api.multi
+    def _prepare_approve_data(self):
+        self.ensure_one()
+        return {
+            "state": "approved",
+        }
+
+    @api.multi
+    def action_rma_approve(self):
+        # pass the supplier address in case this is a customer RMA
+        for rec in self:
+            rec.write(rec._prepare_approve_data())
+        return True
+
+    @api.multi
+    def _prepare_done_data(self):
+        self.ensure_one()
+        return {
+            "state": "done",
+        }
+
+    @api.multi
+    def action_rma_done(self):
+        for rec in self:
+            rec.write(rec._prepare_done_data())
+        return True
+
+    @api.multi
+    def _get_valid_lines(self):
+        """:return: A recordset of rma lines.
+        """
+        self.ensure_one()
+        return self.rma_line_ids
+
+    @api.multi
+    def action_view_lines(self):
+        if self.type == "customer":
+            action = self.env.ref("rma.action_rma_customer_lines")
+        else:
+            action = self.env.ref("rma.action_rma_supplier_lines")
+        result = action.read()[0]
+        lines = self._get_valid_lines()
+        # choose the view_mode accordingly
+        if len(lines) != 1:
+            result["domain"] = "[('id', 'in', " + \
+                               str(lines.ids) + ")]"
+        elif len(lines) == 1:
+            if self.type == "customer":
+                res = self.env.ref("rma.view_rma_line_form", False)
+            else:
+                res = self.env.ref("rma.view_rma_line_supplier_form", False)
+
+            result["views"] = [(res and res.id or False, "form")]
+            result["res_id"] = lines.id
+        return result
+
+    @api.multi
+    def action_view_supplier_lines(self):
+        action = self.env.ref("rma.action_rma_supplier_lines")
+        result = action.read()[0]
+        lines = self.rma_line_ids
+        related_lines = [line.id for line in lines.children_ids]
+        # choose the view_mode accordingly
+        if len(related_lines) != 1:
+            result["domain"] = "[('id', 'in', " + \
+                               str(related_lines) + ")]"
+        elif len(related_lines) == 1:
+            res = self.env.ref("rma.view_rma_line_supplier_form", False)
+            result["views"] = [(res and res.id or False, "form")]
+            result["res_id"] = related_lines[0]
+        return result
 
     @api.multi
     def action_view_in_shipments(self):
@@ -209,75 +325,4 @@ class RmaOrder(models.Model):
             res = self.env.ref("stock.view_picking_form", False)
             result["views"] = [(res and res.id or False, "form")]
             result["res_id"] = shipments[0]
-        return result
-
-    @api.multi
-    def action_rma_to_approve(self):
-        self.write({"state": "to_approve"})
-        for rec in self:
-            pols = rec.mapped("rma_line_ids.product_id.rma_approval_policy")
-            if not any(x != "one_step" for x in pols):
-                rec.write({"assigned_to": self.env.uid})
-                rec.action_rma_approve()
-        return True
-
-    @api.multi
-    def action_rma_draft(self):
-        self.write({"state": "draft"})
-        return True
-
-    @api.multi
-    def action_rma_approve(self):
-        # pass the supplier address in case this is a customer RMA
-        self.write({"state": "approved"})
-        return True
-
-    @api.multi
-    def action_rma_done(self):
-        self.write({"state": "done"})
-        return True
-
-    @api.multi
-    def _get_valid_lines(self):
-        """:return: A recordset of rma lines.
-        """
-        self.ensure_one()
-        return self.rma_line_ids
-
-    @api.multi
-    def action_view_lines(self):
-        if self.type == "customer":
-            action = self.env.ref("rma.action_rma_customer_lines")
-        else:
-            action = self.env.ref("rma.action_rma_supplier_lines")
-        result = action.read()[0]
-        lines = self._get_valid_lines()
-        # choose the view_mode accordingly
-        if len(lines) != 1:
-            result["domain"] = "[('id', 'in', " + \
-                               str(lines.ids) + ")]"
-        elif len(lines) == 1:
-            if self.type == "customer":
-                res = self.env.ref("rma.view_rma_line_form", False)
-            else:
-                res = self.env.ref("rma.view_rma_line_supplier_form", False)
-
-            result["views"] = [(res and res.id or False, "form")]
-            result["res_id"] = lines.id
-        return result
-
-    @api.multi
-    def action_view_supplier_lines(self):
-        action = self.env.ref("rma.action_rma_supplier_lines")
-        result = action.read()[0]
-        lines = self.rma_line_ids
-        related_lines = [line.id for line in lines.children_ids]
-        # choose the view_mode accordingly
-        if len(related_lines) != 1:
-            result["domain"] = "[('id', 'in', " + \
-                               str(related_lines) + ")]"
-        elif len(related_lines) == 1:
-            res = self.env.ref("rma.view_rma_line_supplier_form", False)
-            result["views"] = [(res and res.id or False, "form")]
-            result["res_id"] = related_lines[0]
         return result
