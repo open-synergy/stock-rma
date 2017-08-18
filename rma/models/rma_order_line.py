@@ -455,14 +455,27 @@ class RmaOrderLine(models.Model):
     )
 
     @api.model
-    def create(self, vals):
+    def _create_sequence(self, values):
+        obj_sequence = self.env["ir.sequence"]
         if self.env.context.get("supplier"):
-            vals["name"] = self.env["ir.sequence"].next_by_code(
+            name = obj_sequence.next_by_code(
                 "rma.order.line.supplier")
         else:
-            vals["name"] = self.env["ir.sequence"].next_by_code(
+            name = obj_sequence.next_by_code(
                 "rma.order.line.customer")
-        return super(RmaOrderLine, self).create(vals)
+        return name
+
+    @api.model
+    def _prepare_create_data(self, values):
+        name = values.get("name", False)
+        if not name or name == "/":
+            values["name"] = self._create_sequence(values)
+        return values
+
+    @api.model
+    def create(self, vals):
+        new_values = self._prepare_create_data(vals)
+        return super(RmaOrderLine, self).create(new_values)
 
     @api.onchange("operation_id")
     def _onchange_operation_id(self):
