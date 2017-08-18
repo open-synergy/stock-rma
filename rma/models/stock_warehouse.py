@@ -11,18 +11,31 @@ from openerp import fields, models
 class StockWarehouse(models.Model):
     _inherit = "stock.warehouse"
 
-    lot_rma_id = fields.Many2one('stock.location', 'RMA Location')
-    rma_cust_out_type_id = fields.Many2one('stock.picking.type',
-                                           'RMA Customer out Type')
-    rma_sup_out_type_id = fields.Many2one('stock.picking.type',
-                                          'RMA Supplier out Type')
-    rma_cust_in_type_id = fields.Many2one('stock.picking.type',
-                                          'RMA Customer in Type')
-    rma_sup_in_type_id = fields.Many2one('stock.picking.type',
-                                         'RMA Supplier in Type')
+    lot_rma_id = fields.Many2one(
+        comodel_name="stock.location",
+        string="RMA Location",
+    )
+    rma_cust_out_type_id = fields.Many2one(
+        comodel_name="stock.picking.type",
+        string="RMA Customer out Type",
+    )
+    rma_sup_out_type_id = fields.Many2one(
+        comodel_name="stock.picking.type",
+        string="RMA Supplier out Type",
+    )
+    rma_cust_in_type_id = fields.Many2one(
+        comodel_name="stock.picking.type",
+        string="RMA Customer in Type",
+    )
+    rma_sup_in_type_id = fields.Many2one(
+        comodel_name="stock.picking.type",
+        string="RMA Supplier in Type",
+    )
 
 
 class StockLocationRoute(models.Model):
     _inherit = "stock.location.route"
 
-    rma_selectable = fields.Boolean(string="Selectable on RMA Lines")
+    rma_selectable = fields.Boolean(
+        string="Selectable on RMA Lines",
+    )

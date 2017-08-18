@@ -9,24 +9,32 @@ from openerp import api, fields, models
 
 
 class ProcurementOrder(models.Model):
-    _inherit = 'procurement.order'
+    _inherit = "procurement.order"
 
-    rma_line_id = fields.Many2one('rma.order.line', 'RMA', ondelete="set null")
+    rma_line_id = fields.Many2one(
+        comodel_name="rma.order.line",
+        string="RMA",
+        ondelete="set null",
+    )
 
     @api.model
     def _run_move_create(self, procurement):
         res = super(ProcurementOrder, self)._run_move_create(procurement)
         if procurement.rma_line_id:
             line = procurement.rma_line_id
-            res['rma_line_id'] = line.id
+            res["rma_line_id"] = line.id
             if line.delivery_address_id:
-                res['partner_id'] = line.delivery_address_id.id
+                res["partner_id"] = line.delivery_address_id.id
             else:
-                res['partner_id'] = line.rma_id.partner_id.id
+                res["partner_id"] = line.rma_id.partner_id.id
         return res
 
 
 class ProcurementGroup(models.Model):
-    _inherit = 'procurement.group'
+    _inherit = "procurement.group"
 
-    rma_id = fields.Many2one('rma.order', 'RMA', ondelete="set null")
+    rma_id = fields.Many2one(
+        comodel_name="rma.order",
+        string="RMA",
+        ondelete="set null",
+    )
