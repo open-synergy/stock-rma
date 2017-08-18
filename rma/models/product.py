@@ -9,11 +9,17 @@ from openerp import fields, models
 
 
 class ProductTemplate(models.Model):
-    _inherit = 'product.template'
+    _inherit = "product.template"
 
     rma_operation_id = fields.Many2one(
-        comodel_name="rma.operation", string="Customer RMA Operation")
+        comodel_name="rma.operation",
+        string="Customer RMA Operation",
+    )
     supplier_rma_operation_id = fields.Many2one(
-        comodel_name="rma.operation", string="Supplier RMA Operation")
+        comodel_name="rma.operation",
+        string="Supplier RMA Operation",
+    )
     rma_approval_policy = fields.Selection(
-        related="categ_id.rma_approval_policy", readonly=True)
+        related="categ_id.rma_approval_policy",
+        readonly=True,
+    )

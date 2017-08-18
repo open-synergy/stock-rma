@@ -9,12 +9,15 @@ from openerp import models, fields
 
 
 class StockConfigSettings(models.Model):
-    _inherit = 'stock.config.settings'
+    _inherit = "stock.config.settings"
 
-    group_rma_delivery_address = fields.Selection([
-        (0, "Invoicing and shipping addresses are always the same "
-            "(Example: services companies)"),
-        (1, 'Display 3 fields on rma: partner, invoice address, delivery '
-            'address')
-    ], "Addresses",
-        implied_group='rma.group_rma_delivery_invoice_address')
+    group_rma_delivery_address = fields.Selection(
+        selection=[
+            (0, "Invoicing and shipping addresses are always the same "
+                "(Example: services companies)"),
+            (1, "Display 3 fields on rma: partner, invoice address, delivery "
+                "address"),
+        ],
+        string="Addresses",
+        implied_group="rma.group_rma_delivery_invoice_address",
+    )
