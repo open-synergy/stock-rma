@@ -262,7 +262,7 @@ class RmaOrder(models.Model):
         action = self.env.ref("rma.action_rma_supplier_lines")
         result = action.read()[0]
         lines = self.rma_line_ids
-        related_lines = [line.id for line in lines.children_ids]
+        related_lines = [line.id for line in lines.supplier_rma_line_ids]
         # choose the view_mode accordingly
         if len(related_lines) != 1:
             result["domain"] = "[('id', 'in', " + \
