@@ -138,6 +138,14 @@ class TestRmaCustomer(BaseCase):
             qty_outgoing=0.0,
         )
         self._rma_done(rma)
+
+        # Line's action
         line.action_view_in_shipments()
         line.action_view_out_shipments()
         line.action_view_procurements()
+
+        # RMA's action
+        rma.action_view_lines()
+        rma.action_view_supplier_lines()
+        rma.action_view_in_shipments()
+        rma.action_view_out_shipments()
