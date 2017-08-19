@@ -55,118 +55,23 @@ class RmaMakePicking(models.TransientModel):
         res["item_ids"] = items
         return res
 
+    @api.model
+    def _default_picking_type(self):
+        return self.env.context.get("picking_type", "incoming")
+
     item_ids = fields.One2many(
         comodel_name="rma_make_picking.wizard.item",
         inverse_name="wiz_id",
         string="Items",
     )
-
-    def find_procurement_group(self, item):
-        return self.env["procurement.group"].search([("rma_id", "=",
-                                                      item.line_id.rma_id.id)])
-
-    def _get_procurement_group_data(self, item):
-        group_data = {
-            "name": item.line_id.rma_id.name,
-            "rma_id": item.line_id.rma_id.id,
-        }
-        return group_data
-
-    @api.model
-    def _get_address(self, item):
-        if item.line_id.delivery_address_id:
-            delivery_address = item.line_id.delivery_address_id
-        elif item.line_id.customer_to_supplier:
-            delivery_address = item.line_id.supplier_address_id
-        elif item.line_id.partner_id:
-            delivery_address = item.line_id.partner_id
-        else:
-            raise ValidationError("Unknown delivery address")
-        return delivery_address
-
-    def _get_address_location(self, delivery_address_id, type):
-        if type == "supplier":
-            return delivery_address_id.property_stock_supplier
-        elif type == "customer":
-            return delivery_address_id.property_stock_customer
-
-    @api.model
-    def _get_procurement_data(self, item, group, qty, picking_type):
-        line = item.line_id
-        delivery_address_id = self._get_address(item)
-        if picking_type == "incoming":
-            if line.customer_to_supplier:
-                location = self._get_address_location(
-                    delivery_address_id, "supplier")
-            else:
-                location = line.location_id
-            warehouse = line.in_warehouse_id
-            route = line.in_route_id
-        else:
-            location = self._get_address_location(delivery_address_id,
-                                                  line.rma_id.type)
-            warehouse = line.out_warehouse_id
-            route = line.out_route_id
-        if not route:
-            raise ValidationError("No route specified")
-        if not warehouse:
-            raise ValidationError("No warehouse specified")
-        procurement_data = {
-            "name": line.rma_id.name,
-            "group_id": group.id,
-            "origin": line.rma_id.name,
-            "warehouse_id": warehouse.id,
-            "date_planned": time.strftime(DT_FORMAT),
-            "product_id": item.product_id.id,
-            "product_qty": qty,
-            "partner_dest_id": delivery_address_id.id,
-            "product_uom": line.product_id.product_tmpl_id.uom_id.id,
-            "location_id": location.id,
-            "rma_line_id": line.id,
-            "route_ids": [(4, route.id)]
-        }
-        return procurement_data
-
-    @api.model
-    def _create_procurement(self, item, picking_type):
-        group = self.find_procurement_group(item)
-        if not group:
-            procurement_group = self._get_procurement_group_data(item)
-            group = self.env["procurement.group"].create(procurement_group)
-        if picking_type == "incoming":
-            qty = item.qty_to_receive
-        else:
-            qty = item.qty_to_deliver
-        procurement_data = self._get_procurement_data(
-            item, group, qty, picking_type)
-        # create picking
-        procurement = self.env["procurement.order"].create(procurement_data)
-        procurement.run()
-        return procurement.id
-
-    @api.multi
-    def _create_picking(self):
-        """Method called when the user clicks on create picking"""
-        picking_type = self.env.context.get("picking_type")
-        procurement_list = []
-        for item in self.item_ids:
-            line = item.line_id
-            if line.state != "approved":
-                raise ValidationError(
-                    _("RMA %s is not approved") %
-                    line.rma_id.name)
-            if line.receipt_policy == "no" and picking_type == \
-                    "incoming":
-                raise ValidationError(
-                    _("No shipments needed for this operation"))
-            if line.delivery_policy == "no" and picking_type == \
-                    "outgoing":
-                raise ValidationError(
-                    _("No deliveries needed for this operation"))
-            procurement = self._create_procurement(item, picking_type)
-            procurement_list.append(procurement)
-        procurements = self.env["procurement.order"].browse(procurement_list)
-        return procurements
+    picking_type = fields.Selection(
+        string="Picking Type",
+        selection=[
+            ("incoming", "Incoming"),
+            ("outgoing", "Outgoing"),
+        ],
+        default=lambda self: self._default_picking_type(),
+    )
 
     @api.model
     def _get_action(self, pickings, procurements):
@@ -190,7 +95,11 @@ class RmaMakePicking(models.TransientModel):
 
     @api.multi
     def action_create_picking(self):
-        procurements = self._create_picking()
+        self.ensure_one()
+        procurements = self.env["procurement.order"]
+        for item in self.item_ids:
+            procurements += item._create_procurement()
+        procurements.run()
         groups = []
         for proc in procurements:
             if proc.group_id:
@@ -210,6 +119,59 @@ class RmaMakePicking(models.TransientModel):
 class RmaMakePickingItem(models.TransientModel):
     _name = "rma_make_picking.wizard.item"
     _description = "Items to receive"
+
+    @api.multi
+    @api.depends(
+        "wiz_id.picking_type",
+        "qty_to_receive",
+        "qty_to_deliver",
+    )
+    def _compute_qty(self):
+        for item in self:
+            if item.wiz_id.picking_type == "incoming":
+                item.qty = item.qty_to_receive
+            else:
+                item.qty = item.qty_to_deliver
+
+    @api.multi
+    @api.depends(
+        "line_id",
+    )
+    def _compute_delivery_address_id(self):
+        for item in self:
+            item.delivery_address_id = False
+            if item.line_id.delivery_address_id:
+                item.delivery_address_id = item.line_id.delivery_address_id
+            elif item.line_id.customer_to_supplier:
+                item.delivery_address_id = item.line_id.supplier_address_id
+            elif item.line_id.partner_id:
+                item.delivery_address_id = item.line_id.partner_id
+
+    @api.multi
+    @api.depends(
+        "wiz_id.picking_type",
+        "line_id",
+        "delivery_address_id",
+    )
+    def _compute_data(self):
+        for item in self:
+            picking_type = item.wiz_id.picking_type
+            line = item.line_id
+            delivery = item.delivery_address_id
+            if picking_type == "incoming":
+                if line.customer_to_supplier:
+                    item.location_id = delivery.property_stock_supplier
+                else:
+                    item.location_id = line.location_id
+                item.warehouse_id = line.in_warehouse_id
+                item.route_id = line.in_route_id
+            else:
+                if line.rma_id.type == "customer":
+                    item.location_id = delivery.property_stock_customer
+                else:
+                    item.location_id = delivery.property_stock_supplier
+                item.warehouse_id = line.out_warehouse_id
+                item.route_id = line.out_route_id
 
     wiz_id = fields.Many2one(
         comodel_name="rma_make_picking.wizard",
@@ -248,8 +210,92 @@ class RmaMakePickingItem(models.TransientModel):
         string="Quantity To Deliver",
         digits=dp.get_precision("Product Unit of Measure"),
     )
+    qty = fields.Float(
+        string="Quantity To Deliver",
+        digits=dp.get_precision("Product Unit of Measure"),
+        compute="_compute_qty",
+    )
     uom_id = fields.Many2one(
         "product.uom",
         string="Unit of Measure",
         readonly=True,
     )
+    delivery_address_id = fields.Many2one(
+        string="Delivery Address",
+        comodel_name="res.partner",
+        compute="_compute_delivery_address_id",
+        store=False,
+    )
+    location_id = fields.Many2one(
+        string="Location",
+        comodel_name="stock.location",
+        compute="_compute_data",
+        store=False,
+    )
+    warehouse_id = fields.Many2one(
+        string="Warehouse",
+        comodel_name="stock.warehouse",
+        compute="_compute_data",
+        store=False,
+    )
+    route_id = fields.Many2one(
+        string="Route",
+        comodel_name="stock.location.route",
+        compute="_compute_data",
+        store=False,
+    )
+
+    @api.multi
+    def find_procurement_group(self, item):
+        self.ensure_one()
+        return self.env["procurement.group"].search([("rma_id", "=",
+                                                      self.line_id.rma_id.id)])
+
+    @api.multi
+    def _prepare_procurement_group_data(self):
+        group_data = {
+            "name": self.line_id.rma_id.name,
+            "rma_id": self.line_id.rma_id.id,
+        }
+        return group_data
+
+    @api.multi
+    def _get_procurement_group(self):
+        group = self.find_procurement_group(self)
+        if not group:
+            group_data = self._prepare_procurement_group_data()
+            group = self.env["procurement.group"].create(
+                group_data)
+        return group
+
+    @api.model
+    def _create_procurement(self):
+        procurement_data = self._prepare_procurement_data()
+        # create picking
+        procurement = self.env["procurement.order"].create(procurement_data)
+        return procurement
+
+    @api.multi
+    def _prepare_procurement_data(self):
+        self.ensure_one()
+        line = self.line_id
+        group = self._get_procurement_group()
+        wh = self.warehouse_id
+        delivery = self.delivery_address_id
+        procurement_data = {
+            "name": line.rma_id.name,
+            "group_id": group.id,
+            "origin": line.rma_id.name,
+            "warehouse_id": wh and wh.id or False,
+            "date_planned": time.strftime(DT_FORMAT),
+            "product_id": self.product_id.id,
+            "product_qty": self.qty,
+            "partner_dest_id": delivery and delivery.id or False,
+            "product_uom": line.product_id.product_tmpl_id.uom_id.id,
+            "location_id": self.location_id and self.location_id.id or False,
+            "rma_line_id": line.id,
+        }
+        if self.route_id:
+            procurement_data.update({
+                "route_ids": [(4, self.route_id.id)]})
+        return procurement_data

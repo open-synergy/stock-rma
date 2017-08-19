@@ -3,7 +3,9 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import openerp.addons.decimal_precision as dp
-from openerp import _, api, exceptions, fields, models
+from openerp import api, fields, models
+from openerp.exceptions import Warning as UserError
+from openerp.tools.translate import _
 
 
 class RmaLineMakeSupplierRma(models.TransientModel):
@@ -62,69 +64,43 @@ class RmaLineMakeSupplierRma(models.TransientModel):
         if len(suppliers) == 1:
             res["partner_id"] = suppliers.id
         else:
-            raise exceptions.Warning(
+            raise UserError(
                 _("Only RMA lines from the same supplier address can be "
                   "processed at the same time"))
         res["item_ids"] = items
         return res
 
-    @api.model
-    def _prepare_supplier_rma(self, company):
+    @api.multi
+    def _prepare_supplier_rma(self):
         if not self.partner_id:
-            raise exceptions.Warning(
+            raise UserError(
                 _("Enter a supplier."))
         return {
             "partner_id": self.partner_id.id,
             "delivery_address_id": self.partner_id.id,
             "type": "supplier",
-            "company_id": company.id,
-        }
-
-    @api.model
-    def _prepare_supplier_rma_line(self, rma, item):
-        operation = self.env["rma.operation"].search(
-            [("type", "=", "supplier")], limit=1)
-        return {
-            "origin": item.line_id.rma_id.name,
-            "delivery_address_id":
-                item.line_id.delivery_address_id.id,
-            "product_id": item.line_id.product_id.id,
-            "customer_rma_id": item.line_id.id,
-            "product_qty": item.product_qty,
-            "rma_id": rma.id,
-            "operation_id": operation.id,
-            "receipt_policy": operation.receipt_policy,
-            "delivery_policy": operation.delivery_policy,
-            "in_warehouse_id": operation.in_warehouse_id.id,
-            "out_warehouse_id": operation.out_warehouse_id.id,
-            "location_id": operation.location_id.id,
-            "supplier_to_customer": operation.supplier_to_customer,
-            "in_route_id": operation.in_route_id.id,
-            "out_route_id": operation.out_route_id.id,
+            "company_id": self.env.user.company.id,
         }
 
     @api.multi
+    def _get_supplier_rma(self):
+        self.ensure_one()
+        if self.supplier_rma_id:
+            rma = self.supplier_rma_id
+        if not rma:
+            rma_data = self._prepare_supplier_rma()
+            rma = self.env["rma.order"].create(rma_data)
+        return rma
+
+    @api.multi
     def make_supplier_rma(self):
+        self.ensure_one()
         res = []
-        rma_obj = self.env["rma.order"]
-        rma_line_obj = self.env["rma.order.line"]
-        rma = False
+        rma = self._get_supplier_rma()
 
         for item in self.item_ids:
-            line = item.line_id
-            if item.product_qty <= 0.0:
-                raise exceptions.Warning(
-                    _("Enter a positive quantity."))
-
-            if self.supplier_rma_id:
-                rma = self.supplier_rma_id
-            if not rma:
-                rma_data = self._prepare_supplier_rma(line.company_id)
-                rma = rma_obj.create(rma_data)
-
-            rma_line_data = self._prepare_supplier_rma_line(rma, item)
-            rma_line_obj.create(rma_line_data)
-            res.append(rma.id)
+            item._create_supplier_rma_line(rma)
+        res.append(rma.id)
 
         return {
             "domain": "[('id','in', [" + ",".join(map(str, res)) + "])]",
@@ -178,3 +154,40 @@ class RmaLineMakeRmaOrderItem(models.TransientModel):
         string="Quantity to sell",
         digits=dp.get_precision("Product UoS"),
     )
+
+    @api.multi
+    def _check_qty(self):
+        self.ensure_one()
+        if self.product_qty <= 0.0:
+            raise UserError(
+                _("Enter a positive quantity."))
+
+    @api.multi
+    def _create_supplier_rma_line(self, rma):
+        rma_line_data = self._prepare_supplier_rma_line(rma)
+        res = self.env["rma.order.line"].create(rma_line_data)
+        return res
+
+    @api.model
+    def _prepare_supplier_rma_line(self, rma):
+        self.ensure_one()
+        operation = self.env["rma.operation"].search(
+            [("type", "=", "supplier")], limit=1)
+        return {
+            "origin": self.line_id.rma_id.name,
+            "delivery_address_id":
+                self.line_id.delivery_address_id.id,
+            "product_id": self.line_id.product_id.id,
+            "customer_rma_id": self.line_id.id,
+            "product_qty": self.product_qty,
+            "rma_id": rma.id,
+            "operation_id": operation.id,
+            "receipt_policy": operation.receipt_policy,
+            "delivery_policy": operation.delivery_policy,
+            "in_warehouse_id": operation.in_warehouse_id.id,
+            "out_warehouse_id": operation.out_warehouse_id.id,
+            "location_id": operation.location_id.id,
+            "supplier_to_customer": operation.supplier_to_customer,
+            "in_route_id": operation.in_route_id.id,
+            "out_route_id": operation.out_route_id.id,
+        }
