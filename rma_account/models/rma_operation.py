@@ -8,14 +8,14 @@ from openerp import fields, models
 
 
 class RmaOperation(models.Model):
-    _inherit = 'rma.operation'
+    _inherit = "rma.operation"
 
     refund_policy = fields.Selection(
         selection=[
-            ('no', 'No refund'),
-            ('ordered', 'Based on Ordered Quantities'),
-            ('received', 'Based on Received Quantities'),
+            ("no", "No refund"),
+            ("ordered", "Based on Ordered Quantities"),
+            ("received", "Based on Received Quantities"),
         ],
-        tring="Refund Policy",
-        default='no',
+        string="Refund Policy",
+        default="no",
     )
