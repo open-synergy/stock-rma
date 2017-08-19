@@ -5,7 +5,7 @@
 # © 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import fields, models
+from openerp import fields, models, api
 
 
 class ProductTemplate(models.Model):
@@ -23,3 +23,15 @@ class ProductTemplate(models.Model):
         related="categ_id.rma_approval_policy",
         readonly=True,
     )
+
+    @api.multi
+    def _get_rma_operation(self, rma_type="customer"):
+        self.ensure_one()
+        operation = self.categ_id._get_rma_operation(rma_type)
+        if operation:
+            return operation
+        if rma_type == "customer":
+            operation = self.rma_operation_id
+        else:
+            operation = self.supplier_rma_operation_id
+        return operation

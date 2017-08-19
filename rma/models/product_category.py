@@ -2,7 +2,7 @@
 # Copyright 2017 Eficent Business and IT Consulting Services S.L.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import fields, models
+from openerp import fields, models, api
 
 
 class ProductCategory(models.Model):
@@ -30,3 +30,18 @@ class ProductCategory(models.Model):
         comodel_name="rma.operation",
         string="Supplier RMA Operation",
     )
+
+    @api.multi
+    def _get_rma_operation(self, rma_type="customer"):
+        self.ensure_one()
+        operation = False
+        if rma_type == "customer":
+            operation = self.rma_operation_id
+        else:
+            operation = self.supplier_rma_operation_id
+        if not operation:
+            operation = self.env["rma.operation"].search(
+                [("type", "=", rma_type)], limit=1)
+            if len(operation) == 0:
+                operation = False
+        return operation
