@@ -22,11 +22,11 @@ class ProductCategory(models.Model):
              "* Two steps: A RMA containing a product within a category with "
              "this policy will request the RMA manager approval.",
     )
-    rma_operation_id = fields.Many2one(
+    rma_customer_operation_id = fields.Many2one(
         comodel_name="rma.operation",
         string="Customer RMA Operation",
     )
-    supplier_rma_operation_id = fields.Many2one(
+    rma_supplier_operation_id = fields.Many2one(
         comodel_name="rma.operation",
         string="Supplier RMA Operation",
     )
@@ -36,9 +36,9 @@ class ProductCategory(models.Model):
         self.ensure_one()
         operation = False
         if rma_type == "customer":
-            operation = self.rma_operation_id
+            operation = self.rma_customer_operation_id
         else:
-            operation = self.supplier_rma_operation_id
+            operation = self.rma_supplier_operation_id
         if not operation:
             operation = self.env["rma.operation"].search(
                 [("type", "=", rma_type)], limit=1)
