@@ -10,8 +10,8 @@
                 <xpath expr="//group[@name='parent']" position="inside">
                     <group name="grp_rma" colspan="2" string="RMA">
                         <field name="rma_approval_policy"/>
-                        <field name="rma_operation_id" groups="rma.group_rma_customer_user,rma.group_rma_supplier_user"/>
-                        <field name="supplier_rma_operation_id" groups="rma.group_rma_customer_user,rma.group_rma_supplier_user"/>
+                        <field name="rma_customer_operation_id" groups="rma.group_rma_customer_user,rma.group_rma_supplier_user"/>
+                        <field name="rma_supplier_operation_id" groups="rma.group_rma_customer_user,rma.group_rma_supplier_user"/>
                     </group>
                 </xpath>
             </field>
@@ -25,8 +25,8 @@
                  <group name="inventory" position="inside">
                     <group name="rma" string="RMA" groups="rma.group_rma_customer_user,rma.group_rma_supplier_user">
                         <field name="rma_approval_policy"/>
-                        <field name="rma_operation_id"/>
-                        <field name="supplier_rma_operation_id"/>
+                        <field name="rma_customer_operation_id"/>
+                        <field name="rma_supplier_operation_id"/>
                     </group>
                 </group>
             </field>

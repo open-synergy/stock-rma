@@ -373,7 +373,7 @@ class RmaOrderLine(models.Model):
         comodel_name="stock.location",
         string="Send To This Company Location",
         required=True,
-        default=lambda self: self.default_location_id(),
+        default=lambda self: self._default_location_id(),
     )
     customer_rma_id = fields.Many2one(
         comodel_name="rma.order.line",
