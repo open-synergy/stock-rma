@@ -38,6 +38,8 @@ class BaseCase(TransactionCase):
         self.stock_rma_location = self.env.ref('rma.location_rma')
         self.customer_location = self.env.ref(
             'stock.stock_location_customers')
+        self.supplier_location = self.env.ref(
+            'stock.stock_location_suppliers')
         self.product_uom_id = self.env.ref('product.product_uom_unit')
         self.product_uom_id = self.env.ref('product.product_uom_unit')
 

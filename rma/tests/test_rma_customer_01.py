@@ -48,11 +48,6 @@ class TestRmaCustomer(BaseCase):
         wiz_item = wiz_out_1.item_ids[0]
         wiz_item.qty_to_deliver = 3.0
         wiz_out_1.action_create_picking()
-        # self._check_shipment(
-        #     line,
-        #     in_shipment=0,
-        #     out_shipment=0,
-        # )
         self._check_quantity(
             line,
             qty_to_receive=0.0,
@@ -72,38 +67,32 @@ class TestRmaCustomer(BaseCase):
             qty_delivered=3.0,
             qty_outgoing=0.0,
         )
-        # wiz_out_1 = self.rma_make_picking.with_context({
-        #     "active_model": "rma.order.line",
-        #     "active_ids": [line.id],
-        #     "picking_type": "outgoing"
-        # }).create({})
-        # wiz_item = wiz_out_1.item_ids[0]
-        # wiz_item.qty_to_deliver = 2.0
-        # wiz_out_1.action_create_picking()
-        # self._check_quantity(
-        #     line,
-        #     qty_to_receive=4.0,
-        #     qty_received=3.0,
-        #     qty_incoming=0.0,
-        #     qty_to_deliver=3.0,
-        #     qty_delivered=0.0,
-        #     qty_outgoing=2.0,
-        # )
-        # self._check_shipment(
-        #     line,
-        #     in_shipment=1,
-        #     out_shipment=1,
-        # )
-        # self._process_move(line.move_ids)
-        # self._check_quantity(
-        #     line,
-        #     qty_to_receive=4.0,
-        #     qty_received=3.0,
-        #     qty_incoming=0.0,
-        #     qty_to_deliver=1.0,
-        #     qty_delivered=2.0,
-        #     qty_outgoing=0.0,
-        # )
+        wiz_in_1 = self.rma_make_picking.with_context({
+            "active_model": "rma.order.line",
+            "active_ids": [line.id],
+            "picking_type": "incoming"
+        }).create({})
+        wiz_in_1.item_ids[0].qty_to_receive = 2.0
+        wiz_in_1.action_create_picking()
+        self._check_quantity(
+            line,
+            qty_to_receive=3.0,
+            qty_received=0.0,
+            qty_incoming=2.0,
+            qty_to_deliver=4.0,
+            qty_delivered=3.0,
+            qty_outgoing=0.0,
+        )
+        self._process_move(line.move_ids)
+        self._check_quantity(
+            line,
+            qty_to_receive=1.0,
+            qty_received=2.0,
+            qty_incoming=0.0,
+            qty_to_deliver=4.0,
+            qty_delivered=3.0,
+            qty_outgoing=0.0,
+        )
         # wiz_out_2 = self.rma_make_picking.with_context({
         #     "active_model": "rma.order.line",
         #     "active_ids": [line.id],
