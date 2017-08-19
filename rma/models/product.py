@@ -11,11 +11,11 @@ from openerp import fields, models, api
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    rma_operation_id = fields.Many2one(
+    rma_customer_operation_id = fields.Many2one(
         comodel_name="rma.operation",
         string="Customer RMA Operation",
     )
-    supplier_rma_operation_id = fields.Many2one(
+    rma_supplier_operation_id = fields.Many2one(
         comodel_name="rma.operation",
         string="Supplier RMA Operation",
     )
@@ -31,7 +31,7 @@ class ProductTemplate(models.Model):
         if operation:
             return operation
         if rma_type == "customer":
-            operation = self.rma_operation_id
+            operation = self.rma_customer_operation_id
         else:
-            operation = self.supplier_rma_operation_id
+            operation = self.rma_supplier_operation_id
         return operation
