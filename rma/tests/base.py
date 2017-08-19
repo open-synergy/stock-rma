@@ -115,8 +115,25 @@ class BaseCase(TransactionCase):
     def _rma_draft(self, rma):
         rma.action_rma_draft()
 
-    def _process_move(self, move):
-        move.action_done()
+    def _process_move(self, moves):
+        for move in moves:
+            if move.state not in ["done", "cancel"]:
+                move.action_done()
+
+    def _check_shipment(
+            self,
+            rma_line,
+            in_shipment=False,
+            out_shipment=False,
+    ):
+        if in_shipment:
+            self.assertEqual(
+                rma_line.in_shipment_count,
+                in_shipment)
+        if out_shipment:
+            self.assertEqual(
+                rma_line.out_shipment_count,
+                out_shipment)
 
     def _check_quantity(self,
                         rma_line,
