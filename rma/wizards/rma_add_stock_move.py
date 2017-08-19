@@ -7,6 +7,7 @@
 
 from openerp import models, fields, api
 from openerp.exceptions import ValidationError
+from openerp.tools.translate import _
 
 
 class RmaAddStockMove(models.TransientModel):
@@ -47,13 +48,10 @@ class RmaAddStockMove(models.TransientModel):
         domain="[('state', '=', 'done')]",
     )
 
+    @api.model
     def _prepare_rma_line_from_stock_move(self, sm, lot=False):
-        if self.rma_id.type == "customer":
-            operation = sm.product_id.rma_operation_id or \
-                sm.product_id.categ_id.rma_operation_id
-        else:
-            operation = sm.product_id.supplier_rma_operation_id or \
-                sm.product_id.categ_id.supplier_rma_operation_id
+        operation = sm.product_id.product_tmpl_id._get_rma_operation(
+            self.rma_id.type)
         data = {
             "reference_move_id": sm.id,
             "product_id": sm.product_id.id,
@@ -66,11 +64,10 @@ class RmaAddStockMove(models.TransientModel):
             "delivery_address_id": sm.picking_id.partner_id.id,
             "rma_id": self.rma_id.id
         }
+
         if not operation:
-            operation = self.env["rma.operation"].search(
-                [("type", "=", self.rma_id.type)], limit=1)
-            if not operation:
-                raise ValidationError("Please define an operation first")
+            raise ValidationError(_("Please define an operation first"))
+
         if not operation.in_route_id or not operation.out_route_id:
             route = self.env["stock.location.route"].search(
                 [("rma_selectable", "=", True)], limit=1)
