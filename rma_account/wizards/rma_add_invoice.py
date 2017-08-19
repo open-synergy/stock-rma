@@ -43,8 +43,8 @@ class RmaAddinvoice(models.TransientModel):
                                         string='Invoice Lines')
 
     def _prepare_rma_line_from_inv_line(self, line):
-        operation = line.product_id.rma_operation_id or \
-            line.product_id.categ_id.rma_operation_id
+        operation = line.product_id.product_tmpl_id._get_rma_operation(
+            self.rma_id.type)
         data = {
             'invoice_line_id': line.id,
             'product_id': line.product_id.id,

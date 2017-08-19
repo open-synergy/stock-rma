@@ -51,26 +51,6 @@ class RmaOrder(models.Model):
         copy=False,
     )
 
-    def _prepare_rma_line_from_inv_line(self, line):
-        operation = line.product_id.rma_operation_id and \
-            line.product_id.rma_operation_id.id or False
-        if not operation:
-            operation = line.product_id.categ_id.rma_operation_id and \
-                line.product_id.categ_id.rma_operation_id.id or False
-        data = {
-            "invoice_line_id": line.id,
-            "product_id": line.product_id.id,
-            "name": line.name,
-            "origin": line.invoice_id.number,
-            "uom_id": line.uom_id.id,
-            "operation_id": operation,
-            "product_qty": line.quantity,
-            "price_unit": line.invoice_id.currency_id.compute(
-                line.price_unit, line.currency_id, round=False),
-            "rma_id": self._origin.id
-        }
-        return data
-
     @api.onchange("add_invoice_id")
     def on_change_invoice(self):
         if not self.add_invoice_id:
@@ -93,19 +73,6 @@ class RmaOrder(models.Model):
         self.add_invoice_id = False
         return {}
 
-    @api.model
-    def prepare_rma_line(self, origin_rma, rma_id, line):
-        line_values = super(RmaOrder, self).prepare_rma_line(
-            origin_rma, rma_id, line)
-        line_values["invoice_address_id"] = line.invoice_address_id.id
-        return line_values
-
-    @api.model
-    def _prepare_rma_data(self, partner, origin_rma):
-        res = super(RmaOrder, self)._prepare_rma_data(partner, origin_rma)
-        res["invoice_address_id"] = partner.id
-        return res
-
     @api.multi
     def action_view_invoice_refund(self):
         """
@@ -122,8 +89,8 @@ class RmaOrder(models.Model):
         invoice_ids = list(set(invoice_list))
         # choose the view_mode accordingly
         if len(invoice_ids) != 1:
-            result["domain"] = "[('id', 'in', ' + \
-                               str(invoice_ids) + ')]"
+            result["domain"] = "[('id', 'in', " + \
+                               str(invoice_ids) + ")]"
         elif len(invoice_ids) == 1:
             res = self.env.ref("account.invoice_supplier_form", False)
             result["views"] = [(res and res.id or False, "form")]
@@ -143,8 +110,8 @@ class RmaOrder(models.Model):
         invoice_ids = list(set(invoice_list))
         # choose the view_mode accordingly
         if len(invoice_ids) != 1:
-            result["domain"] = "[('id', 'in', ' + \
-                               str(invoice_ids) + ')]"
+            result["domain"] = "[('id', 'in', " + \
+                               str(invoice_ids) + ")]"
         elif len(invoice_ids) == 1:
             if self.type == "supplier":
                 res = self.env.ref("account.invoice_supplier_form", False)
