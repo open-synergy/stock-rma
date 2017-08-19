@@ -120,7 +120,7 @@ class BaseCase(TransactionCase):
             if move.state not in ["done", "cancel"]:
                 move.action_done()
 
-    def _check_shipment(
+    def _check_rma_line_shipment(
             self,
             rma_line,
             in_shipment=False,
@@ -133,6 +133,21 @@ class BaseCase(TransactionCase):
         if out_shipment:
             self.assertEqual(
                 rma_line.out_shipment_count,
+                out_shipment)
+
+    def _check_rma_shipment(
+            self,
+            rma,
+            in_shipment=False,
+            out_shipment=False,
+    ):
+        if in_shipment:
+            self.assertEqual(
+                rma.in_shipment_count,
+                in_shipment)
+        if out_shipment:
+            self.assertEqual(
+                rma.out_shipment_count,
                 out_shipment)
 
     def _check_quantity(self,
