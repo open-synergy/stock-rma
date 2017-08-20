@@ -6,6 +6,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, fields, models
+from openerp.exceptions import Warning as UserError
+from openerp.tools.translate import _
 
 
 class SaleOrderLine(models.Model):
@@ -18,6 +20,13 @@ class SaleOrderLine(models.Model):
     )
 
     @api.multi
+    def _create_rma_line_from_so_line(self, rma):
+        self.ensure_one()
+        so_line = self.env["rma.order.line"].create(
+            self._prepare_rma_line_from_so_line(rma))
+        return so_line
+
+    @api.multi
     def _prepare_order_line_procurement(self, group_id=False):
         # TODO: Review
         vals = super(SaleOrderLine, self)._prepare_order_line_procurement(
@@ -26,3 +35,41 @@ class SaleOrderLine(models.Model):
             "rma_line_id": self.rma_line_id.id
         })
         return vals
+
+    @api.multi
+    def _prepare_rma_line_from_so_line(self, rma):
+        self.ensure_one()
+        operation = self.product_id.product_tmpl_id._get_rma_operation(
+            rma.type)
+        if not operation:
+            raise UserError(_("Please define an operation first"))
+
+        if not operation.in_route_id or not operation.out_route_id:
+            route = self.env["stock.location.route"].search(
+                [("rma_selectable", "=", True)], limit=1)
+            if not route:
+                raise UserError(_("Please define an rma route"))
+        data = {
+            "sale_line_id": self.id,
+            "product_id": self.product_id.id,
+            "origin": self.order_id.name,
+            "uom_id": self.product_uom.id,
+            "operation_id": operation.id,
+            "product_qty": self.product_uom_qty,
+            "delivery_address_id": self.order_id.partner_id.id,
+            "invoice_address_id": self.order_id.partner_id.id,
+            # "price_unit": line.currency_id.compute(
+            #     line.price_unit, line.currency_id, round=False),
+            "price_unit": self.price_unit,
+            "rma_id": rma.id,
+            "in_route_id": operation.in_route_id.id or route,
+            "out_route_id": operation.out_route_id.id or route,
+            "receipt_policy": operation.receipt_policy,
+            "location_id": operation.location_id.id or
+            self.env.ref("stock.stock_location_stock").id,
+            "refund_policy": operation.refund_policy,
+            "delivery_policy": operation.delivery_policy,
+            "out_warehouse_id": operation.out_warehouse_id.id,
+            "in_warehouse_id": operation.in_warehouse_id.id,
+        }
+        return data
