@@ -6,7 +6,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, fields, models
-from openerp.exceptions import ValidationError
 
 
 class RmaAddSale(models.TransientModel):
@@ -54,48 +53,6 @@ class RmaAddSale(models.TransientModel):
         string="Sale Lines",
     )
 
-    def _prepare_rma_line_from_sale_order_line(self, line):
-        operation = line.product_id.rma_operation_id
-        if not operation:
-            operation = line.product_id.categ_id.rma_operation_id
-        data = {
-            "sale_line_id": line.id,
-            "product_id": line.product_id.id,
-            "origin": line.order_id.name,
-            "uom_id": line.product_uom.id,
-            "operation_id": operation.id,
-            "product_qty": line.product_uom_qty,
-            "delivery_address_id": self.sale_id.partner_id.id,
-            "invoice_address_id": self.sale_id.partner_id.id,
-            # "price_unit": line.currency_id.compute(
-            #     line.price_unit, line.currency_id, round=False),
-            "price_unit": line.price_unit,
-            "rma_id": self.rma_id.id
-        }
-        if not operation:
-            operation = self.env["rma.operation"].search(
-                [("type", "=", self.rma_id.type)], limit=1)
-            if not operation:
-                raise ValidationError("Please define an operation first")
-        if not operation.in_route_id or not operation.out_route_id:
-            route = self.env["stock.location.route"].search(
-                [("rma_selectable", "=", True)], limit=1)
-            if not route:
-                raise ValidationError("Please define an rma route")
-        data.update(
-            {"in_route_id": operation.in_route_id.id or route,
-             "out_route_id": operation.out_route_id.id or route,
-             "receipt_policy": operation.receipt_policy,
-             "location_id": operation.location_id.id or
-             self.env.ref("stock.stock_location_stock").id,
-             "operation_id": operation.id,
-             "refund_policy": operation.refund_policy,
-             "delivery_policy": operation.delivery_policy,
-             "out_warehouse_id": operation.out_warehouse_id.id,
-             "in_warehouse_id": operation.in_warehouse_id.id,
-             })
-        return data
-
     @api.model
     def _get_rma_data(self):
         data = {
@@ -114,14 +71,12 @@ class RmaAddSale(models.TransientModel):
 
     @api.multi
     def add_lines(self):
-        rma_line_obj = self.env["rma.order.line"]
         existing_sale_lines = self._get_existing_sale_lines()
+        rma = self.rma_id
         for line in self.sale_line_ids:
             # Load a PO line only once
             if line not in existing_sale_lines:
-                data = self._prepare_rma_line_from_sale_order_line(line)
-                rma_line_obj.create(data)
-        rma = self.rma_id
+                line._create_rma_line_from_so_line(rma)
         data_rma = self._get_rma_data()
         rma.write(data_rma)
         return {"type": "ir.actions.act_window_close"}
