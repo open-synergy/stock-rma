@@ -85,3 +85,6 @@ class TestRmaCustomer(BaseCase):
             line,
             qty_to_receive=7.0,
             qty_to_refund=0.0)
+        rma.action_view_purchase_order()
+        rma.action_view_origin_purchase_order()
+        line.action_view_purchase_order()
