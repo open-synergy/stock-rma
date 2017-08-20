@@ -12,6 +12,7 @@ class BaseCase(TransactionCase):
         super(BaseCase, self).setUp()
         self.rma_make_picking = self.env['rma_make_picking.wizard']
         self.rma_add_stock_move = self.env['rma_add_stock_move']
+        self.make_supplier_rma = self.env["rma.order.line.make.supplier.rma"]
         self.stockpicking = self.env['stock.picking']
         self.rma = self.env['rma.order']
         self.rma_line = self.env['rma.order.line']
@@ -34,6 +35,7 @@ class BaseCase(TransactionCase):
         self.product_2.write(product_value)
         self.product_3.write(product_value)
         self.partner = self.env.ref('base.res_partner_12')
+        self.supplier = self.env.ref('base.res_partner_13')
         self.stock_location = self.env.ref('stock.stock_location_stock')
         self.stock_rma_location = self.env.ref('rma.location_rma')
         self.customer_location = self.env.ref(
@@ -47,7 +49,7 @@ class BaseCase(TransactionCase):
                      partner,
                      rma_type,
                      date_rma,
-                     rma_lines
+                     rma_lines,
                      ):
         return {
             "partner_id": partner.id,
@@ -83,6 +85,7 @@ class BaseCase(TransactionCase):
             "in_warehouse_id": operation.in_warehouse_id.id,
             "out_warehouse_id": operation.out_warehouse_id.id,
             "location_id": location.id,
+            "supplier_address_id": self.supplier.id,
         }
 
     def _create_rma(self,

@@ -136,3 +136,15 @@ class TestRmaCustomer(BaseCase):
         rma.action_view_supplier_lines()
         rma.action_view_in_shipments()
         rma.action_view_out_shipments()
+
+        # Make supplier RMA
+        wiz = self.make_supplier_rma.with_context({
+            "active_model": "rma.order.line",
+            "active_ids": [line.id],
+        }).create({})
+        wiz.item_ids[0].product_qty = 3.0
+        wiz.make_supplier_rma()
+        self._check_quantity(
+            line,
+            qty_in_supplier_rma=3.0,
+            qty_to_supplier_rma=0.0)
