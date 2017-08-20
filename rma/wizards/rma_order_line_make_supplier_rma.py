@@ -79,12 +79,13 @@ class RmaLineMakeSupplierRma(models.TransientModel):
             "partner_id": self.partner_id.id,
             "delivery_address_id": self.partner_id.id,
             "type": "supplier",
-            "company_id": self.env.user.company.id,
+            "company_id": self.env.user.company_id.id,
         }
 
     @api.multi
     def _get_supplier_rma(self):
         self.ensure_one()
+        rma = False
         if self.supplier_rma_id:
             rma = self.supplier_rma_id
         if not rma:
@@ -168,7 +169,7 @@ class RmaLineMakeRmaOrderItem(models.TransientModel):
         res = self.env["rma.order.line"].create(rma_line_data)
         return res
 
-    @api.model
+    @api.multi
     def _prepare_supplier_rma_line(self, rma):
         self.ensure_one()
         operation = self.env["rma.operation"].search(
@@ -180,13 +181,14 @@ class RmaLineMakeRmaOrderItem(models.TransientModel):
             "product_id": self.line_id.product_id.id,
             "customer_rma_id": self.line_id.id,
             "product_qty": self.product_qty,
+            "uom_id": self.uom_id.id,
             "rma_id": rma.id,
             "operation_id": operation.id,
             "receipt_policy": operation.receipt_policy,
             "delivery_policy": operation.delivery_policy,
             "in_warehouse_id": operation.in_warehouse_id.id,
             "out_warehouse_id": operation.out_warehouse_id.id,
-            "location_id": operation.location_id.id,
+            "location_id": self.line_id.location_id.id,
             "supplier_to_customer": operation.supplier_to_customer,
             "in_route_id": operation.in_route_id.id,
             "out_route_id": operation.out_route_id.id,
