@@ -91,7 +91,6 @@ class StockMove(models.Model):
              "out_route_id": operation.out_route_id.id,
              "receipt_policy": operation.receipt_policy,
              "operation_id": operation.id,
-             "refund_policy": operation.refund_policy,
              "delivery_policy": operation.delivery_policy
              })
         if operation.in_warehouse_id:
