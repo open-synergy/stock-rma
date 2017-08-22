@@ -40,16 +40,6 @@ class RmaOperation(models.Model):
         string="Code",
         required=True,
     )
-    # TODO: Remove?
-    refund_policy = fields.Selection(
-        selection=[
-            ("no", "No refund"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("received", "Based on Received Quantities"),
-        ],
-        string="Refund Policy",
-        default="no",
-    )
     receipt_policy = fields.Selection(
         selection=[
             ("no", "Not required"),
