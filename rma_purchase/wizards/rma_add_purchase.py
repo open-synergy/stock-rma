@@ -44,6 +44,10 @@ class RmaAddPurchase(models.TransientModel):
         comodel_name="purchase.order",
         string="Order",
     )
+    operation_id = fields.Many2one(
+        comodel_name="rma.operation",
+        domain=[("type", "=", "supplier")],
+        )
     purchase_line_ids = fields.Many2many(
         comodel_name="purchase.order.line",
         relation="rma_add_purchase_add_line_rel",
@@ -70,7 +74,7 @@ class RmaAddPurchase(models.TransientModel):
         for line in self.purchase_line_ids:
             # Load a PO line only once
             if line not in existing_purchase_lines:
-                line._create_rma_line_from_po_line(rma)
+                line._create_rma_line_from_po_line(rma, self.operation_id)
         data_rma = self._get_rma_data()
         rma.write(data_rma)
         return {"type": "ir.actions.act_window_close"}

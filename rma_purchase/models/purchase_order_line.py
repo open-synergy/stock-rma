@@ -14,17 +14,18 @@ class PurchaserderLine(models.Model):
     _inherit = "purchase.order.line"
 
     @api.multi
-    def _create_rma_line_from_po_line(self, rma):
+    def _create_rma_line_from_po_line(self, rma, operation=False):
         self.ensure_one()
         po_line = self.env["rma.order.line"].create(
-            self._prepare_rma_line_from_po_line(rma))
+            self._prepare_rma_line_from_po_line(rma, operation))
         return po_line
 
     @api.multi
-    def _prepare_rma_line_from_po_line(self, rma):
+    def _prepare_rma_line_from_po_line(self, rma, operation=False):
         self.ensure_one()
-        operation = self.product_id.product_tmpl_id._get_rma_operation(
-            rma.type)
+        if not operation:
+            operation = self.product_id.product_tmpl_id._get_rma_operation(
+                rma.type)
 
         if not operation:
             raise UserError(_("Please define an operation first"))
@@ -45,8 +46,8 @@ class PurchaserderLine(models.Model):
             # "price_unit": line.currency_id.compute(
             #     line.price_unit, line.currency_id, round=False),
             "rma_id": rma.id,
-            "in_route_id": operation.in_route_id.id or route,
-            "out_route_id": operation.out_route_id.id or route,
+            "in_route_id": operation.in_route_id.id or route.id,
+            "out_route_id": operation.out_route_id.id or route.id,
             "receipt_policy": operation.receipt_policy,
             "location_id": operation.location_id.id or
             self.env.ref("stock.stock_location_stock").id,

@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <form string="Select Purchase Order from customer">
                 <group>
+                    <field name="operation_id"/>
                     <field name="partner_id"
                            domain="[('customer','=',True)]"
                            string="Customer"/>
