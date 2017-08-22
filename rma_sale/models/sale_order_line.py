@@ -20,10 +20,10 @@ class SaleOrderLine(models.Model):
     )
 
     @api.multi
-    def _create_rma_line_from_so_line(self, rma):
+    def _create_rma_line_from_so_line(self, rma, operation=False):
         self.ensure_one()
         so_line = self.env["rma.order.line"].create(
-            self._prepare_rma_line_from_so_line(rma))
+            self._prepare_rma_line_from_so_line(rma, operation))
         return so_line
 
     @api.multi
@@ -37,10 +37,11 @@ class SaleOrderLine(models.Model):
         return vals
 
     @api.multi
-    def _prepare_rma_line_from_so_line(self, rma):
+    def _prepare_rma_line_from_so_line(self, rma, operation=False):
         self.ensure_one()
-        operation = self.product_id.product_tmpl_id._get_rma_operation(
-            rma.type)
+        if not operation:
+            operation = self.product_id.product_tmpl_id._get_rma_operation(
+                rma.type)
         if not operation:
             raise UserError(_("Please define an operation first"))
 
@@ -62,8 +63,8 @@ class SaleOrderLine(models.Model):
             #     line.price_unit, line.currency_id, round=False),
             "price_unit": self.price_unit,
             "rma_id": rma.id,
-            "in_route_id": operation.in_route_id.id or route,
-            "out_route_id": operation.out_route_id.id or route,
+            "in_route_id": operation.in_route_id.id or route.id,
+            "out_route_id": operation.out_route_id.id or route.id,
             "receipt_policy": operation.receipt_policy,
             "location_id": operation.location_id.id or
             self.env.ref("stock.stock_location_stock").id,
