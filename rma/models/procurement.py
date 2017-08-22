@@ -30,7 +30,14 @@ class ProcurementOrder(models.Model):
             dest_loc = self.env["stock.location"].browse([
                 res["location_dest_id"]])[0]
             if dest_loc.usage == "internal":
-                res["price_unit"] = line.price_unit
+                if not line.currency_id:
+                    price = line.price_unit
+                elif line.currency_id and line.currency_id != \
+                        line.rma_id.company_id.currency_id:
+                    price = line.currency_id.compute(
+                        line.price_unit,
+                        line.rma_id.company_id.currency_id)
+                res["price_unit"] = price
         return res
 
 
