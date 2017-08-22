@@ -52,6 +52,10 @@ class RmaAddSale(models.TransientModel):
         readonly=False,
         string="Sale Lines",
     )
+    operation_id = fields.Many2one(
+        comodel_name="rma.operation",
+        domain=[("type", "=", "customer")],
+    )
 
     @api.model
     def _get_rma_data(self):
@@ -76,7 +80,7 @@ class RmaAddSale(models.TransientModel):
         for line in self.sale_line_ids:
             # Load a PO line only once
             if line not in existing_sale_lines:
-                line._create_rma_line_from_so_line(rma)
+                line._create_rma_line_from_so_line(rma, self.operation_id)
         data_rma = self._get_rma_data()
         rma.write(data_rma)
         return {"type": "ir.actions.act_window_close"}
