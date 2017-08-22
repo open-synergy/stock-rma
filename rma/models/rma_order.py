@@ -6,6 +6,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, fields, models
+from openerp.exceptions import Warning as UserError
 
 
 class RmaOrder(models.Model):
@@ -64,7 +65,7 @@ class RmaOrder(models.Model):
         string="Type",
         required=True,
         default=lambda self: self._get_default_type(),
-        readonly=True,
+        readonly=False,
     )
     reference = fields.Char(
         string="Partner Reference",
