@@ -71,12 +71,14 @@ class TestRmaCustomer(BaseCase):
             self._prepare_po())
         po.signal_workflow("purchase_confirm")
         rma = self._create_rma(rma_type="supplier", rma_lines=[])
-        wiz = self.obj_wiz_add_po.create({
-            "rma_id": rma.id,
-            "partner_id": self.partner.id,
-            "purchase_id": po.id,
-            "purchase_line_ids": [(6, 0, po.order_line.ids)],
-        })
+        wiz = self.obj_wiz_add_po.with_context({
+            "active_model": "rma.order",
+            "active_ids": [rma.id]}).create({
+                "rma_id": rma.id,
+                "partner_id": self.partner.id,
+                "purchase_id": po.id,
+                "purchase_line_ids": [(6, 0, po.order_line.ids)],
+            })
         wiz.add_lines()
         self._rma_request_approval(rma)
         self._rma_approve(rma)

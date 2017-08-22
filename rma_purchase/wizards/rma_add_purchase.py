@@ -47,7 +47,7 @@ class RmaAddPurchase(models.TransientModel):
     operation_id = fields.Many2one(
         comodel_name="rma.operation",
         domain=[("type", "=", "supplier")],
-        )
+    )
     purchase_line_ids = fields.Many2many(
         comodel_name="purchase.order.line",
         relation="rma_add_purchase_add_line_rel",
