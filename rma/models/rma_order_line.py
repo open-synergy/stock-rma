@@ -508,7 +508,8 @@ class RmaOrderLine(models.Model):
             if self.lot_id.product_id != self.product_id:
                 self.lot_id = False
             self.price_unit = self.product_id.standard_price
-            self.operation_id = self.product_id.product_tmpl_id._get_rma_operation(
+            product_tmpl = self.product_id.product_tmpl_id
+            self.operation_id = product_tmpl._get_rma_operation(
                 self.type)
             self.uom_id = self.product_id.uom_id
             return {"domain": {
