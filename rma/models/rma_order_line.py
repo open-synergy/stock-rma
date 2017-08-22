@@ -503,18 +503,14 @@ class RmaOrderLine(models.Model):
 
     @api.onchange("product_id")
     def _onchange_product_id(self):
-        self.uom_id = self.product_id.uom_id
         self.product_qty = 1
-        self.price_unit = self.product_id.standard_price
-        if self.type == "customer":
-            self.operation_id = self.product_id.rma_operation_id or \
-                self.product_id.categ_id.rma_operation_id
-        else:
-            self.operation_id = self.product_id.supplier_rma_operation_id or \
-                self.product_id.categ_id.supplier_rma_operation_id
-        if self.lot_id.product_id != self.product_id:
-            self.lot_id = False
         if self.product_id:
+            if self.lot_id.product_id != self.product_id:
+                self.lot_id = False
+            self.price_unit = self.product_id.standard_price
+            self.operation_id = self.product_id.product_tmpl_id._get_rma_operation(
+                self.type)
+            self.uom_id = self.product_id.uom_id
             return {"domain": {
                 "lot_id": [("product_id", "=", self.product_id.id)]}}
         return {"domain": {"lot_id": []}}
