@@ -9,6 +9,7 @@
             <form string="Select Sale Order from customer">
                 <separator string="Select Sale Order from customer"/>
                 <group>
+                    <field name="operation_id"/>
                     <field name="partner_id"
                            domain="[('customer','=',True)]"
                            string="Customer"/>
