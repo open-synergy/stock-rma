@@ -7,7 +7,7 @@
         <field name="code">RPLC</field>
         <field name="refund_policy">no</field>
         <field name="receipt_policy">ordered</field>
-        <field name="delivery_policy">received</field>
+        <field name="delivery_policy">delivered</field>
         <field name="type">customer</field>
         <field name="in_route_id" ref="rma.route_rma_customer"/>
         <field name="out_route_id" ref="rma.route_rma_customer"/>
@@ -64,7 +64,7 @@
         <field name="code">DSRPLV</field>
         <field name="refund_policy">no</field>
         <field name="receipt_policy">no</field>
-        <field name="delivery_policy">received</field>
+        <field name="delivery_policy">delivered</field>
         <field name="type">customer</field>
         <field name="out_route_id" ref="rma.route_rma_dropship"/>
     </record>
@@ -75,7 +75,7 @@
         <field name="code">DSRPC</field>
         <field name="refund_policy">no</field>
         <field name="receipt_policy">no</field>
-        <field name="delivery_policy">received</field>
+        <field name="delivery_policy">delivered</field>
         <field name="type">supplier</field>
         <field name="out_route_id" ref="rma.route_rma_dropship"/>
     </record>
