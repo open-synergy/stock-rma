@@ -32,6 +32,9 @@ class ProcurementOrder(models.Model):
             if dest_loc.usage == "internal":
                 if not line.currency_id:
                     price = line.price_unit
+                elif line.currency_id and line.currency_id == \
+                        line.rma_id.company_id.currency_id:
+                    price = line.price_unit
                 elif line.currency_id and line.currency_id != \
                         line.rma_id.company_id.currency_id:
                     price = line.currency_id.compute(
