@@ -59,8 +59,7 @@ class SaleOrderLine(models.Model):
             "product_qty": self.product_uom_qty,
             "delivery_address_id": self.order_id.partner_id.id,
             "invoice_address_id": self.order_id.partner_id.id,
-            # "price_unit": line.currency_id.compute(
-            #     line.price_unit, line.currency_id, round=False),
+            "currency_id": self.order_id.currency_id.id,
             "price_unit": self.price_unit,
             "rma_id": rma.id,
             "in_route_id": operation.in_route_id.id or route.id,
