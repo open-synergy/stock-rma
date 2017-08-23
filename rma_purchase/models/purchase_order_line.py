@@ -43,8 +43,7 @@ class PurchaserderLine(models.Model):
             "operation_id": operation.id,
             "product_qty": self.product_qty,
             "price_unit": self.price_unit,
-            # "price_unit": line.currency_id.compute(
-            #     line.price_unit, line.currency_id, round=False),
+            "currency_id": self.order_id.currency_id.id,
             "rma_id": rma.id,
             "in_route_id": operation.in_route_id.id or route.id,
             "out_route_id": operation.out_route_id.id or route.id,
