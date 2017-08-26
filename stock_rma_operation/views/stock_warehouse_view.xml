@@ -10,6 +10,18 @@
     <field name="model">stock.warehouse</field>
     <field name="inherit_id" ref="rma.view_warehouse_form"/>
     <field name="arch" type="xml">
+        <xpath expr="//field[@name='lot_rma_id']" position="replace">
+            <label for="lot_rma_id"/>
+            <div>
+                <field name="lot_rma_id"/>
+                <button name="button_create_rma_loc"
+                    type="object"
+                    string="(create)"
+                    class="oe_link"
+                    attrs="{'invisible': [('lot_rma_id', '!=', False)]}"
+                />
+            </div>
+        </xpath>
         <xpath expr="//field[@name='rma_cust_in_type_id']" position="replace">
             <label for="rma_cust_in_type_id"/>
             <div>
