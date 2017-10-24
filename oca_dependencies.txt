@@ -13,3 +13,4 @@
 #
 # To provide both the URL and a branch, use:
 opnsynid-stock-logistics-warehouse https://github.com/open-synergy/opnsynid-stock-logistics-warehouse.git 8.0
+manufacture https://github.com/oca/manufacture.git 8.0

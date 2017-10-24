@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+<data>
+    <record id="rma_add_quality_inspection_view_form" model="ir.ui.view">
+        <field name="name">Form rma.add_quality_inspection</field>
+        <field name="model">rma.add_quality_inspection</field>
+        <field name="arch" type="xml">
+            <form string="Select Quality Inspection">
+                <group>
+                    <field name="operation_id"/>
+                </group>
+                <separator string="Select Quality Inspection to Add"/>
+                <field name="quality_inspection_ids"
+                       domain="[('state', '=', 'failed')]"
+                       string="Quality Inspection">
+                </field>
+                <footer>
+                    <button
+                            string="Confirm"
+                            name="add_lines" type="object"
+                            class="oe_highlight"/>
+                    or
+                    <button name="action_cancel"
+                            string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="rma_add_quality_inspection_action" model="ir.actions.act_window">
+        <field name="name">Add Quality Inspection</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">rma.add_quality_inspection</field>
+        <field name="src_model">rma.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="rma_add_quality_inspection_view_form"/>
+        <field name="groups_id" eval="[(4, ref('rma.group_rma_supplier_user'))]"/>
+    </record>
+
+    <record id="view_rma_add_quality_inspection_button_form" model="ir.ui.view">
+        <field name="name">Add Quality Inspection Button</field>
+        <field name="model">rma.order</field>
+        <field name="inherit_id" ref="rma.view_rma_supplier_form"/>
+        <field name="arch" type="xml">
+            <button name="action_rma_done" position="after">
+                <button name="%(rma_add_quality_inspection_action)d"
+                        string="Add From Quality Inspection"
+                        type="action"
+                        states="draft,to_approve"/>
+            </button>
+        </field>
+    </record>
+
+</data>
+</openerp>
