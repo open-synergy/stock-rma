@@ -17,11 +17,6 @@ class RmaLineMakeRepair(models.TransientModel):
 
     @api.model
     def _prepare_item(self, line):
-        if line.product_id.refurbish_product_id:
-            to_refurbish = True
-            refurbish_product_id = line.product_id.refurbish_product_id.id
-        else:
-            to_refurbish = refurbish_product_id = False
         return {
             'line_id': line.id,
             'rma_line_id': line.id,
@@ -32,8 +27,6 @@ class RmaLineMakeRepair(models.TransientModel):
             'product_uom_id': line.uom_id.id,
             'partner_id': line.partner_id.id,
             # 'location_dest_id': which default here?,
-            'to_refurbish': to_refurbish,
-            'refurbish_product_id': refurbish_product_id,
             'location_id': line.location_id.id,
         }
 
@@ -86,13 +79,6 @@ class RmaLineMakeRepairItem(models.TransientModel):
             if rec.product_qty <= 0.0:
                 raise ValidationError(_('Quantity must be positive.'))
 
-    @api.onchange('to_refurbish')
-    def _onchange_to_refurbish(self):
-        if self.to_refurbish:
-            self.refurbish_product_id = self.product_id.refurbish_product_id
-        else:
-            self.refurbish_product_id = False
-
     wiz_id = fields.Many2one(
         comodel_name='rma.order.line.make.repair', string='Wizard',
         required=True, readonly=True)
@@ -118,16 +104,10 @@ class RmaLineMakeRepairItem(models.TransientModel):
     location_dest_id = fields.Many2one(
         comodel_name="stock.location", string="Destination location",
         required=True)
-    to_refurbish = fields.Boolean(string="To Refurbish?")
-    refurbish_product_id = fields.Many2one(
-        comodel_name="product.product", string="Refurbished Product")
 
     @api.model
     def _prepare_repair_order(self, rma_line):
-        location_dest = (self.location_dest_id if not self.to_refurbish else
-                         self.product_id.property_stock_refurbish)
-        refurbish_location_dest_id = (self.location_dest_id.id if
-                                      self.to_refurbish else False)
+        location_dest = self.location_dest_id
         return {
             'product_id': self.product_id.id,
             'partner_id': self.partner_id.id,
@@ -137,7 +117,4 @@ class RmaLineMakeRepairItem(models.TransientModel):
             'company_id': rma_line.company_id.id,
             'location_id': self.location_id.id,
             'location_dest_id': location_dest.id,
-            'refurbish_location_dest_id': refurbish_location_dest_id,
-            'refurbish_product_id': self.refurbish_product_id.id,
-            'to_refurbish': self.to_refurbish,
         }

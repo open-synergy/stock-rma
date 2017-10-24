@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="1">
+<openerp>
+<data noupdate="1">
 
     <record id="mrp_repair.seq_mrp_repair" model="ir.sequence">
         <field name="prefix">RO</field>
     </record>
 
-</odoo>
+</data>
+</openerp>

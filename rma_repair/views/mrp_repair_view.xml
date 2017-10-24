@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
-
+<openerp>
+<data>
     <record id="view_repair_order_form" model="ir.ui.view">
         <field name="name">mrp.repair.form rma_repair</field>
         <field name="model">mrp.repair</field>
@@ -11,5 +11,5 @@
             </field>
         </field>
     </record>
-
-</odoo>
+</data>
+</openerp>

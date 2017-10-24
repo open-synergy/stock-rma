@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
+<openerp>
+<data>
 
     <record id="rma_operation_tree" model="ir.ui.view">
         <field name="name">rma.operation.tree - rma_repair</field>
@@ -22,5 +23,5 @@
             </field>
         </field>
     </record>
-
-</odoo>
+</data>
+</openerp>

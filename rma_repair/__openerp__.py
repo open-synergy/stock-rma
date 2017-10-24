@@ -4,13 +4,13 @@
 
 {
     "name": "RMA Repair",
-    "version": "9.0.1.0.0",
-    "license": "LGPL-3",
+    "version": "8.0.1.0.0",
+    "license": "AGPL-3",
     "category": "RMA",
     "summary": "Links RMA with Repairs.",
     "author": "Eficent",
     "website": "http://www.github.com/OCA/rma",
-    "depends": ["rma_account", "mrp_repair_refurbish"],
+    "depends": ["rma_account", "mrp_repair"],
     "data": ["views/rma_order_view.xml",
              "views/rma_operation_view.xml",
              "views/mrp_repair_view.xml",

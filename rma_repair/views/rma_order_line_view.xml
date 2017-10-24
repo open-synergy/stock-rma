@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
+<openerp>
+<data>
 
     <record id="view_rma_line_form" model="ir.ui.view">
         <field name="name">rma.order.line.form - rma_repair</field>
@@ -46,5 +47,5 @@
             </header>
         </field>
     </record>
-
-</odoo>
+</data>
+</openerp>
