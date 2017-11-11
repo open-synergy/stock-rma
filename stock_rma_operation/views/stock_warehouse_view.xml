@@ -84,9 +84,15 @@
                 <field name="rma_cust_route_id"/>
                 <button name="button_create_route_rma_cust"
                     type="object"
-                    string="(create)"
-                    class="oe_link"
+                    string="Create Route"
                     attrs="{'invisible': [('rma_cust_route_id', '!=', False)]}"
+                    icon="gtk-execute"
+                />
+                <button name="button_reset_route_rma_cust"
+                    type="object"
+                    string="Reset Route"
+                    attrs="{'invisible': [('rma_cust_route_id', '=', False)]}"
+                    icon="gtk-refresh"
                 />
             </div>
             <label for="rma_sup_route_id"/>
@@ -94,9 +100,15 @@
                 <field name="rma_sup_route_id"/>
                 <button name="button_create_route_rma_sup"
                     type="object"
-                    string="(create)"
-                    class="oe_link"
+                    string="Create Route"
                     attrs="{'invisible': [('rma_sup_route_id', '!=', False)]}"
+                    icon="gtk-execute"
+                />
+                <button name="button_reset_route_rma_sup"
+                    type="object"
+                    string="Reset Route"
+                    attrs="{'invisible': [('rma_sup_route_id', '=', False)]}"
+                    icon="gtk-refresh"
                 />
             </div>
         </xpath>

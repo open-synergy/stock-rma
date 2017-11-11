@@ -227,26 +227,31 @@ class StockWarehouse(models.Model):
         self.ensure_one()
         result = []
         rma_cust_in_type = self.rma_cust_in_type_id
-        rma_cust_out_type = self.rma_cust_out_type_id
+        rma_supp_in_type = self.rma_sup_in_type_id
         cust_loc = self.env["ir.property"].get(
             "property_stock_customer",
             "res.partner")
+        sup_loc = self.env["ir.property"].get(
+            "property_stock_supplier",
+            "res.partner")
+        # RMA Cust Inbound
         result.append((0, 0, {
-            "name": self.code + ": RMA -> Customer",
+            "name": self.code + ": RMA Customer Inbound",
             "location_id": self.lot_rma_id.id,
             "warehouse_id": self.id,
             "action": "move",
             "location_src_id": cust_loc.id,
-            "picking_type_id": rma_cust_out_type.id,
+            "picking_type_id": rma_cust_in_type.id,
             "procure_method": "make_to_stock",
         }))
+        # RMA Supp Inbound
         result.append((0, 0, {
-            "name": self.code + ": Customer -> RMA",
-            "location_id": cust_loc.id,
+            "name": self.code + ": RMA Supplier Inbound",
+            "location_src_id": sup_loc.id,
             "warehouse_id": self.id,
             "action": "move",
-            "location_src_id": self.lot_rma_id.id,
-            "picking_type_id": rma_cust_in_type.id,
+            "location_id": self.lot_rma_id.id,
+            "picking_type_id": rma_supp_in_type.id,
             "procure_method": "make_to_stock",
         }))
         return result
@@ -255,27 +260,32 @@ class StockWarehouse(models.Model):
     def _prepare_rma_sup_pull_rule(self, step=False):
         self.ensure_one()
         result = []
-        rma_sup_in_type = self.rma_sup_in_type_id
+        rma_cust_out_type = self.rma_cust_out_type_id
         rma_sup_out_type = self.rma_sup_out_type_id
+        cust_loc = self.env["ir.property"].get(
+            "property_stock_customer",
+            "res.partner")
         sup_loc = self.env["ir.property"].get(
             "property_stock_supplier",
             "res.partner")
+        # RMA Cust Outbound
         result.append((0, 0, {
-            "name": self.code + ": RMA -> Supplier",
-            "location_id": self.lot_rma_id.id,
+            "name": self.code + ": RMA Customer Outbound",
+            "location_src_id": self.lot_rma_id.id,
             "warehouse_id": self.id,
             "action": "move",
-            "location_src_id": sup_loc.id,
-            "picking_type_id": rma_sup_out_type.id,
+            "location_id": cust_loc.id,
+            "picking_type_id": rma_cust_out_type.id,
             "procure_method": "make_to_stock",
         }))
+        # RMA Supp Outbound
         result.append((0, 0, {
-            "name": self.code + ": Supplier -> RMA",
+            "name": self.code + ": RMA Supplier Outbound",
             "location_id": sup_loc.id,
             "warehouse_id": self.id,
             "action": "move",
             "location_src_id": self.lot_rma_id.id,
-            "picking_type_id": rma_sup_in_type.id,
+            "picking_type_id": rma_sup_out_type.id,
             "procure_method": "make_to_stock",
         }))
         return result
@@ -314,6 +324,32 @@ class StockWarehouse(models.Model):
             self._prepare_route_rma_cust())
 
     @api.multi
+    def _reset_route_rma_cust(self):
+        self.ensure_one()
+        route = self.rma_cust_route_id
+        criteria = [
+            ("route_id", "=", route.id),
+        ]
+        self.env["procurement.rule"].search(
+            criteria).unlink()
+        route.write({
+            "pull_ids": self._prepare_rma_cust_pull_rule(),
+        })
+
+    @api.multi
+    def _reset_route_rma_sup(self):
+        self.ensure_one()
+        route = self.rma_sup_route_id
+        criteria = [
+            ("route_id", "=", route.id),
+        ]
+        self.env["procurement.rule"].search(
+            criteria).unlink()
+        route.write({
+            "pull_ids": self._prepare_rma_sup_pull_rule(),
+        })
+
+    @api.multi
     def _create_route_rma_sup(self):
         self.ensure_one()
         obj_route = self.env["stock.location.route"]
@@ -341,3 +377,13 @@ class StockWarehouse(models.Model):
         for wh in self:
             rma_loc = wh._create_rma_loc()
             self.lot_rma_id = rma_loc.id
+
+    @api.multi
+    def button_reset_route_rma_sup(self):
+        for wh in self:
+            self._reset_route_rma_sup()
+
+    @api.multi
+    def button_reset_route_rma_cust(self):
+        for wh in self:
+            self._reset_route_rma_cust()
