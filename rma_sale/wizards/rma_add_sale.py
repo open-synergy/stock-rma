@@ -53,6 +53,7 @@ class RmaAddSale(models.TransientModel):
         string="Sale Lines",
     )
     operation_id = fields.Many2one(
+        string="RNA Operation",
         comodel_name="rma.operation",
         domain=[("type", "=", "customer")],
     )
