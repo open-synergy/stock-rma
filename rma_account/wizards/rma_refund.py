@@ -233,6 +233,7 @@ class RmaRefundItem(models.TransientModel):
             ("no", "Not required"),
             ("ordered", "Based on Ordered Quantities"),
             ("received", "Based on Received Quantities"),
+            ("unreplaceable", "Based on Unreplaceable Quantities"),
         ],
         string="Refund Policy",
     )
