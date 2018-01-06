@@ -50,6 +50,11 @@ class RmaOrderLine(models.Model):
                 qty = rec.product_qty - rec.qty_refunded
             elif rec.refund_policy == "received":
                 qty = rec.qty_received - rec.qty_refunded
+            elif rec.refund_policy == "unreplaceable":
+                if rec.type == "customer":
+                    qty = rec.qty_to_deliver
+                elif rec.type == "supplier":
+                    qty = rec.qty_to_receive
             rec.qty_to_refund = qty
 
     @api.multi
@@ -59,6 +64,39 @@ class RmaOrderLine(models.Model):
             if rec.refund_line_ids:
                 rec.refund_count = len(
                     rec.refund_line_ids.mapped("invoice_id"))
+
+    @api.multi
+    @api.depends(
+        "move_ids", "move_ids.state",
+        "qty_received", "receipt_policy",
+        "product_qty", "type",
+        "refund_line_ids",
+        "refund_line_ids.invoice_id.state",
+        "refund_policy",
+    )
+    def _compute_qty_to_receive(self):
+        _super = super(RmaOrderLine, self)
+        _super._compute_qty_to_receive()
+        for rec in self:
+            if rec.refund_policy == "unreplaceable" and rec.type == "supplier":
+                rec.qty_to_receive -= rec.qty_refunded
+
+    @api.multi
+    @api.depends(
+        "move_ids", "move_ids.state",
+        "delivery_policy", "product_qty",
+        "type", "qty_delivered",
+        "qty_received",
+        "refund_line_ids",
+        "refund_line_ids.invoice_id.state",
+        "refund_policy",
+    )
+    def _compute_qty_to_deliver(self):
+        _super = super(RmaOrderLine, self)
+        _super._compute_qty_to_deliver()
+        for rec in self:
+            if rec.refund_policy == "unreplaceable" and rec.type == "customer":
+                rec.qty_to_deliver -= rec.qty_refunded
 
     invoice_address_id = fields.Many2one(
         comodel_name="res.partner",
@@ -97,6 +135,7 @@ class RmaOrderLine(models.Model):
             ("no", "No refund"),
             ("ordered", "Based on Ordered Quantities"),
             ("received", "Based on Received Quantities"),
+            ("unreplaceable", "Based on Unreplaceable Quantities"),
         ],
         string="Refund Policy",
         required=True,
@@ -118,6 +157,12 @@ class RmaOrderLine(models.Model):
         compute="_compute_qty_refunded",
         store=True,
     )
+    qty_to_receive = fields.Float(
+        compute="_compute_qty_to_receive",
+        )
+    qty_to_deliver = fields.Float(
+        compute="_compute_qty_to_deliver",
+        )
 
     @api.onchange("operation_id")
     def _onchange_operation_id(self):
