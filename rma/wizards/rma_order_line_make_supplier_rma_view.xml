@@ -13,7 +13,9 @@
                      <separator string="Existing Supplier RMA to update:"/>
                      <newline/>
                      <group>
-                        <field name="supplier_rma_id"/>
+                         <field name="supplier_rma_id"
+                             domain="[('partner_id','=',partner_id),('state','=','draft')]"
+                             />
                      </group>
                      <newline/>
                      <separator
@@ -37,13 +39,14 @@
                          </field>
                      </group>
                      <newline/>
-                     <group colspan="2">
+                     <footer>
                          <button name="make_supplier_rma"
                                  string="Create/Update Supplier RMA"
                                  type="object"
                                  class="oe_highlight"/>
+                            Or
                          <button special="cancel" string="Cancel" class="oe_link"/>
-                     </group>
+                     </footer>
                 </form>
             </field>
         </record>

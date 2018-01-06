@@ -152,7 +152,7 @@ class RmaLineMakeRmaOrderItem(models.TransientModel):
         readonly=True,
     )
     product_qty = fields.Float(
-        string="Quantity to sell",
+        string="Quantity to RMA Supplier",
         digits=dp.get_precision("Product UoS"),
     )
 
