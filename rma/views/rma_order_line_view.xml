@@ -20,6 +20,9 @@
                     <field name="supplier_address_id"/>
                     <field name="uom_id" groups="product.group_uom"/>
                     <field name="product_qty"/>
+                    <field name="qty_to_receive"/>
+                    <field name="qty_to_deliver"/>
+                    <field name="qty_to_supplier_rma"/>
                     <field name="price_unit"/>
                 </tree>
             </field>
@@ -44,6 +47,8 @@
                     <field name="uom_id" groups="product.group_uom"/>
                     <field name="currency_id"/>
                     <field name="product_qty"/>
+                    <field name="qty_to_receive"/>
+                    <field name="qty_to_deliver"/>
                     <field name="price_unit"/>
                 </tree>
             </field>
@@ -314,6 +319,11 @@
                     <separator/>
                     <filter domain="[('assigned_to','=',uid)]" help="My RMAs"/>
                     <filter domain="[('requested_by','=',uid)]" help="My Requested RMAs"/>
+                    <group name="grp_pending" string="Pending">
+                        <filter name="to_receive" string="To Receive" domain="[('qty_to_receive', '>', 0)]"/>
+                        <filter name="to_deliver" string="To Deliver" domain="[('qty_to_deliver', '>', 0)]"/>
+                        <filter name="to_rma" string="To Supplier RMA" domain="[('qty_to_supplier_rma', '>', 0)]"/>
+                    </group>
                     <group expand="0" string="Group By">
                         <filter name="partner" string="Partner" domain="[]"
                                 context="{'group_by':'partner_id'}"/>
@@ -327,10 +337,6 @@
                                 context="{'group_by':'requested_by'}"/>
                         <filter name="assigned_to" string="Assigned To" domain="[]"
                                 context="{'group_by':'assigned_to'}"/>
-                        <filter name="to_receive" string="To Receive" domain="[('qty_to_receive', '>', 0)]"
-                                context="{'group_by':'partner_id'}"/>
-                        <filter name="to_deliver" string="To Deliver" domain="[('qty_to_deliver', '>', 0)]"
-                                context="{'group_by':'partner_id'}"/>
                     </group>
                </search>
             </field>
