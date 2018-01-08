@@ -206,10 +206,12 @@ class RmaOrderLine(models.Model):
     assigned_to = fields.Many2one(
         comodel_name="res.users",
         related="rma_id.assigned_to",
+        store=True,
     )
     requested_by = fields.Many2one(
         comodel_name="res.users",
         related="rma_id.requested_by",
+        store=True,
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner",
