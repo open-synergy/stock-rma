@@ -9,6 +9,8 @@
                       decoration-muted="state in ('draft','to_approve')">
                     <field name="rma_id"/>
                     <field name="state" invisible="1"/>
+                    <field name="assigned_to"/>
+                    <field name="requested_by"/>
                     <field name="partner_id"/>
                     <field name="product_id"/>
                     <field name="lot_id" groups="stock.group_production_lot"/>
@@ -31,6 +33,8 @@
                       decoration-muted="state in ('draft','to_approve')">
                     <field name="rma_id"/>
                     <field name="state" invisible="1"/>
+                    <field name="assigned_to"/>
+                    <field name="requested_by"/>
                     <field name="partner_id"/>
                     <field name="product_id"/>
                     <field name="lot_id" groups="stock.group_production_lot"/>
@@ -240,8 +244,7 @@
                                             <field name="in_route_id"/>
                                             <field name="customer_to_supplier"/>
                                             <field name="supplier_address_id"
-                                                   attrs="{'required':[('customer_to_supplier', '=', True)],
-                                                           'invisible':[('customer_to_supplier', '=', False)]}"/>
+                                                attrs="{'required':[('customer_to_supplier', '=', True)],}"/>
                                         </group>
                                         <group name="outbound" string="Outbound">
                                             <field name="out_warehouse_id"/>
@@ -268,8 +271,7 @@
                                             <field name="qty_outgoing"/>
                                             <field name="qty_delivered"/>
                                         </group>
-                                        <group name="supplier_rma"
-                                               attrs="{'invisible':[('customer_to_supplier','=',False)]}">
+                                        <group name="supplier_rma">
                                             <field name="qty_to_supplier_rma"/>
                                             <field name="qty_in_supplier_rma"/>
                                         </group>
@@ -311,13 +313,20 @@
                     <field name="lot_id"/>
                     <separator/>
                     <filter domain="[('assigned_to','=',uid)]" help="My RMAs"/>
+                    <filter domain="[('requested_by','=',uid)]" help="My Requested RMAs"/>
                     <group expand="0" string="Group By">
                         <filter name="partner" string="Partner" domain="[]"
                                 context="{'group_by':'partner_id'}"/>
+                        <filter name="supplier_address_id" string="Supplier" domain="[]"
+                                context="{'group_by':'supplier_address_id'}"/>
                         <filter name="operation" string="Operation" domain="[]"
                                 context="{'group_by':'operation_id'}"/>
                         <filter name="product" string="Product" domain="[]"
                                 context="{'group_by':'product_id'}"/>
+                        <filter name="requested_by" string="Requested By" domain="[]"
+                                context="{'group_by':'requested_by'}"/>
+                        <filter name="assigned_to" string="Assigned To" domain="[]"
+                                context="{'group_by':'assigned_to'}"/>
                         <filter name="to_receive" string="To Receive" domain="[('qty_to_receive', '>', 0)]"
                                 context="{'group_by':'partner_id'}"/>
                         <filter name="to_deliver" string="To Deliver" domain="[('qty_to_deliver', '>', 0)]"
