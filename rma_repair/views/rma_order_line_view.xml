@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-
+    <record id="view_rma_line_tree" model="ir.ui.view">
+        <field name="name">rma.order.line.tree</field>
+        <field name="model">rma.order.line</field>
+        <field name="inherit_id" ref="rma.view_rma_line_tree"/>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='price_unit']" position="before">
+                    <field name="qty_to_repair"/>
+                </xpath>
+            </data>
+        </field>
+    </record>
     <record id="view_rma_line_form" model="ir.ui.view">
         <field name="name">rma.order.line.form - rma_repair</field>
         <field name="model">rma.order.line</field>
