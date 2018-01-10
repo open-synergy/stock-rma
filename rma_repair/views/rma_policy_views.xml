@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="rma_policy_form" model="ir.ui.view">
+            <field name="name">rma.policy.form</field>
+            <field name="model">rma.policy</field>
+            <field name="inherit_id" ref="rma.rma_policy_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='rma_supplier_policy_ok']" position="after">
+                        <field name="repair_policy_ok"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+    </data>
+</openerp>

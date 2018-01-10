@@ -33,8 +33,8 @@
                     <field name="qty_repaired"/>
                 </group>
             </group>
-            <field name="delivery_policy" position="after">
-                <field name="repair_type"/>
+            <field name="delivery_policy_id" position="after">
+                <field name="repair_policy_id"/>
             </field>
             <notebook position="inside">
                 <page name="repair" string="Repair Orders">

@@ -9,26 +9,30 @@ from openerp.addons import decimal_precision as dp
 class RmaOrderLine(models.Model):
     _inherit = "rma.order.line"
 
-    @api.one
-    @api.depends('repair_ids', 'repair_type', 'repair_ids.state',
-                 'qty_to_receive')
-    def _compute_qty_to_repair(self):
-        if self.repair_type == 'no':
-            self.qty_to_repair = 0.0
-        elif self.repair_type == 'ordered':
-            qty = self._get_rma_repaired_qty()
-            self.qty_to_repair = self.product_qty - qty
-        elif self.repair_type == 'received':
-            qty = self._get_rma_repaired_qty()
-            self.qty_to_repair = self.qty_received - qty
-        else:
-            self.qty_to_repair = 0.0
+    @api.model
+    def _default_repair_policy(self):
+        return self.env.ref("rma.rma_policy_no") or False
 
-    @api.one
+    @api.multi
+    @api.depends(
+        "receipt_policy_id", "delivery_policy_id",
+        "rma_supplier_policy_id", "repair_policy_id",
+        "refund_policy_id", "type",
+        "product_qty", "qty_received",
+        "qty_delivered", "qty_in_supplier_rma",
+        "qty_refunded", "qty_repaired",
+    )
+
+    def _compute_qty_to_repair(self):
+        for rec in self:
+            rec.qty_to_repair = rec.refund_policy_id._compute_quantity(rec)
+
+    @api.multi
     @api.depends('repair_ids', 'repair_type', 'repair_ids.state',
                  'qty_to_receive')
     def _compute_qty_repaired(self):
-        self.qty_repaired = self._get_rma_repaired_qty()
+        for rec in self:
+            rec.qty_repaired = rec._get_rma_repaired_qty()
 
     @api.multi
     def _compute_repair_count(self):
@@ -53,6 +57,16 @@ class RmaOrderLine(models.Model):
         ('no', 'Not required'), ('ordered', 'Based on Ordered Quantities'),
         ('received', 'Based on Received Quantities')],
         string="Repair Policy", default='no', required=True)
+    repair_policy_id = fields.Many2one(
+        string="Repair Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "customer"),
+            ("repair_policy_ok", "=", True),
+            ],
+        required=True,
+        default=lambda self: self._default_repair_policy(),
+        )
     repair_count = fields.Integer(
         compute=_compute_repair_count, string='# of Repairs')
 
