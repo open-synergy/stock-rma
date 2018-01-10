@@ -5,6 +5,7 @@
 # © 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from . import sale_order_line
+from . import rma_policy
 from . import rma_order_line
 from . import rma_order
 from . import rma_operation

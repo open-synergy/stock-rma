@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+    <record id="rma.rma_policy_no" model="rma.policy">
+        <field name="name">Not Required</field>
+        <field name="repair_policy_ok" eval="1"/>
+    </record>
+
+    <record id="rma_policy_ordered_sold" model="rma.policy">
+        <field name="name">Based on Ordered - Sold</field>
+        <field name="active" eval="1"/>
+        <field name="rma_type">both</field>
+        <field name="sale_policy_ok" eval="1"/>
+    </record>
+    <record id="rma_policy_rule_ordered_sold_1" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">+</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_ordered"/>
+        <field name="rma_policy_id" ref="rma_sale.rma_policy_ordered_sold"/>
+    </record>
+    <record id="rma_policy_rule_ordered_sold_2" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">-</field>
+        <field name="policy_field_id" ref="rma_sale.rma_policy_field_sold"/>
+        <field name="rma_policy_id" ref="rma_sale.rma_policy_ordered_sold"/>
+    </record>
+    <record id="rma_policy_received_sold" model="rma.policy">
+        <field name="name">Based on Received - Sold</field>
+        <field name="active" eval="2"/>
+        <field name="rma_type">both</field>
+        <field name="sale_policy_ok" eval="1"/>
+    </record>
+    <record id="rma_policy_rule_received_sold_1" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">+</field>
+        <field name="policy_field_id" ref="rma_sale.rma_policy_field_sold"/>
+        <field name="rma_policy_id" ref="rma_sale.rma_policy_received_sold"/>
+    </record>
+    <record id="rma_policy_rule_received_sold_2" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">-</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_received"/>
+        <field name="rma_policy_id" ref="rma_sale.rma_policy_received_sold"/>
+    </record>
+</data>
+</openerp>
