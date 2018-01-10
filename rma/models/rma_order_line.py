@@ -6,6 +6,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from openerp import api, fields, models
 from openerp.addons import decimal_precision as dp
+from openerp.exceptions import Warning as UserError
+from openerp.tools.translate import _
 import operator
 ops = {"=": operator.eq,
        "!=": operator.ne}
@@ -72,34 +74,7 @@ class RmaOrderLine(models.Model):
                     rec.uom_id)
             return qty
 
-    @api.multi
-    @api.depends(
-        "move_ids", "move_ids.state",
-        "qty_received", "receipt_policy",
-        "product_qty", "type",
-    )
-    def _compute_qty_to_receive(self):
-        for rec in self:
-            rec.qty_to_receive = 0.0
-            if rec.receipt_policy == "ordered":
-                rec.qty_to_receive = rec.product_qty - rec.qty_received
-            elif self.receipt_policy == "delivered":
-                self.qty_to_receive = rec.qty_delivered - rec.qty_received
 
-    @api.multi
-    @api.depends(
-        "move_ids", "move_ids.state",
-        "delivery_policy", "product_qty",
-        "type", "qty_delivered",
-        "qty_received",
-    )
-    def _compute_qty_to_deliver(self):
-        for rec in self:
-            rec.qty_to_deliver = 0.0
-            if rec.delivery_policy == "ordered":
-                rec.qty_to_deliver = rec.product_qty - rec.qty_delivered
-            elif rec.delivery_policy == "received":
-                rec.qty_to_deliver = rec.qty_received - rec.qty_delivered
 
     @api.multi
     @api.depends(
@@ -151,22 +126,65 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "customer_to_supplier", "supplier_rma_line_ids",
+        "supplier_rma_line_ids",
         "supplier_rma_line_ids.rma_id.state",
-        "move_ids", "move_ids.state", "qty_received",
-        "receipt_policy", "product_qty", "type",
+    )
+    def _compute_qty_in_supplier_rma(self):
+        for rec in self:
+            qty = rec._get_supplier_rma_qty()
+            rec.qty_in_supplier_rma = qty
+
+    @api.multi
+    @api.depends(
+        "receipt_policy_id", "delivery_policy_id",
+        "rma_supplier_policy_id", "type",
+        "product_qty", "qty_received",
+        "qty_delivered", "qty_in_supplier_rma",
+    )
+    def _compute_qty_to_receive(self):
+        for rec in self:
+            rec.qty_to_receive = rec.receipt_policy_id._compute_quantity(rec)
+
+    @api.multi
+    @api.depends(
+        "receipt_policy_id", "delivery_policy_id",
+        "rma_supplier_policy_id", "type",
+        "product_qty", "qty_received",
+        "qty_delivered", "qty_in_supplier_rma",
+    )
+    def _compute_qty_to_deliver(self):
+        for rec in self:
+            rec.qty_to_deliver = rec.delivery_policy_id._compute_quantity(rec)
+
+    @api.multi
+    @api.depends(
+        "receipt_policy_id", "delivery_policy_id",
+        "rma_supplier_policy_id", "type",
+        "product_qty", "qty_received",
+        "qty_delivered", "qty_in_supplier_rma",
     )
     def _compute_qty_supplier_rma(self):
         for rec in self:
-            qty = rec._get_supplier_rma_qty()
-            rec.qty_to_supplier_rma = rec.qty_to_receive - qty
-            rec.qty_in_supplier_rma = qty
+            rec.qty_to_supplier_rma = rec.rma_supplier_policy_id._compute_quantity(rec)
+
 
     @api.multi
     def _compute_procurement_count(self):
         for rec in self:
             rec.procurement_count = len(rec.procurement_ids.filtered(
                 lambda p: p.state == "exception"))
+
+    @api.model
+    def _default_receipt_policy(self):
+        return self.env.ref("rma.rma_policy_no") or False
+
+    @api.model
+    def _default_delivery_policy(self):
+        return self.env.ref("rma.rma_policy_no") or False
+
+    @api.model
+    def _default_rma_supplier_policy(self):
+        return self.env.ref("rma.rma_policy_no") or False
 
     delivery_address_id = fields.Many2one(
         comodel_name="res.partner",
@@ -325,6 +343,36 @@ class RmaOrderLine(models.Model):
     supplier_to_customer = fields.Boolean(
         string="The supplier will send to the customer",
     )
+    receipt_policy_id = fields.Many2one(
+        string="Receipt Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "both"),
+            ("receipt_policy_ok", "=", True),
+            ],
+        required=True,
+        default=lambda self: self._default_receipt_policy(),
+        )
+    delivery_policy_id = fields.Many2one(
+        string="Delivery Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "both"),
+            ("delivery_policy_ok", "=", True),
+            ],
+        required=True,
+        default=lambda self: self._default_delivery_policy(),
+        )
+    rma_supplier_policy_id = fields.Many2one(
+        string="RMA Supplier Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "customer"),
+            ("rma_supplier_policy_ok", "=", True),
+            ],
+        required=True,
+        default=lambda self: self._default_receipt_policy(),
+        )
     receipt_policy = fields.Selection(
         selection=[
             ("no", "Not required"),
@@ -339,9 +387,27 @@ class RmaOrderLine(models.Model):
             ("no", "Not required"),
             ("ordered", "Based on Ordered Quantities"),
             ("received", "Based on Received Quantities"),
+            ("rma_supplier", "Based on RMA to Supplier Quantities"),
+            ("in_rma_supplier_delivered", "Based on In RMA Supplier Quantities - Delivered Quantities"),
         ],
         required=True,
         string="Delivery Policy",
+    )
+    rma_supplier_policy = fields.Selection(
+        selection=[
+            ("no", "Not required"),
+            ("ordered", "Based on Ordered Quantities"),
+            ("received", "Based on Received Quantities"),
+            ("unrealized", "Based on Unrealized Quantities"),
+            ("realized", "Based on Realized Quantities"),
+            ("received_unrealized", "Based on Received - Unrealized Quantities"),
+            ("received_realized", "Based on Received - Realized Quantities"),
+            ("to_receive_unrealized", "Based on To Receive - Unrealized Quantities"),
+            ("to_receive_realized", "Based on To Receive - Realized Quantities"),
+        ],
+        required=True,
+        string="RMA Supplier Policy",
+        default="no",
     )
     in_route_id = fields.Many2one(
         comodel_name="stock.location.route",
@@ -452,7 +518,7 @@ class RmaOrderLine(models.Model):
     qty_in_supplier_rma = fields.Float(
         string="Qty in Supplier RMA",
         digits=dp.get_precision("Product Unit of Measure"),
-        readonly=True, compute=_compute_qty_supplier_rma,
+        readonly=True, compute=_compute_qty_in_supplier_rma,
         store=True,
     )
 
@@ -467,6 +533,14 @@ class RmaOrderLine(models.Model):
                 "rma.order.line.customer")
         return name
 
+    @api.constrains(
+        "type", "delivery_policy",
+        )
+    def _check_rma_delivery_policy(self):
+        if self.type == "supplier" and \
+                self.delivery_policy == "rma_supplier":
+            raise UserError(_("You can't select this policy for RMA"
+                               "Supplier operation"))
     @api.model
     def _prepare_create_data(self, values):
         name = values.get("name", False)
@@ -484,8 +558,8 @@ class RmaOrderLine(models.Model):
         result = {}
         if not self.operation_id:
             return result
-        self.receipt_policy = self.operation_id.receipt_policy
-        self.delivery_policy = self.operation_id.delivery_policy
+        self.receipt_policy_id = self.operation_id.receipt_policy_id
+        self.delivery_policy_id = self.operation_id.delivery_policy_id
         self.in_warehouse_id = self.operation_id.in_warehouse_id
         self.out_warehouse_id = self.operation_id.out_warehouse_id
         self.location_id = self.operation_id.location_id or \

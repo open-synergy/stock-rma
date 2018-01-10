@@ -89,9 +89,9 @@ class StockMove(models.Model):
         data.update(
             {"in_route_id": operation.in_route_id.id,
              "out_route_id": operation.out_route_id.id,
-             "receipt_policy": operation.receipt_policy,
+             "receipt_policy_id": operation.receipt_policy_id.id,
              "operation_id": operation.id,
-             "delivery_policy": operation.delivery_policy
+             "delivery_policy_id": operation.delivery_policy_id.id,
              })
         if operation.in_warehouse_id:
             data["in_warehouse_id"] = operation.in_warehouse_id.id

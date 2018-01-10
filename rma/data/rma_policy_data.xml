@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+    <!-- All Policy -->
+    <record id="rma_policy_no" model="rma.policy">
+        <field name="name">Not Required</field>
+        <field name="active" eval="1"/>
+        <field name="rma_type">both</field>
+        <field name="receipt_policy_ok" eval="1"/>
+        <field name="delivery_policy_ok" eval="1"/>
+        <field name="rma_supplier_policy_ok" eval="1"/>
+    </record>
+
+    <!-- Receipt Policy -->
+    <record id="rma_policy_ordered_received" model="rma.policy">
+        <field name="name">Based on Ordered - Received Quantities</field>
+        <field name="active" eval="1"/>
+        <field name="rma_type">both</field>
+        <field name="receipt_policy_ok" eval="1"/>
+        <field name="delivery_policy_ok" eval="0"/>
+        <field name="rma_supplier_policy_ok" eval="0"/>
+    </record>
+    <record id="rma_policy_rule_ordered_received_1" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">+</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_ordered"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_ordered_received"/>
+    </record>
+    <record id="rma_policy_rule_ordered_received_2" model="rma.policy_rule">
+        <field name="sequence" eval="2"/>
+        <field name="operator">-</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_received"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_ordered_received"/>
+    </record>
+
+    <record id="rma_policy_delivered_received" model="rma.policy">
+        <field name="name">Based on Delivered - Received Quantities</field>
+        <field name="active" eval="1"/>
+        <field name="rma_type">both</field>
+        <field name="receipt_policy_ok" eval="1"/>
+        <field name="delivery_policy_ok" eval="0"/>
+        <field name="rma_supplier_policy_ok" eval="0"/>
+    </record>
+    <record id="rma_policy_rule_delivered_received_1" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">+</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_delivered"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_delivered_received"/>
+    </record>
+    <record id="rma_policy_rule_delivered_received_2" model="rma.policy_rule">
+        <field name="sequence" eval="2"/>
+        <field name="operator">-</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_received"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_delivered_received"/>
+    </record>
+
+    <!-- Delivery Policy -->
+    <record id="rma_policy_ordered_delivered" model="rma.policy">
+        <field name="name">Based on Ordered - Delivered Quantities</field>
+        <field name="active" eval="1"/>
+        <field name="rma_type">both</field>
+        <field name="receipt_policy_ok" eval="0"/>
+        <field name="delivery_policy_ok" eval="1"/>
+        <field name="rma_supplier_policy_ok" eval="0"/>
+    </record>
+    <record id="rma_policy_rule_ordered_delivered_1" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">+</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_ordered"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_ordered_delivered"/>
+    </record>
+    <record id="rma_policy_rule_ordered_delivered_2" model="rma.policy_rule">
+        <field name="sequence" eval="2"/>
+        <field name="operator">-</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_delivered"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_ordered_delivered"/>
+    </record>
+    <record id="rma_policy_received_delivered" model="rma.policy">
+        <field name="name">Based on Received - Delivered Quantities</field>
+        <field name="active" eval="1"/>
+        <field name="rma_type">both</field>
+        <field name="receipt_policy_ok" eval="0"/>
+        <field name="delivery_policy_ok" eval="1"/>
+        <field name="rma_supplier_policy_ok" eval="0"/>
+    </record>
+    <record id="rma_policy_rule_received_delivered_1" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">+</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_received"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_received_delivered"/>
+    </record>
+    <record id="rma_policy_rule_received_delivered_2" model="rma.policy_rule">
+        <field name="sequence" eval="2"/>
+        <field name="operator">-</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_delivered"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_received_delivered"/>
+    </record>
+
+    <!-- RMA Supplier -->
+    <record id="rma_policy_rma_delivered" model="rma.policy">
+        <field name="name">Based on in RMA Supplier - Delivered Quantities</field>
+        <field name="active" eval="1"/>
+        <field name="rma_type">both</field>
+        <field name="receipt_policy_ok" eval="0"/>
+        <field name="delivery_policy_ok" eval="0"/>
+        <field name="rma_supplier_policy_ok" eval="1"/>
+    </record>
+    <record id="rma_policy_rule_rma_delivered_1" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">+</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_rma_supplier"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_rma_delivered"/>
+    </record>
+    <record id="rma_policy_rule_rma_delivered_2" model="rma.policy_rule">
+        <field name="sequence" eval="1"/>
+        <field name="operator">-</field>
+        <field name="policy_field_id" ref="rma.rma_policy_field_delivered"/>
+        <field name="rma_policy_id" ref="rma.rma_policy_rma_delivered"/>
+    </record>
+</data>
+</openerp>
