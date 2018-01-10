@@ -15,35 +15,12 @@ class RmaOrderLine(models.Model):
     def _default_sale_type(self):
         return self.sale_type or False
 
-    sale_type = fields.Selection(
-        selection=[
-            ("no", "Not required"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("received", "Based on Received Quantities"),
-        ],
-        string="Sale Policy",
-        default=lambda self: self._default_sale_type(),
-    )
+    @api.model
+    def _default_sale_policy(self):
+        return self.env.ref("rma.rma_policy_no") or False
 
-    @api.multi
-    @api.depends(
-        "sale_line_ids",
-        "sale_type",
-        "sales_count",
-        "sale_line_ids.state",
-    )
-    def _compute_qty_to_sell(self):
-        for line in self:
-            if line.sale_type == "no":
-                line.qty_to_sell = 0.0
-            elif line.sale_type == "ordered":
-                qty = line._get_rma_sold_qty()
-                line.qty_to_sell = line.product_qty - qty
-            elif line.sale_type == "received":
-                qty = line._get_rma_sold_qty()
-                line.qty_to_sell = line.qty_received - qty
-            else:
-                line.qty_to_sell = 0.0
+
+
 
     @api.multi
     @api.depends(
@@ -58,6 +35,18 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
+        "receipt_policy_id", "delivery_policy_id", "sale_policy_id",
+        "rma_supplier_policy_id", "refund_policy_id", "type",
+        "product_qty", "qty_received",
+        "qty_delivered", "qty_in_supplier_rma", "qty_refunded",
+        "qty_sold",
+    )
+    def _compute_qty_to_sell(self):
+        for rec in self:
+            rec.qty_to_sell = rec.sale_type_id._compute_quantity(rec)
+
+    @api.multi
+    @api.depends(
         "sale_line_ids",
     )
     def _compute_sales_count(self):
@@ -67,6 +56,15 @@ class RmaOrderLine(models.Model):
                 sales_list.append(sale_order_line.order_id.id)
             line.sales_count = len(list(set(sales_list)))
 
+    sale_type = fields.Selection(
+        selection=[
+            ("no", "Not required"),
+            ("ordered", "Based on Ordered Quantities"),
+            ("received", "Based on Received Quantities"),
+        ],
+        string="Sale Policy",
+        default=lambda self: self._default_sale_type(),
+    )
     sale_line_id = fields.Many2one(
         comodel_name="sale.order.line",
         string="Originating Sales Order Line",
@@ -100,6 +98,16 @@ class RmaOrderLine(models.Model):
         compute=_compute_qty_sold,
         store=True,
     )
+    sale_policy_id = fields.Many2one(
+        string="Sale Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "both"),
+            ("sale_policy_ok", "=", True),
+            ],
+        required=True,
+        default=lambda self: self._default_sale_policy(),
+        )
     sale_type = fields.Selection(
         selection=[
             ("no", "Not required"),
