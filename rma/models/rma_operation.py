@@ -6,6 +6,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, fields, models
+from openerp.tools.translate import _
+from openerp.exceptions import Warning as UserError
 
 
 class RmaOperation(models.Model):
@@ -27,6 +29,18 @@ class RmaOperation(models.Model):
     def _default_supplier_location_id(self):
         return self.env.ref("stock.stock_location_suppliers") or False
 
+    @api.model
+    def _default_receipt_policy(self):
+        return self.env.ref("rma.rma_policy_no") or False
+
+    @api.model
+    def _default_delivery_policy(self):
+        return self.env.ref("rma.rma_policy_no") or False
+
+    @api.model
+    def _default_rma_supplier_policy(self):
+        return self.env.ref("rma.rma_policy_no") or False
+
     name = fields.Char(
         string="Description",
         required=True,
@@ -40,6 +54,36 @@ class RmaOperation(models.Model):
         string="Code",
         required=True,
     )
+    receipt_policy_id = fields.Many2one(
+        string="Receipt Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "both"),
+            ("receipt_policy_ok", "=", True),
+            ],
+        required=True,
+        default=lambda self: self._default_receipt_policy(),
+        )
+    delivery_policy_id = fields.Many2one(
+        string="Delivery Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "both"),
+            ("delivery_policy_ok", "=", True),
+            ],
+        required=True,
+        default=lambda self: self._default_delivery_policy(),
+        )
+    rma_supplier_policy_id = fields.Many2one(
+        string="RMA Supplier Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "customer"),
+            ("rma_supplier_policy_ok", "=", True),
+            ],
+        required=True,
+        default=lambda self: self._default_receipt_policy(),
+        )
     receipt_policy = fields.Selection(
         selection=[
             ("no", "Not required"),
@@ -54,8 +98,25 @@ class RmaOperation(models.Model):
             ("no", "Not required"),
             ("ordered", "Based on Ordered Quantities"),
             ("received", "Based on Received Quantities"),
+            ("rma_supplier", "Based on RMA to Supplier Quantities"),
         ],
         string="Delivery Policy",
+        default="no",
+    )
+    rma_supplier_policy = fields.Selection(
+        selection=[
+            ("no", "Not required"),
+            ("ordered", "Based on Ordered Quantities"),
+            ("received", "Based on Received Quantities"),
+            ("unrealized", "Based on Unrealized Quantities"),
+            ("realized", "Based on Realized Quantities"),
+            ("received_unrealized", "Based on Received - Unrealized Quantities"),
+            ("received_realized", "Based on Received - Realized Quantities"),
+            ("to_receive_unrealized", "Based on To Receive - Unrealized Quantities"),
+            ("to_receive_realized", "Based on To Receive - Realized Quantities"),
+        ],
+        required=True,
+        string="RMA to Supplier Policy",
         default="no",
     )
     in_route_id = fields.Many2one(
@@ -108,3 +169,12 @@ class RmaOperation(models.Model):
         inverse_name="operation_id",
         string="RMA lines",
     )
+
+    @api.constrains(
+        "type", "delivery_policy",
+        )
+    def _check_rma_delivery_policy(self):
+        if self.type == "supplier" and \
+                self.delivery_policy == "rma_supplier":
+            raise UserError(_("You can't select this policy for RMA"
+                               "Supplier operation"))
