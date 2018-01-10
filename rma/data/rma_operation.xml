@@ -5,9 +5,8 @@
         <field name="name">Replace After Receive</field>
         <field name="active" eval="1"/>
         <field name="code">RPLC</field>
-        <field name="refund_policy">no</field>
-        <field name="receipt_policy">ordered</field>
-        <field name="delivery_policy">received</field>
+        <field name="receipt_policy_id" ref="rma.rma_policy_ordered_received"/>
+        <field name="delivery_policy_id" ref="rma.rma_policy_received_delivered"/>
         <field name="type">customer</field>
         <field name="in_route_id" ref="rma.route_rma_customer"/>
         <field name="out_route_id" ref="rma.route_rma_customer"/>
@@ -17,9 +16,8 @@
         <field name="name">Replace</field>
         <field name="active" eval="1"/>
         <field name="code">RPLS</field>
-        <field name="refund_policy">no</field>
-        <field name="receipt_policy">ordered</field>
-        <field name="delivery_policy">ordered</field>
+        <field name="receipt_policy_id" ref="rma.rma_policy_ordered_received"/>
+        <field name="delivery_policy_id" ref="rma.rma_policy_ordered_delivered"/>
         <field name="type">supplier</field>
         <field name="in_route_id" ref="rma.route_rma_supplier"/>
         <field name="out_route_id" ref="rma.route_rma_supplier"/>
@@ -29,9 +27,8 @@
         <field name="name">Refund before receive</field>
         <field name="active" eval="1"/>
         <field name="code">RFC</field>
-        <field name="refund_policy">ordered</field>
-        <field name="receipt_policy">no</field>
-        <field name="delivery_policy">no</field>
+        <field name="receipt_policy_id" ref="rma.rma_policy_no"/>
+        <field name="delivery_policy_id" ref="rma.rma_policy_no"/>
         <field name="type">customer</field>
         <field name="in_route_id" ref="rma.route_rma_customer"/>
     </record>
@@ -40,9 +37,8 @@
         <field name="name">Refund only</field>
         <field name="active" eval="1"/>
         <field name="code">RFS</field>
-        <field name="refund_policy">ordered</field>
-        <field name="receipt_policy">no</field>
-        <field name="delivery_policy">no</field>
+        <field name="receipt_policy_id" ref="rma.rma_policy_no"/>
+        <field name="delivery_policy_id" ref="rma.rma_policy_no"/>
         <field name="type">supplier</field>
         <field name="out_route_id" ref="rma.route_rma_supplier"/>
     </record>
@@ -51,9 +47,8 @@
         <field name="name">Replace deliver to vendor</field>
         <field name="active" eval="1"/>
         <field name="code">DSRPLB</field>
-        <field name="refund_policy">no</field>
-        <field name="receipt_policy">ordered</field>
-        <field name="delivery_policy">no</field>
+        <field name="receipt_policy_id" ref="rma.rma_policy_ordered_received"/>
+        <field name="delivery_policy_id" ref="rma.rma_policy_no"/>
         <field name="type">customer</field>
         <field name="out_route_id" ref="rma.route_rma_dropship"/>
     </record>
@@ -62,9 +57,8 @@
         <field name="name">Replace receive in vendor</field>
         <field name="active" eval="1"/>
         <field name="code">DSRPLV</field>
-        <field name="refund_policy">no</field>
-        <field name="receipt_policy">no</field>
-        <field name="delivery_policy">received</field>
+        <field name="receipt_policy_id" ref="rma.rma_policy_no"/>
+        <field name="delivery_policy_id" ref="rma.rma_policy_received_delivered"/>
         <field name="type">customer</field>
         <field name="out_route_id" ref="rma.route_rma_dropship"/>
     </record>
@@ -73,9 +67,8 @@
         <field name="name">Replace deliver to customer</field>
         <field name="active" eval="1"/>
         <field name="code">DSRPC</field>
-        <field name="refund_policy">no</field>
-        <field name="receipt_policy">no</field>
-        <field name="delivery_policy">received</field>
+        <field name="receipt_policy_id" ref="rma.rma_policy_no"/>
+        <field name="delivery_policy_id" ref="rma.rma_policy_received_delivered"/>
         <field name="type">supplier</field>
         <field name="out_route_id" ref="rma.route_rma_dropship"/>
     </record>

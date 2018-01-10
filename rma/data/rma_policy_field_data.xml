@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+    <record id="rma_policy_field_ordered" model="rma.policy_field">
+        <field name="name">Ordered</field>
+        <field name="code">product_qty</field>
+        <field name="active" eval="1"/>
+    </record>
+    <record id="rma_policy_field_received" model="rma.policy_field">
+        <field name="name">Received</field>
+        <field name="code">qty_received</field>
+        <field name="active" eval="1"/>
+    </record>
+    <record id="rma_policy_field_delivered" model="rma.policy_field">
+        <field name="name">Delivered</field>
+        <field name="code">qty_delivered</field>
+        <field name="active" eval="1"/>
+    </record>
+    <record id="rma_policy_field_rma_supplier" model="rma.policy_field">
+        <field name="name">In RMA Supplier</field>
+        <field name="code">qty_in_supplier_rma</field>
+        <field name="active" eval="1"/>
+    </record>
+</data>
+</openerp>
