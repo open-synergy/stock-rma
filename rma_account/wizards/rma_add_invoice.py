@@ -73,11 +73,11 @@ class RmaAddinvoice(models.TransientModel):
              'out_route_id': operation.out_route_id.id,
              'in_warehouse_id': operation.in_warehouse_id.id,
              'out_warehouse_id': operation.out_warehouse_id.id,
-             'receipt_policy': operation.receipt_policy,
+             'receipt_policy_id': operation.receipt_policy_id.id,
              'location_id': operation.location_id.id,
              'operation_id': operation.id,
-             'refund_policy': operation.refund_policy,
-             'delivery_policy': operation.delivery_policy
+             'refund_policy_id': operation.refund_policy_id.id,
+             'delivery_policy_id': operation.delivery_policy_id.id
              })
         return data
 

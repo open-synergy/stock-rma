@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+    <record id="rma_policy_field_refunded" model="rma.policy_field">
+        <field name="name">Refunded</field>
+        <field name="code">qty_refunded</field>
+        <field name="active" eval="1"/>
+    </record>
+</data>
+</openerp>

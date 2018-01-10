@@ -14,5 +14,5 @@ class RmaLineMakeSupplierRma(models.TransientModel):
             rma, item)
         if res['operation_id']:
             operation = self.env['rma.operation'].browse(res['operation_id'])
-            res['refund_policy'] = operation.refund_policy
+            res['refund_policy_id'] = operation.refund_policy_id.id
         return res
