@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+    <record id="rma_policy_field_sold" model="rma.policy_field">
+        <field name="name">Sold</field>
+        <field name="code">qty_sold</field>
+        <field name="active" eval="1"/>
+    </record>
+</data>
+</openerp>

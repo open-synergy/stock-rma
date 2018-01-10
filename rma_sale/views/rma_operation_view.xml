@@ -7,9 +7,11 @@
             <field name="model">rma.operation</field>
             <field name="inherit_id" ref="rma.rma_operation_tree"/>
             <field name="arch" type="xml">
-                <field name="delivery_policy" position="after">
-                    <field name="sale_type"/>
-                </field>
+                <data>
+                    <xpath expr="//field[@name='delivery_policy_id']" position="after">
+                        <field name="sale_policy_id"/>
+                    </xpath>
+                </data>
             </field>
         </record>
 
@@ -18,9 +20,11 @@
             <field name="model">rma.operation</field>
             <field name="inherit_id" ref="rma.rma_operation_form"/>
             <field name="arch" type="xml">
-                <field name="delivery_policy" position="after">
-                    <field name="sale_type"/>
-                </field>
+                <data>
+                    <xpath expr="//field[@name='delivery_policy_id']" position="after">
+                        <field name="sale_policy_id"/>
+                    </xpath>
+                </data>
             </field>
         </record>
 
