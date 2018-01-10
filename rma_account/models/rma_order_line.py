@@ -21,6 +21,10 @@ class RmaOrderLine(models.Model):
             return self.env["res.partner"].browse(partner_id)
         return False
 
+    @api.model
+    def _default_refund_policy(self):
+        return self.env.ref("rma.rma_policy_no") or False
+
     @api.multi
     @api.depends(
         "refund_line_ids",
@@ -36,26 +40,47 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "refund_line_ids",
-        "refund_line_ids.invoice_id.state",
-        "refund_policy",
-        "move_ids",
-        "move_ids.state",
-        "type",
+        "receipt_policy_id", "delivery_policy_id",
+        "rma_supplier_policy_id", "refund_policy_id", "type",
+        "product_qty", "qty_received",
+        "qty_delivered", "qty_in_supplier_rma", "qty_refunded",
     )
     def _compute_qty_to_refund(self):
         for rec in self:
-            qty = 0.0
-            if rec.refund_policy == "ordered":
-                qty = rec.product_qty - rec.qty_refunded
-            elif rec.refund_policy == "received":
-                qty = rec.qty_received - rec.qty_refunded
-            elif rec.refund_policy == "unreplaceable":
-                if rec.type == "customer":
-                    qty = rec.qty_to_deliver
-                elif rec.type == "supplier":
-                    qty = rec.qty_to_receive
-            rec.qty_to_refund = qty
+            rec.qty_to_refund = rec.refund_policy_id._compute_quantity(rec)
+
+    @api.multi
+    @api.depends(
+        "receipt_policy_id",
+        "product_qty", "type", "qty_received",
+        "qty_delivered", "qty_in_supplier_rma",
+        "qty_refunded",
+    )
+    def _compute_qty_to_receive(self):
+        _super = super(RmaOrderLine, self)
+        _super._compute_qty_to_receive()
+
+    @api.multi
+    @api.depends(
+        "receipt_policy_id",
+        "product_qty", "type", "qty_received",
+        "qty_delivered", "qty_in_supplier_rma",
+        "qty_refunded",
+    )
+    def _compute_qty_to_deliver(self):
+        _super = super(RmaOrderLine, self)
+        _super._compute_qty_to_deliver()
+
+    @api.multi
+    @api.depends(
+        "receipt_policy_id",
+        "product_qty", "type", "qty_received",
+        "qty_delivered", "qty_in_supplier_rma",
+        "qty_refunded",
+    )
+    def _compute_qty_supplier_rma(self):
+        _super = super(RmaOrderLine, self)
+        _super._compute_qty_supplier_rma()
 
     @api.multi
     def _compute_refund_count(self):
@@ -65,38 +90,6 @@ class RmaOrderLine(models.Model):
                 rec.refund_count = len(
                     rec.refund_line_ids.mapped("invoice_id"))
 
-    @api.multi
-    @api.depends(
-        "move_ids", "move_ids.state",
-        "qty_received", "receipt_policy",
-        "product_qty", "type",
-        "refund_line_ids",
-        "refund_line_ids.invoice_id.state",
-        "refund_policy",
-    )
-    def _compute_qty_to_receive(self):
-        _super = super(RmaOrderLine, self)
-        _super._compute_qty_to_receive()
-        for rec in self:
-            if rec.refund_policy == "unreplaceable" and rec.type == "supplier":
-                rec.qty_to_receive -= rec.qty_refunded
-
-    @api.multi
-    @api.depends(
-        "move_ids", "move_ids.state",
-        "delivery_policy", "product_qty",
-        "type", "qty_delivered",
-        "qty_received",
-        "refund_line_ids",
-        "refund_line_ids.invoice_id.state",
-        "refund_policy",
-    )
-    def _compute_qty_to_deliver(self):
-        _super = super(RmaOrderLine, self)
-        _super._compute_qty_to_deliver()
-        for rec in self:
-            if rec.refund_policy == "unreplaceable" and rec.type == "customer":
-                rec.qty_to_deliver -= rec.qty_refunded
 
     invoice_address_id = fields.Many2one(
         comodel_name="res.partner",
@@ -141,6 +134,16 @@ class RmaOrderLine(models.Model):
         required=True,
         default="no",
     )
+    refund_policy_id = fields.Many2one(
+        string="Refund Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "both"),
+            ("refund_policy_ok", "=", True),
+            ],
+        required=True,
+        default=lambda self: self._default_refund_policy(),
+        )
     qty_to_refund = fields.Float(
         string="Qty To Refund",
         copy=False,

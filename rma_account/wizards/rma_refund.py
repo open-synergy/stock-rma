@@ -30,7 +30,7 @@ class RmaRefund(models.TransientModel):
                   "product_qty": line.product_qty,
                   "uom_id": line.uom_id.id,
                   "qty_to_refund": line.qty_to_refund,
-                  "refund_policy": line.refund_policy,
+                  "refund_policy_id": line.refund_policy_id.id,
                   "invoice_address_id": line.invoice_address_id.id,
                   "line_id": line.id,
                   "rma_id": line.rma_id.id,
@@ -103,7 +103,7 @@ class RmaRefund(models.TransientModel):
             self.env.context["active_ids"])
         # TODO: Create method
         for line in rma_line_ids:
-            if line.refund_policy == "no":
+            if line.refund_policy_id.id == self.env.ref("rma.rma_policy_no").id:
                 raise UserError(
                     _("The operation is not refund for at least one line"))
             if line.state != "approved":
@@ -237,6 +237,15 @@ class RmaRefundItem(models.TransientModel):
         ],
         string="Refund Policy",
     )
+    refund_policy_id = fields.Many2one(
+        string="Refund Policy",
+        comodel_name="rma.policy",
+        domain=[
+            ("rma_type", "=", "both"),
+            ("refund_policy_ok", "=", True),
+            ],
+        required=True,
+        )
 
     @api.multi
     def _get_account(self):

@@ -17,7 +17,10 @@
     'depends': ['account', 'rma'],
     'demo': ['demo/rma_operation.xml'],
     'data': [
-            'views/rma_order_view.xml',
+        'data/rma_policy_field_data.xml',
+        'data/rma_policy_data.xml',
+        'views/rma_policy_views.xml',
+        'views/rma_order_view.xml',
         'views/rma_operation_view.xml',
         'views/rma_order_line_view.xml',
         'views/invoice_view.xml',
