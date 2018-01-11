@@ -13,8 +13,8 @@ class TestRmaCustomer(BaseCase):
         self.cust_op = self.rma_op.create({
             "name": "Replace After Receive",
             "code": "RAR",
-            "receipt_policy": "ordered",
-            "delivery_policy": "received",
+            "receipt_policy_id": self.env.ref("rma.rma_policy_ordered_received").id,
+            "delivery_policy_id": self.env.ref("rma.rma_policy_received_delivered").id,
             "type": "customer",
             "in_warehouse_id": self.wh.id,
             "out_warehouse_id": self.wh.id,
