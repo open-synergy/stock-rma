@@ -25,7 +25,6 @@ class RmaOrderLine(models.Model):
     @api.multi
     @api.depends(
         "sale_line_ids",
-        "sale_type",
         "sales_count",
         "sale_line_ids.state",
     )
@@ -56,15 +55,6 @@ class RmaOrderLine(models.Model):
                 sales_list.append(sale_order_line.order_id.id)
             line.sales_count = len(list(set(sales_list)))
 
-    sale_type = fields.Selection(
-        selection=[
-            ("no", "Not required"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("received", "Based on Received Quantities"),
-        ],
-        string="Sale Policy",
-        default=lambda self: self._default_sale_type(),
-    )
     sale_line_id = fields.Many2one(
         comodel_name="sale.order.line",
         string="Originating Sales Order Line",
