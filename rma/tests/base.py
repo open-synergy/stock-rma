@@ -4,6 +4,8 @@
 
 from openerp.tests.common import TransactionCase
 from datetime import datetime
+import csv
+import os
 
 
 class BaseCase(TransactionCase):
@@ -194,3 +196,24 @@ class BaseCase(TransactionCase):
             self.assertEqual(
                 qty_in_supplier_rma,
                 rma_line.qty_in_supplier_rma)
+
+    def _run_qty_check(self, line, file_name):
+        script_dir = os.path.dirname(__file__)
+        abs_path = os.path.join(script_dir, file_name)
+        with open(abs_path, "rb") as csvfile:
+            scenarios = csv.DictReader(csvfile, delimiter=",")
+            for row in scenarios:
+                receipt_policy_id = self.env.ref(row["receipt_policy_xml_id"]).id
+                delivery_policy_id = self.env.ref(row["delivery_policy_xml_id"]).id
+                rma_supplier_policy_id = self.env.ref(row["rma_supplier_policy_xml_id"]).id
+                line.write({
+                    "receipt_policy_id": receipt_policy_id,
+                    "delivery_policy_id": delivery_policy_id,
+                    "rma_supplier_policy_id": rma_supplier_policy_id,
+                    })
+                self._check_quantity(
+                    line,
+                    qty_to_supplier_rma=float(row["qty_to_supplier_rma"]),
+                    qty_to_receive=float(row["qty_to_receive"]),
+                    qty_to_deliver=float(row["qty_to_deliver"]),
+                    )
