@@ -11,7 +11,7 @@ drop_columns = [
     ("rma_order_line", "delivery_policy"),
     ("rma_operation", "receipt_policy"),
     ("rma_operation", "delivery_policy"),
-    ]
+]
 
 
 def map_rma_operation(env):
@@ -26,7 +26,7 @@ def map_rma_operation(env):
         ],
         table="rma_operation",
         write="sql",
-        )
+    )
 
     openupgrade.map_values(
         env.cr,
@@ -39,7 +39,7 @@ def map_rma_operation(env):
         ],
         table="rma_operation",
         write="sql",
-        )
+    )
 
 
 def map_rma_order_line(env):
@@ -54,7 +54,7 @@ def map_rma_order_line(env):
         ],
         table="rma_order_line",
         write="sql",
-        )
+    )
 
     openupgrade.map_values(
         env.cr,
@@ -67,7 +67,7 @@ def map_rma_order_line(env):
         ],
         table="rma_order_line",
         write="sql",
-        )
+    )
 
 
 @openupgrade.migrate()

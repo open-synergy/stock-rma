@@ -36,16 +36,16 @@ class RmaPolicy(models.Model):
         string="Policy Rules",
         comodel_name="rma.policy_rule",
         inverse_name="rma_policy_id",
-        )
+    )
     receipt_policy_ok = fields.Boolean(
         string="Available on Receipt Policy"
-        )
+    )
     delivery_policy_ok = fields.Boolean(
         string="Available on Delivery Policy"
-        )
+    )
     rma_supplier_policy_ok = fields.Boolean(
         string="Available on RMA to Supplier Policy"
-        )
+    )
 
     @api.multi
     def _compute_quantity(self, rma_line_id):
