@@ -132,12 +132,3 @@ class RmaOperation(models.Model):
         inverse_name="operation_id",
         string="RMA lines",
     )
-
-    @api.constrains(
-        "type", "delivery_policy",
-    )
-    def _check_rma_delivery_policy(self):
-        if self.type == "supplier" and \
-                self.delivery_policy == "rma_supplier":
-            raise UserError(_("You can't select this policy for RMA"
-                              "Supplier operation"))
