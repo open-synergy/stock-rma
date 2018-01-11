@@ -19,9 +19,6 @@ class RmaOrderLine(models.Model):
     def _default_sale_policy(self):
         return self.env.ref("rma.rma_policy_no") or False
 
-
-
-
     @api.multi
     @api.depends(
         "sale_line_ids",
@@ -94,10 +91,10 @@ class RmaOrderLine(models.Model):
         domain=[
             ("rma_type", "=", "both"),
             ("sale_policy_ok", "=", True),
-            ],
+        ],
         required=True,
         default=lambda self: self._default_sale_policy(),
-        )
+    )
     sale_type = fields.Selection(
         selection=[
             ("no", "Not required"),
