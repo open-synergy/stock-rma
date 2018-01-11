@@ -59,29 +59,29 @@ class RmaOperation(models.Model):
         comodel_name="rma.policy",
         domain=[
             ("receipt_policy_ok", "=", True),
-            ],
+        ],
         required=True,
         default=lambda self: self._default_receipt_policy(),
-        )
+    )
     delivery_policy_id = fields.Many2one(
         string="Delivery Policy",
         comodel_name="rma.policy",
         domain=[
             ("delivery_policy_ok", "=", True),
-            ],
+        ],
         required=True,
         default=lambda self: self._default_delivery_policy(),
-        )
+    )
     rma_supplier_policy_id = fields.Many2one(
         string="RMA Supplier Policy",
         comodel_name="rma.policy",
         domain=[
             ("rma_type", "in", ["both", "customer"]),
             ("rma_supplier_policy_ok", "=", True),
-            ],
+        ],
         required=True,
         default=lambda self: self._default_receipt_policy(),
-        )
+    )
     in_route_id = fields.Many2one(
         comodel_name="stock.location.route",
         string="Inbound Route",
@@ -135,9 +135,9 @@ class RmaOperation(models.Model):
 
     @api.constrains(
         "type", "delivery_policy",
-        )
+    )
     def _check_rma_delivery_policy(self):
         if self.type == "supplier" and \
                 self.delivery_policy == "rma_supplier":
             raise UserError(_("You can't select this policy for RMA"
-                               "Supplier operation"))
+                              "Supplier operation"))

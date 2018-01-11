@@ -14,23 +14,22 @@ class RmaPolicyRule(models.Model):
         string="Sequence",
         required=True,
         default=5,
-        )
+    )
     operator = fields.Selection(
         string="Operator",
         selection=[
             ("-", "-"),
-            ("+","+"),
-            ],
+            ("+", "+"),
+        ],
         required=True,
         default="+",
-        )
+    )
     policy_field_id = fields.Many2one(
         string="Field",
         comodel_name="rma.policy_field",
         required=True,
-        )
+    )
     rma_policy_id = fields.Many2one(
         string="RMA Policy",
         comodel_name="rma.policy",
-        )
-
+    )
