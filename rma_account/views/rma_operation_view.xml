@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="rma.rma_operation_tree"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <field name="refund_policy_id"/>
+                    <field name="refund_policy_id" widget="selection"/>
                 </field>
             </field>
         </record>
@@ -18,7 +18,7 @@
             <field name="inherit_id" ref="rma.rma_operation_form"/>
             <field name="arch" type="xml">
                 <field name="receipt_policy_id" position="before">
-                    <field name="refund_policy_id"/>
+                    <field name="refund_policy_id" widget="selection"/>
                 </field>
             </field>
         </record>
