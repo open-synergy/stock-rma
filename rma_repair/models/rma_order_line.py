@@ -57,7 +57,7 @@ class RmaOrderLine(models.Model):
         string="Repair Policy",
         comodel_name="rma.policy",
         domain=[
-            ("rma_type", "=", "customer"),
+            ("rma_type", "in", ["both", "customer"]),
             ("repair_policy_ok", "=", True),
             ],
         required=True,
