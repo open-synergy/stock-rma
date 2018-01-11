@@ -5,7 +5,8 @@
         <field name="name">Not Required</field>
         <field name="repair_policy_ok" eval="1"/>
     </record>
-
+</data>
+<data noupdate="1">
     <record id="rma_policy_ordered_repaired" model="rma.policy">
         <field name="name">Based on Ordered - Repaired</field>
         <field name="active" eval="1"/>
