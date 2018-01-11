@@ -21,7 +21,7 @@ class RmaOperation(models.Model):
         domain=[
             ("rma_type", "=", "both"),
             ("refund_policy_ok", "=", True),
-            ],
+        ],
         required=True,
         default=lambda self: self._default_refund_policy(),
-        )
+    )

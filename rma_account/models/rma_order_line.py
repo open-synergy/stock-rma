@@ -89,7 +89,6 @@ class RmaOrderLine(models.Model):
                 rec.refund_count = len(
                     rec.refund_line_ids.mapped("invoice_id"))
 
-
     invoice_address_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner invoice address",
@@ -128,10 +127,10 @@ class RmaOrderLine(models.Model):
         domain=[
             ("rma_type", "=", "both"),
             ("refund_policy_ok", "=", True),
-            ],
+        ],
         required=True,
         default=lambda self: self._default_refund_policy(),
-        )
+    )
     qty_to_refund = fields.Float(
         string="Qty To Refund",
         copy=False,
@@ -150,10 +149,10 @@ class RmaOrderLine(models.Model):
     )
     qty_to_receive = fields.Float(
         compute="_compute_qty_to_receive",
-        )
+    )
     qty_to_deliver = fields.Float(
         compute="_compute_qty_to_deliver",
-        )
+    )
 
     @api.onchange("operation_id")
     def _onchange_operation_id(self):
