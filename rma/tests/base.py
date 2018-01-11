@@ -203,17 +203,20 @@ class BaseCase(TransactionCase):
         with open(abs_path, "rb") as csvfile:
             scenarios = csv.DictReader(csvfile, delimiter=",")
             for row in scenarios:
-                receipt_policy_id = self.env.ref(row["receipt_policy_xml_id"]).id
-                delivery_policy_id = self.env.ref(row["delivery_policy_xml_id"]).id
-                rma_supplier_policy_id = self.env.ref(row["rma_supplier_policy_xml_id"]).id
+                receipt_policy_id = self.env.ref(
+                    row["receipt_policy_xml_id"]).id
+                delivery_policy_id = self.env.ref(
+                    row["delivery_policy_xml_id"]).id
+                rma_supplier_policy_id = self.env.ref(
+                    row["rma_supplier_policy_xml_id"]).id
                 line.write({
                     "receipt_policy_id": receipt_policy_id,
                     "delivery_policy_id": delivery_policy_id,
                     "rma_supplier_policy_id": rma_supplier_policy_id,
-                    })
+                })
                 self._check_quantity(
                     line,
                     qty_to_supplier_rma=float(row["qty_to_supplier_rma"]),
                     qty_to_receive=float(row["qty_to_receive"]),
                     qty_to_deliver=float(row["qty_to_deliver"]),
-                    )
+                )
