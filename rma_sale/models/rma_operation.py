@@ -20,7 +20,7 @@ class RmaOperation(models.Model):
         domain=[
             ("rma_type", "=", "both"),
             ("sale_policy_ok", "=", True),
-            ],
+        ],
         required=True,
         default=lambda self: self._default_sale_policy(),
-        )
+    )
