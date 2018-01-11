@@ -15,16 +15,6 @@ class RmaOperation(models.Model):
     def _default_refund_policy(self):
         return self.env.ref("rma.rma_policy_no") or False
 
-    refund_policy = fields.Selection(
-        selection=[
-            ("no", "No refund"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("received", "Based on Received Quantities"),
-            ("unreplaceable", "Based on Unreplaceable Quantities"),
-        ],
-        string="Refund Policy",
-        default="no",
-    )
     refund_policy_id = fields.Many2one(
         string="Refund Policy",
         comodel_name="rma.policy",
