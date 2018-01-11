@@ -92,7 +92,7 @@ class RmaOrderLine(models.Model):
         string="Sale Policy",
         comodel_name="rma.policy",
         domain=[
-            ("rma_type", "in", ["both", "customer"]),
+            ("rma_type", "=", "both"),
             ("sale_policy_ok", "=", True),
             ],
         required=True,
