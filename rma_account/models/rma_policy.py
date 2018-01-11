@@ -10,4 +10,4 @@ class RmaPolicy(models.Model):
 
     refund_policy_ok = fields.Boolean(
         string="Available on Refund Policy"
-        )
+    )
