@@ -373,42 +373,6 @@ class RmaOrderLine(models.Model):
         required=True,
         default=lambda self: self._default_receipt_policy(),
         )
-    receipt_policy = fields.Selection(
-        selection=[
-            ("no", "Not required"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("delivered", "Based on Delivered Quantities"),
-        ],
-        required=True,
-        string="Receipts Policy",
-    )
-    delivery_policy = fields.Selection(
-        selection=[
-            ("no", "Not required"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("received", "Based on Received Quantities"),
-            ("rma_supplier", "Based on RMA to Supplier Quantities"),
-            ("in_rma_supplier_delivered", "Based on In RMA Supplier Quantities - Delivered Quantities"),
-        ],
-        required=True,
-        string="Delivery Policy",
-    )
-    rma_supplier_policy = fields.Selection(
-        selection=[
-            ("no", "Not required"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("received", "Based on Received Quantities"),
-            ("unrealized", "Based on Unrealized Quantities"),
-            ("realized", "Based on Realized Quantities"),
-            ("received_unrealized", "Based on Received - Unrealized Quantities"),
-            ("received_realized", "Based on Received - Realized Quantities"),
-            ("to_receive_unrealized", "Based on To Receive - Unrealized Quantities"),
-            ("to_receive_realized", "Based on To Receive - Realized Quantities"),
-        ],
-        required=True,
-        string="RMA Supplier Policy",
-        default="no",
-    )
     in_route_id = fields.Many2one(
         comodel_name="stock.location.route",
         string="Inbound Route",
