@@ -10,4 +10,4 @@ class RmaPolicy(models.Model):
 
     sale_policy_ok = fields.Boolean(
         string="Available on Sale Policy"
-        )
+    )
