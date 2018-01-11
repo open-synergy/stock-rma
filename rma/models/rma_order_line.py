@@ -347,7 +347,6 @@ class RmaOrderLine(models.Model):
         string="Receipt Policy",
         comodel_name="rma.policy",
         domain=[
-            ("rma_type", "=", "both"),
             ("receipt_policy_ok", "=", True),
             ],
         required=True,
@@ -357,7 +356,6 @@ class RmaOrderLine(models.Model):
         string="Delivery Policy",
         comodel_name="rma.policy",
         domain=[
-            ("rma_type", "=", "both"),
             ("delivery_policy_ok", "=", True),
             ],
         required=True,
@@ -367,7 +365,7 @@ class RmaOrderLine(models.Model):
         string="RMA Supplier Policy",
         comodel_name="rma.policy",
         domain=[
-            ("rma_type", "=", "customer"),
+            ("rma_type", "in", ["both", "customer"]),
             ("rma_supplier_policy_ok", "=", True),
             ],
         required=True,
