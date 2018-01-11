@@ -29,7 +29,6 @@ class RmaOrderLine(models.Model):
     @api.depends(
         "refund_line_ids",
         "refund_line_ids.invoice_id.state",
-        "refund_policy",
         "type",
     )
     def _compute_qty_refunded(self):
@@ -122,17 +121,6 @@ class RmaOrderLine(models.Model):
         related="invoice_line_id.invoice_id",
         index=True,
         readonly=True,
-    )
-    refund_policy = fields.Selection(
-        selection=[
-            ("no", "No refund"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("received", "Based on Received Quantities"),
-            ("unreplaceable", "Based on Unreplaceable Quantities"),
-        ],
-        string="Refund Policy",
-        required=True,
-        default="no",
     )
     refund_policy_id = fields.Many2one(
         string="Refund Policy",
