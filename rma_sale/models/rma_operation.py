@@ -14,15 +14,6 @@ class RmaOperation(models.Model):
     def _default_sale_policy(self):
         return self.env.ref("rma.rma_policy_no") or False
 
-    sale_type = fields.Selection(
-        selection=[
-            ("no", "Not required"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("received", "Based on Received Quantities"),
-        ],
-        string="Sale Policy",
-        default="no",
-    )
     sale_policy_id = fields.Many2one(
         string="Sale Policy",
         comodel_name="rma.policy",
