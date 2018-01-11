@@ -3,8 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from .base import BaseCase
-import csv
-import os
 
 
 class TestRmaCustomer(BaseCase):
@@ -15,12 +13,12 @@ class TestRmaCustomer(BaseCase):
         self.cust_op = self.rma_op.create({
             "name": "Test RMA Operation",
             "code": "TEST",
-            "receipt_policy_id": self.env.\
-                ref("rma.rma_policy_no").id,
-            "delivery_policy_id": self.env.\
-                ref("rma.rma_policy_no").id,
-            "rma_supplier_policy_id": self.env.\
-                ref("rma.rma_policy_no").id,
+            "receipt_policy_id": self.env.
+            ref("rma.rma_policy_no").id,
+            "delivery_policy_id": self.env.
+            ref("rma.rma_policy_no").id,
+            "rma_supplier_policy_id": self.env.
+            ref("rma.rma_policy_no").id,
             "type": "customer",
             "in_warehouse_id": self.wh.id,
             "out_warehouse_id": self.wh.id,
@@ -52,7 +50,7 @@ class TestRmaCustomer(BaseCase):
         self._check_quantity(
             line,
             qty_received=5.0
-            )
+        )
         self._run_qty_check(line, "rma_customer_case_01.csv")
 
         # Create Outgoing Picking
@@ -68,7 +66,7 @@ class TestRmaCustomer(BaseCase):
         self._check_quantity(
             line,
             qty_delivered=3.0
-            )
+        )
 
         # Make supplier RMA
         wiz = self.make_supplier_rma.with_context({
@@ -80,10 +78,10 @@ class TestRmaCustomer(BaseCase):
         self._check_quantity(
             line,
             qty_in_supplier_rma=2.0
-            )
+        )
 
         self._run_qty_check(line, "rma_customer_case_99.csv")
-                    
+
         # Done RMA
         self._rma_done(rma)
 
