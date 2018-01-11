@@ -13,8 +13,8 @@ class TestRmaCustomer(BaseCase):
         self.cust_op = self.rma_op.create({
             "name": "Delivery BeforeReceive",
             "code": "RAR",
-            "receipt_policy": "delivered",
-            "delivery_policy": "ordered",
+            "receipt_policy_id": self.env.ref("rma.rma_policy_delivered_received").id,
+            "delivery_policy_id": self.env.ref("rma.rma_policy_ordered_delivered").id,
             "type": "customer",
             "in_warehouse_id": self.wh.id,
             "out_warehouse_id": self.wh.id,
