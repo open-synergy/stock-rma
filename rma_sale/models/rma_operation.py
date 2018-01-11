@@ -18,7 +18,7 @@ class RmaOperation(models.Model):
         string="Sale Policy",
         comodel_name="rma.policy",
         domain=[
-            ("rma_type", "=", "both"),
+            ("rma_type", "in", ["both", "customer"]),
             ("sale_policy_ok", "=", True),
             ],
         required=True,
