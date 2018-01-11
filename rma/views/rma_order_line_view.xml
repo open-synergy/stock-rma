@@ -108,8 +108,8 @@
                             <group name="operation" string="Operation" colspan="2">
                                 <field name="operation_id"
                                        domain="[('type','=','supplier')]"/>
-                                <field name="receipt_policy_id"/>
-                                <field name="delivery_policy_id"/>
+                                <field name="receipt_policy_id" widget="selection"/>
+                                <field name="delivery_policy_id" widget="selection"/>
                             </group>
                         </group>
                         <notebook>
@@ -234,9 +234,9 @@
                             <newline/>
                             <group name="operation" string="Operation">
                                 <field name="operation_id" domain="[('type','=','customer')]"/>
-                                <field name="receipt_policy_id"/>
-                                <field name="delivery_policy_id"/>
-                                <field name="rma_supplier_policy_id"/>
+                                <field name="receipt_policy_id" widget="selection"/>
+                                <field name="delivery_policy_id" widget="selection"/>
+                                <field name="rma_supplier_policy_id" widget="selection"/>
                             </group>
                         </group>
                         <notebook>
