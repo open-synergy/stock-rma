@@ -40,7 +40,7 @@
                         </button>
                 </button>
                 <field name="operation_id" position="after">
-                    <field name="refund_policy_id"/>
+                    <field name="refund_policy_id" widget="selection"/>
                     <field name="invoice_line_id" invisible="True"/>
                 </field>
                 <page name="stock" position="after">
@@ -76,7 +76,7 @@
                         </button>
                 </button>
                 <field name="operation_id" position="after">
-                    <field name="refund_policy_id"/>
+                    <field name="refund_policy_id" widget="selection"/>
                     <field name="invoice_line_id" invisible="True"/>
                 </field>
                 <page name="stock" position="after">
