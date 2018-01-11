@@ -13,12 +13,6 @@ class TestRmaCustomer(BaseCase):
         self.cust_op = self.rma_op.create({
             "name": "Test RMA Operation",
             "code": "TEST",
-            "receipt_policy_id": self.env.
-            ref("rma.rma_policy_no").id,
-            "delivery_policy_id": self.env.
-            ref("rma.rma_policy_no").id,
-            "rma_supplier_policy_id": self.env.
-            ref("rma.rma_policy_no").id,
             "type": "customer",
             "in_warehouse_id": self.wh.id,
             "out_warehouse_id": self.wh.id,
@@ -49,7 +43,9 @@ class TestRmaCustomer(BaseCase):
         self._process_move(line.move_ids)
         self._check_quantity(
             line,
-            qty_received=5.0
+            qty_received=5.0,
+            in_shipment_count=1.0,
+            out_shipment_count=0.0,
         )
         self._run_qty_check(line, "rma_customer_case_01.csv")
 
@@ -65,7 +61,9 @@ class TestRmaCustomer(BaseCase):
         self._process_move(line.move_ids)
         self._check_quantity(
             line,
-            qty_delivered=3.0
+            qty_delivered=3.0,
+            in_shipment_count=1.0,
+            out_shipment_count=1.0,
         )
 
         # Make supplier RMA
