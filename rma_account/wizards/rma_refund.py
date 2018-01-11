@@ -103,7 +103,8 @@ class RmaRefund(models.TransientModel):
             self.env.context["active_ids"])
         # TODO: Create method
         for line in rma_line_ids:
-            if line.refund_policy_id.id == self.env.ref("rma.rma_policy_no").id:
+            if line.refund_policy_id.id == \
+                    self.env.ref("rma.rma_policy_no").id:
                 raise UserError(
                     _("The operation is not refund for at least one line"))
             if line.state != "approved":
@@ -243,9 +244,9 @@ class RmaRefundItem(models.TransientModel):
         domain=[
             ("rma_type", "=", "both"),
             ("refund_policy_ok", "=", True),
-            ],
+        ],
         required=True,
-        )
+    )
 
     @api.multi
     def _get_account(self):
