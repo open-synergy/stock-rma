@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='delivery_policy_id']" position="after">
-                        <field name="sale_policy_id"/>
+                        <field name="sale_policy_id" widget="selection"/>
                     </xpath>
                 </data>
             </field>
@@ -22,7 +22,7 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='delivery_policy_id']" position="after">
-                        <field name="sale_policy_id"/>
+                        <field name="sale_policy_id" widget="selection"/>
                     </xpath>
                 </data>
             </field>
