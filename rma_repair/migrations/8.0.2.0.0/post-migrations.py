@@ -16,7 +16,7 @@ def map_rma_operation(env):
     openupgrade.map_values(
         env.cr,
         "repair_type",
-        "refund_policy_id",
+        "repair_policy_id",
         [
             ("no", env.ref("rma.rma_policy_no").id),
             ("ordered",
@@ -33,7 +33,7 @@ def map_rma_order_line(env):
     openupgrade.map_values(
         env.cr,
         "repair_type",
-        "refund_policy_id",
+        "repair_policy_id",
         [
             ("no", env.ref("rma.rma_policy_no").id),
             ("ordered",
