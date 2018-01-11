@@ -12,10 +12,10 @@ class RmaOperation(models.Model):
     def _default_repair_policy(self):
         return self.env.ref("rma.rma_policy_no") or False
 
-    repair_type = fields.Selection([
-        ('no', 'Not required'), ('ordered', 'Based on Ordered Quantities'),
-        ('received', 'Based on Received Quantities')],
-        string="Repair Policy", default='no')
+    # repair_type = fields.Selection([
+    #     ('no', 'Not required'), ('ordered', 'Based on Ordered Quantities'),
+    #     ('received', 'Based on Received Quantities')],
+    #     string="Repair Policy", default='no')
 
     repair_policy_id = fields.Many2one(
         string="Repair Policy",

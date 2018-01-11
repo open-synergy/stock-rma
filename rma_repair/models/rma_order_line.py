@@ -28,7 +28,7 @@ class RmaOrderLine(models.Model):
             rec.qty_to_repair = rec.refund_policy_id._compute_quantity(rec)
 
     @api.multi
-    @api.depends('repair_ids', 'repair_type', 'repair_ids.state',
+    @api.depends('repair_ids', 'repair_ids.state',
                  'qty_to_receive')
     def _compute_qty_repaired(self):
         for rec in self:
@@ -53,10 +53,6 @@ class RmaOrderLine(models.Model):
         digits=dp.get_precision('Product Unit of Measure'),
         readonly=True, compute=_compute_qty_repaired,
         store=True, help="Quantity repaired or being repaired.")
-    repair_type = fields.Selection(selection=[
-        ('no', 'Not required'), ('ordered', 'Based on Ordered Quantities'),
-        ('received', 'Based on Received Quantities')],
-        string="Repair Policy", default='no', required=True)
     repair_policy_id = fields.Many2one(
         string="Repair Policy",
         comodel_name="rma.policy",
