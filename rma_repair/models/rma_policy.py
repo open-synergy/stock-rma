@@ -10,4 +10,4 @@ class RmaPolicy(models.Model):
 
     repair_policy_ok = fields.Boolean(
         string="Available on Repair Policy"
-        )
+    )

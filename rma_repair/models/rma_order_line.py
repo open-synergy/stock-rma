@@ -22,7 +22,6 @@ class RmaOrderLine(models.Model):
         "qty_delivered", "qty_in_supplier_rma",
         "qty_refunded", "qty_repaired",
     )
-
     def _compute_qty_to_repair(self):
         for rec in self:
             rec.qty_to_repair = rec.refund_policy_id._compute_quantity(rec)
@@ -59,10 +58,10 @@ class RmaOrderLine(models.Model):
         domain=[
             ("rma_type", "in", ["both", "customer"]),
             ("repair_policy_ok", "=", True),
-            ],
+        ],
         required=True,
         default=lambda self: self._default_repair_policy(),
-        )
+    )
     repair_count = fields.Integer(
         compute=_compute_repair_count, string='# of Repairs')
 

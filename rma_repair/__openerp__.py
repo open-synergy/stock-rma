@@ -21,7 +21,7 @@
         "views/mrp_repair_view.xml",
         "wizards/rma_order_line_make_repair_view.xml",
         "views/rma_order_line_view.xml",
-        ],
+    ],
     "installable": True,
     "auto_install": True,
 }
