@@ -6,8 +6,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from openerp import api, fields, models
 from openerp.addons import decimal_precision as dp
-from openerp.exceptions import Warning as UserError
-from openerp.tools.translate import _
 import operator
 ops = {"=": operator.eq,
        "!=": operator.ne}
@@ -367,7 +365,7 @@ class RmaOrderLine(models.Model):
             ("rma_supplier_policy_ok", "=", True),
         ],
         required=True,
-        default=lambda self: self._default_receipt_policy(),
+        default=lambda self: self._default_rma_supplier_policy(),
     )
     in_route_id = fields.Many2one(
         comodel_name="stock.location.route",
@@ -492,15 +490,6 @@ class RmaOrderLine(models.Model):
             name = obj_sequence.next_by_code(
                 "rma.order.line.customer")
         return name
-
-    @api.constrains(
-        "type", "delivery_policy",
-    )
-    def _check_rma_delivery_policy(self):
-        if self.type == "supplier" and \
-                self.delivery_policy == "rma_supplier":
-            raise UserError(_("You can't select this policy for RMA"
-                              "Supplier operation"))
 
     @api.model
     def _prepare_create_data(self, values):

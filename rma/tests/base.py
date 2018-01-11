@@ -163,7 +163,8 @@ class BaseCase(TransactionCase):
                         qty_to_receive=False, qty_incoming=False,
                         qty_received=False, qty_to_deliver=False,
                         qty_outgoing=False, qty_delivered=False,
-                        qty_to_supplier_rma=False, qty_in_supplier_rma=False):
+                        qty_to_supplier_rma=False, qty_in_supplier_rma=False,
+                        in_shipment_count=False, out_shipment_count=False):
         if qty_to_receive:
             self.assertEqual(
                 qty_to_receive,
@@ -196,6 +197,14 @@ class BaseCase(TransactionCase):
             self.assertEqual(
                 qty_in_supplier_rma,
                 rma_line.qty_in_supplier_rma)
+        if in_shipment_count:
+            self.assertEqual(
+                in_shipment_count,
+                rma_line.in_shipment_count)
+        if out_shipment_count:
+            self.assertEqual(
+                out_shipment_count,
+                rma_line.out_shipment_count)
 
     def _run_qty_check(self, line, file_name):
         script_dir = os.path.dirname(__file__)
