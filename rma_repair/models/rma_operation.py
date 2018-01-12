@@ -10,7 +10,11 @@ class RmaOperation(models.Model):
 
     @api.model
     def _default_repair_policy(self):
-        return self.env.ref("rma.rma_policy_no") or False
+        try:
+            result = self.env.ref("rma.rma_policy_no")
+        except ValueError:
+            result = self.env["rma.policy"]._create_default_policy()
+        return result
 
     repair_policy_id = fields.Many2one(
         string="Repair Policy",
