@@ -12,12 +12,12 @@ class RmaOrderLine(models.Model):
     _inherit = "rma.order.line"
 
     @api.model
-    def _default_sale_type(self):
-        return self.sale_type or False
-
-    @api.model
     def _default_sale_policy(self):
-        return self.env.ref("rma.rma_policy_no") or False
+        try:
+            result = self.env.ref("rma.rma_policy_no")
+        except ValueError:
+            result = self.env["rma.policy"]._create_default_policy()
+        return result
 
     @api.multi
     @api.depends(
