@@ -142,5 +142,3 @@ class RmaOperation(models.Model):
         inverse_name="operation_id",
         string="RMA lines",
     )
-
-
