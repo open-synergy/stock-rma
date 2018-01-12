@@ -64,7 +64,7 @@ class RmaPolicy(models.Model):
         res = {
             "name": "Not Needed",
             "rma_type": "both",
-            }
+        }
         default_policy = self.env["rma.policy"].create(res)
         self.env["ir.model.data"].sudo().create({
             "name": "rma_policy_no",
@@ -73,6 +73,5 @@ class RmaPolicy(models.Model):
             "res_id": default_policy.id,
             "date_init": datetime.now(),
             "date_update": datetime.now(),
-            })
+        })
         return default_policy
-
