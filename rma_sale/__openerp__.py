@@ -7,7 +7,7 @@
 
 {
     "name": "RMA Sale",
-    "version": "8.0.2.0.0",
+    "version": "8.0.2.2.0",
     "license": "AGPL-3",
     "category": "RMA",
     "summary": "Links RMA with Sales Orders",
