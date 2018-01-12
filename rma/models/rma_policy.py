@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import fields, models, api
+from datetime import datetime
 
 
 class RmaPolicy(models.Model):
@@ -57,3 +58,21 @@ class RmaPolicy(models.Model):
             elif rule.operator == "-":
                 qty -= getattr(rma_line_id, rule.policy_field_id.code)
         return qty
+
+    @api.model
+    def _create_default_policy(self):
+        res = {
+            "name": "Not Needed",
+            "rma_type": "both",
+            }
+        default_policy = self.env["rma.policy"].create(res)
+        self.env["ir.model.data"].sudo().create({
+            "name": "rma_policy_no",
+            "model": "rma.policy",
+            "module": "rma",
+            "res_id": default_policy.id,
+            "date_init": datetime.now(),
+            "date_update": datetime.now(),
+            })
+        return default_policy
+
