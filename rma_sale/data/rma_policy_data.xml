@@ -3,7 +3,7 @@
 <data>
     <record id="rma.rma_policy_no" model="rma.policy">
         <field name="name">Not Required</field>
-        <field name="repair_policy_ok" eval="1"/>
+        <field name="sale_policy_ok" eval="1"/>
     </record>
 </data>
 
