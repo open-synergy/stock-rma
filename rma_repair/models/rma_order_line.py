@@ -11,7 +11,11 @@ class RmaOrderLine(models.Model):
 
     @api.model
     def _default_repair_policy(self):
-        return self.env.ref("rma.rma_policy_no") or False
+        try:
+            result = self.env.ref("rma.rma_policy_no")
+        except ValueError:
+            result = self.env["rma.policy"]._create_default_policy()
+        return result
 
     @api.multi
     @api.depends(
