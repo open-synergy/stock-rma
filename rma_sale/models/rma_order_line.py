@@ -39,7 +39,7 @@ class RmaOrderLine(models.Model):
     )
     def _compute_qty_to_sell(self):
         for rec in self:
-            rec.qty_to_sell = rec.sale_type_id._compute_quantity(rec)
+            rec.qty_to_sell = rec.sale_policy_id._compute_quantity(rec)
 
     @api.multi
     @api.depends(
@@ -94,16 +94,6 @@ class RmaOrderLine(models.Model):
         ],
         required=True,
         default=lambda self: self._default_sale_policy(),
-    )
-    sale_type = fields.Selection(
-        selection=[
-            ("no", "Not required"),
-            ("ordered", "Based on Ordered Quantities"),
-            ("received", "Based on Received Quantities"),
-        ],
-        string="Sale Policy",
-        default="no",
-        required=True,
     )
     sales_count = fields.Integer(
         compute=_compute_sales_count,
