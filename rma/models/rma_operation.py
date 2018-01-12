@@ -29,15 +29,27 @@ class RmaOperation(models.Model):
 
     @api.model
     def _default_receipt_policy(self):
-        return self.env.ref("rma.rma_policy_no") or False
+        try:
+            result = self.env.ref("rma.rma_policy_no")
+        except ValueError:
+            result = self.env["rma.policy"]._create_default_policy()
+        return result
 
     @api.model
     def _default_delivery_policy(self):
-        return self.env.ref("rma.rma_policy_no") or False
+        try:
+            result = self.env.ref("rma.rma_policy_no")
+        except ValueError:
+            result = self.env["rma.policy"]._create_default_policy()
+        return result
 
     @api.model
     def _default_rma_supplier_policy(self):
-        return self.env.ref("rma.rma_policy_no") or False
+        try:
+            result = self.env.ref("rma.rma_policy_no")
+        except ValueError:
+            result = self.env["rma.policy"]._create_default_policy()
+        return result
 
     name = fields.Char(
         string="Description",
@@ -130,3 +142,5 @@ class RmaOperation(models.Model):
         inverse_name="operation_id",
         string="RMA lines",
     )
+
+
