@@ -9,6 +9,8 @@
                       decoration-muted="state in ('draft','to_approve')">
                     <field name="rma_id"/>
                     <field name="state" invisible="1"/>
+                    <field name="date_rma"/>
+                    <field name="date_deadline"/>
                     <field name="assigned_to"/>
                     <field name="requested_by"/>
                     <field name="partner_id"/>
@@ -36,6 +38,8 @@
                       decoration-muted="state in ('draft','to_approve')">
                     <field name="rma_id"/>
                     <field name="state" invisible="1"/>
+                    <field name="date_rma"/>
+                    <field name="date_deadline"/>
                     <field name="assigned_to"/>
                     <field name="requested_by"/>
                     <field name="partner_id"/>
@@ -110,6 +114,10 @@
                                        domain="[('type','=','supplier')]"/>
                                 <field name="receipt_policy_id" widget="selection"/>
                                 <field name="delivery_policy_id" widget="selection"/>
+                            </group>
+                            <group name="date" string="Date" colspan="2">
+                                <field name="date_rma"/>
+                                <field name="date_deadline"/>
                             </group>
                         </group>
                         <notebook>
@@ -238,6 +246,10 @@
                                 <field name="delivery_policy_id" widget="selection"/>
                                 <field name="rma_supplier_policy_id" widget="selection"/>
                             </group>
+                            <group name="date" string="Date" colspan="2">
+                                <field name="date_rma"/>
+                                <field name="date_deadline"/>
+                            </group>
                         </group>
                         <notebook>
                             <page name="route" string="Routes">
@@ -320,6 +332,13 @@
                     <separator/>
                     <filter domain="[('assigned_to','=',uid)]" help="My RMAs"/>
                     <filter domain="[('requested_by','=',uid)]" help="My Requested RMAs"/>
+                    <filter string="Due" domain="[('date_deadline','&lt;',time.strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                    <group name="grp_state" string="State">
+                        <filter name="grp_draft" string="Draft" domain="[('state','=','draft')]"/>
+                        <filter name="grp_to_approve" string="To Approve" domain="[('state','=','to_approve')]"/>
+                        <filter name="grp_approved" string="Approved" domain="[('state','=','approved')]"/>
+                        <filter name="grp_done" string="Done" domain="[('state','=','done')]"/>
+                    </group>
                     <group name="grp_pending" string="Pending">
                         <filter name="to_receive" string="To Receive" domain="[('qty_to_receive', '>', 0)]"/>
                         <filter name="to_deliver" string="To Deliver" domain="[('qty_to_deliver', '>', 0)]"/>
@@ -338,6 +357,18 @@
                                 context="{'group_by':'requested_by'}"/>
                         <filter name="assigned_to" string="Assigned To" domain="[]"
                                 context="{'group_by':'assigned_to'}"/>
+                        <filter name="rma_date_month" string="RMA Date by Month" domain="[]"
+                                context="{'group_by':'date_rma:month'}"/>
+                        <filter name="rma_date_week" string="RMA Date by Week" domain="[]"
+                                context="{'group_by':'date_rma:week'}"/>
+                        <filter name="rma_date_day" string="RMA Date by Day" domain="[]"
+                                context="{'group_by':'date_rma:day'}"/>
+                        <filter name="date_deadline_month" string="Deadline by Month" domain="[]"
+                                context="{'group_by':'date_deadline:month'}"/>
+                        <filter name="date_deadline_week" string="Deadline by Week" domain="[]"
+                                context="{'group_by':'date_deadline:week'}"/>
+                        <filter name="date_deadline_day" string="Deadline by Day" domain="[]"
+                                context="{'group_by':'date_deadline:day'}"/>
                     </group>
                </search>
             </field>
