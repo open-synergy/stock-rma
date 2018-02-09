@@ -225,6 +225,23 @@ class RmaOrderLine(models.Model):
     state = fields.Selection(
         related="rma_id.state",
     )
+    date_rma = fields.Datetime(
+        string="Order Date",
+        index=True,
+        readonly=True,
+        related="rma_id.date_rma",
+        store=True,
+    )
+    date_deadline = fields.Datetime(
+        string="Deadline",
+        index=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
     operation_id = fields.Many2one(
         comodel_name="rma.operation",
         string="Operation",
