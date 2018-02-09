@@ -94,6 +94,12 @@ class RmaOrder(models.Model):
         string="Order Date",
         index=True,
         copy=False,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner",
