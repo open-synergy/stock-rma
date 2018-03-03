@@ -163,7 +163,7 @@ class RmaOrderLine(models.Model):
         result = super(RmaOrderLine, self)._onchange_operation_id()
         if not self.operation_id:
             return result
-        self.refund_policy = self.operation_id.refund_policy
+        self.refund_policy_id = self.operation_id.refund_policy_id
         return result
 
     @api.onchange("invoice_line_id")
