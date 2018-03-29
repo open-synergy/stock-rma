@@ -87,10 +87,16 @@ class StockWarehouse(models.Model):
         sequence = obj_sequence.create(
             self._prepare_rma_cust_in_sequence())
 
+        cust_loc = self.env["ir.property"].get(
+            "property_stock_customer",
+            "res.partner")
+
         data = {
             "name": _("RMA Customer In"),
             "warehouse_id": self.id,
             "sequence_id": sequence.id,
+            "default_location_src_id": cust_loc.id,
+            "default_location_dest_id": self.lot_rma_id.id,
             "code": "incoming",
         }
         return data
@@ -103,10 +109,16 @@ class StockWarehouse(models.Model):
         sequence = obj_sequence.create(
             self._prepare_rma_cust_out_sequence())
 
+        cust_loc = self.env["ir.property"].get(
+            "property_stock_customer",
+            "res.partner")
+
         data = {
             "name": _("RMA Customer Out"),
             "warehouse_id": self.id,
             "sequence_id": sequence.id,
+            "default_location_src_id": self.lot_rma_id.id,
+            "default_location_dest_id": cust_loc.id,
             "code": "outgoing",
         }
         return data
@@ -119,10 +131,16 @@ class StockWarehouse(models.Model):
         sequence = obj_sequence.create(
             self._prepare_rma_sup_in_sequence())
 
+        sup_loc = self.env["ir.property"].get(
+            "property_stock_supplier",
+            "res.partner")
+
         data = {
             "name": _("RMA Supplier In"),
             "warehouse_id": self.id,
             "sequence_id": sequence.id,
+            "default_location_src_id": sup_loc.id,
+            "default_location_dest_id": self.lot_rma_id.id,
             "code": "incoming",
         }
         return data
@@ -135,10 +153,16 @@ class StockWarehouse(models.Model):
         sequence = obj_sequence.create(
             self._prepare_rma_sup_out_sequence())
 
+        sup_loc = self.env["ir.property"].get(
+            "property_stock_supplier",
+            "res.partner")
+
         data = {
             "name": _("RMA Supplier Out"),
             "warehouse_id": self.id,
             "sequence_id": sequence.id,
+            "default_location_src_id": self.lot_rma_id.id,
+            "default_location_dest_id": sup_loc.id,
             "code": "outgoing",
         }
         return data
@@ -202,17 +226,19 @@ class StockWarehouse(models.Model):
     @api.model
     def create(self, values):
         new_wh = super(StockWarehouse, self).create(values)
+        rma_loc = new_wh._create_rma_loc()
+        new_wh.write({
+            "lot_rma_id": rma_loc.id,
+        })
         rma_cust_in_type = new_wh._create_rma_cust_in_type()
         rma_cust_out_type = new_wh._create_rma_cust_out_type()
         rma_sup_in_type = new_wh._create_rma_sup_in_type()
         rma_sup_out_type = new_wh._create_rma_sup_out_type()
-        rma_loc = new_wh._create_rma_loc()
         new_wh.write({
             "rma_cust_in_type_id": rma_cust_in_type.id,
             "rma_cust_out_type_id": rma_cust_out_type.id,
             "rma_sup_in_type_id": rma_sup_in_type.id,
             "rma_sup_out_type_id": rma_sup_out_type.id,
-            "lot_rma_id": rma_loc.id,
         })
         rma_cust_route = new_wh._create_route_rma_cust()
         rma_sup_route = new_wh._create_route_rma_sup()
