@@ -3,7 +3,7 @@
    :alt: License: AGPL-3
 
 RMA Purchase
-===========
+============
 
 Purchase as RMA source
 
