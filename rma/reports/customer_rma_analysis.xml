@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 Opensynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+
+<record id="customer_rma_analysis_view_search" model="ir.ui.view">
+    <field name="name">rma.customer_rma_analysis search</field>
+    <field name="model">rma.customer_rma_analysis</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="company_id" groups="base.group_multi_company"/>
+            <field name="rma_id"/>
+            <field name="operation_id"/>
+            <field name="assigned_to_id"/>
+            <field name="requested_by_id"/>
+            <field name="partner_id"/>
+            <field name="product_id"/>
+            <field name="lot_id"/>
+            <field name="in_warehouse_id"/>
+            <field name="out_warehouse_id"/>
+            <field name="state"/>
+            <filter name="dom_empty" string="Empty" domain="[('id','=',0)]"/>
+            <group name="filter_state" string="State">
+                <filter name="filter_draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="filter_to_approve" string="To Approve" domain="[('state','=','to_approve')]"/>
+                <filter name="filter_approved" string="Approved" domain="[('state','=','approved')]"/>
+                <filter name="filter_done" string="Done" domain="[('state','=','done')]"/>
+            </group>
+            <group name="filter_date_rma" string="Date RMA">
+                <filter string="Today" domain="[('date_rma','&lt;=', datetime.datetime.combine(context_today(), datetime.time(23,59,59))), ('date_rma','&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <filter string="01" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,1,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,1,31), datetime.time(23,59,59)))]"/>
+                <filter string="02" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,2,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,2,1) + relativedelta(months=1) + relativedelta(days=-1), datetime.time(23,59,59)))]"/>
+                <filter string="03" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,3,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,3,31), datetime.time(23,59,59)))]"/>
+                <filter string="04" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,4,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,4,30), datetime.time(23,59,59)))]"/>
+                <filter string="05" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,5,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,5,31), datetime.time(23,59,59)))]"/>
+                <filter string="06" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,6,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,6,30), datetime.time(23,59,59)))]"/>
+                <filter string="07" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,7,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,7,31), datetime.time(23,59,59)))]"/>
+                <filter string="08" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,8,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,8,31), datetime.time(23,59,59)))]"/>
+                <filter string="09" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,9,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,9,30), datetime.time(23,59,59)))]"/>
+                <filter string="10" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,10,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,10,31), datetime.time(23,59,59)))]"/>
+                <filter string="11" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,11,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,11,30), datetime.time(23,59,59)))]"/>
+                <filter string="12" domain="[('date_rma','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,12,1), datetime.time(0,0,0))), ('date_rma','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,12,31), datetime.time(23,59,59)))]"/>
+            </group>
+            <group name="filter_date_deadline" string="Date Deadline">
+                <filter string="Today" domain="[('date_deadline','&lt;=', datetime.datetime.combine(context_today(), datetime.time(23,59,59))), ('date_deadline','&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <filter string="01" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,1,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,1,31), datetime.time(23,59,59)))]"/>
+                <filter string="02" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,2,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,2,1) + relativedelta(months=1) + relativedelta(days=-1), datetime.time(23,59,59)))]"/>
+                <filter string="03" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,3,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,3,31), datetime.time(23,59,59)))]"/>
+                <filter string="04" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,4,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,4,30), datetime.time(23,59,59)))]"/>
+                <filter string="05" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,5,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,5,31), datetime.time(23,59,59)))]"/>
+                <filter string="06" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,6,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,6,30), datetime.time(23,59,59)))]"/>
+                <filter string="07" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,7,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,7,31), datetime.time(23,59,59)))]"/>
+                <filter string="08" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,8,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,8,31), datetime.time(23,59,59)))]"/>
+                <filter string="09" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,9,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,9,30), datetime.time(23,59,59)))]"/>
+                <filter string="10" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,10,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,10,31), datetime.time(23,59,59)))]"/>
+                <filter string="11" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,11,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,11,30), datetime.time(23,59,59)))]"/>
+                <filter string="12" domain="[('date_deadline','&gt;=', datetime.datetime.combine(datetime.date(context_today().year,12,1), datetime.time(0,0,0))), ('date_deadline','&lt;=', datetime.datetime.combine(datetime.date(context_today().year,12,31), datetime.time(23,59,59)))]"/>
+            </group>
+            <group name="row_grp" string="Row Grouping">
+                <filter name="row_grp_company" string="Company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                <filter name="row_grp_rma" string="RMA" context="{'group_by':'rma_id'}"/>
+                <filter name="row_grp_state" string="State" context="{'group_by':'state'}"/>
+                <filter name="row_grp_operation" string="Operation" context="{'group_by':'operation_id'}"/>
+                <filter name="row_grp_assigned_to" string="Assigned To" context="{'group_by':'assigned_to_id'}"/>
+                <filter name="row_grp_requested_by" string="Requested By" context="{'group_by':'requested_by_id'}"/>
+                <filter name="row_grp_partner" string="Partner" context="{'group_by':'partner_id'}"/>
+                <filter name="row_grp_product" string="Product" context="{'group_by':'product_id'}"/>
+                <filter name="row_grp_lot" string="Lot/Serial Number" context="{'group_by':'lot_id'}"/>
+                <filter name="row_grp_in_warehouse" string="In Warehouse" context="{'group_by':'in_warehouse_id'}"/>
+                <filter name="row_grp_out_warehouse" string="Out Warehouse" context="{'group_by':'out_warehouse_id'}"/>
+                <filter name="row_grp_date_rma_year" string="RMA Date by Year" context="{'group_by':'date_rma:year'}"/>
+                <filter name="row_grp_date_rma_month" string="RMA Date by Month" context="{'group_by':'date_rma:month'}"/>
+                <filter name="row_grp_date_rma_week" string="RMA Date by Week" context="{'group_by':'date_rma:week'}"/>
+                <filter name="row_grp_date_rma_day" string="RMA Date by Day" context="{'group_by':'date_rma:day'}"/>
+                <filter name="row_grp_date_deadline_year" string="Deadline by Year" context="{'group_by':'date_deadline:year'}"/>
+                <filter name="row_grp_date_deadline_month" string="Deadline by Month" context="{'group_by':'date_deadline:month'}"/>
+                <filter name="row_grp_date_deadline_week" string="Deadline by Week" context="{'group_by':'date_deadline:week'}"/>
+                <filter name="row_grp_date_deadline_day" string="Deadline by Day" context="{'group_by':'date_deadline:day'}"/>
+            </group>
+            <group name="col_grp" string="Col Grouping">
+                <filter name="col_grp_company" string="Company" context="{'col_group_by':'company_id'}" groups="base.group_multi_company"/>
+                <filter name="col_grp_rma" string="RMA" context="{'col_group_by':'rma_id'}"/>
+                <filter name="col_grp_state" string="State" context="{'col_group_by':'state'}"/>
+                <filter name="col_grp_operation" string="Operation" context="{'col_group_by':'operation_id'}"/>
+                <filter name="col_grp_assigned_to" string="Assigned To" context="{'col_group_by':'assigned_to_id'}"/>
+                <filter name="col_grp_requested_by" string="Requested By" context="{'col_group_by':'requested_by_id'}"/>
+                <filter name="col_grp_partner" string="Partner" context="{'col_group_by':'partner_id'}"/>
+                <filter name="col_grp_product" string="Product" context="{'col_group_by':'product_id'}"/>
+                <filter name="col_grp_lot" string="Lot/Serial Number" context="{'col_group_by':'lot_id'}"/>
+                <filter name="col_grp_in_warehouse" string="In Warehouse" context="{'col_group_by':'in_warehouse_id'}"/>
+                <filter name="col_grp_out_warehouse" string="Out Warehouse" context="{'col_group_by':'out_warehouse_id'}"/>
+                <filter name="col_grp_date_rma_year" string="RMA Date by Year" context="{'col_group_by':'date_rma:year'}"/>
+                <filter name="col_grp_date_rma_month" string="RMA Date by Month" context="{'col_group_by':'date_rma:month'}"/>
+                <filter name="col_grp_date_rma_week" string="RMA Date by Week" context="{'col_group_by':'date_rma:week'}"/>
+                <filter name="col_grp_date_rma_day" string="RMA Date by Day" context="{'col_group_by':'date_rma:day'}"/>
+                <filter name="col_grp_date_deadline_year" string="Deadline by Year" context="{'col_group_by':'date_deadline:year'}"/>
+                <filter name="col_grp_date_deadline_month" string="Deadline by Month" context="{'col_group_by':'date_deadline:month'}"/>
+                <filter name="col_grp_date_deadline_week" string="Deadline by Week" context="{'col_group_by':'date_deadline:week'}"/>
+                <filter name="col_grp_date_deadline_day" string="Deadline by Day" context="{'col_group_by':'date_deadline:day'}"/>
+            </group>
+        </search>
+    </field>
+</record>
+
+<record id="customer_rma_analysis_view_graph" model="ir.ui.view">
+    <field name="name">rma.customer_rma_analysis graph</field>
+    <field name="model">rma.customer_rma_analysis</field>
+    <field name="arch" type="xml">
+        <graph type="pivot">
+            <field name="product_qty" type="measure"/>
+            <field name="price_unit" type="measure"/>
+            <field name="qty_to_receive" type="measure"/>
+            <field name="qty_incoming" type="measure"/>
+            <field name="qty_received" type="measure"/>
+            <field name="qty_to_deliver" type="measure"/>
+            <field name="qty_outgoing" type="measure"/>
+            <field name="qty_delivered" type="measure"/>
+            <field name="qty_to_supplier_rma" type="measure"/>
+            <field name="qty_in_supplier_rma" type="measure"/>
+        </graph>
+    </field>
+</record>
+
+<record id="customer_rma_analysis_action" model="ir.actions.act_window">
+    <field name="name">Customer RMA Analysis</field>
+    <field name="res_model">rma.customer_rma_analysis</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">graph</field>
+    <field name="context">{'search_default_dom_empty':1}</field>
+    <field name="view_id" ref="customer_rma_analysis_view_graph"/>
+    <field name="search_view_id" ref="customer_rma_analysis_view_search"/>
+</record>
+
+
+<menuitem
+    id="customer_rma_analysis_menu"
+    name="Customer RMA Analysis"
+    parent="stock.next_id_61"
+    action="customer_rma_analysis_action"
+    sequence="10" />
+
+</data>
+</openerp>
