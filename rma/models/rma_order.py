@@ -249,18 +249,8 @@ class RmaOrder(models.Model):
             action = self.env.ref("rma.action_rma_supplier_lines")
         result = action.read()[0]
         lines = self._get_valid_lines()
-        # choose the view_mode accordingly
-        if len(lines) != 1:
-            result["domain"] = "[('id', 'in', " + \
-                               str(lines.ids) + ")]"
-        elif len(lines) == 1:
-            if self.type == "customer":
-                res = self.env.ref("rma.view_rma_line_form", False)
-            else:
-                res = self.env.ref("rma.view_rma_line_supplier_form", False)
-
-            result["views"] = [(res and res.id or False, "form")]
-            result["res_id"] = lines.id
+        result["domain"] = "[('id', 'in', " + \
+                           str(lines.ids) + ")]"
         return result
 
     @api.multi
