@@ -7,7 +7,7 @@
 
 {
     'name': 'RMA (Return Merchandise Authorization)',
-    'version': '8.0.2.2.1',
+    'version': '8.0.2.3.0',
     'license': 'AGPL-3',
     'category': 'RMA',
     'summary': 'Introduces the return merchandise authorization (RMA) process '
@@ -38,6 +38,8 @@
              'wizards/rma_add_stock_move_view.xml',
              'wizards/stock_config_settings.xml',
              'wizards/rma_order_line_make_supplier_rma_view.xml',
+             'reports/customer_rma_analysis.xml',
+             'reports/supplier_rma_analysis.xml',
              ],
     'installable': True,
     'auto_install': False,
