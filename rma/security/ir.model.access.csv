@@ -12,3 +12,5 @@ access_stock_config_settings,access_stock_config_settings,model_stock_config_set
 access_rma_policy_field,access_rma_policy_field,model_rma_policy_field,,1,0,0,0
 access_rma_policy,access_rma_policy,model_rma_policy,,1,1,1,1
 access_rma_policy_rule,access_rma_policy_rule,model_rma_policy_rule,,1,1,1,1
+access_rma_customer_rma_analysis,access_rma_customer_rma_analysis,model_rma_customer_rma_analysis,,1,0,0,0
+access_rma_supplier_rma_analysis,access_rma_supplier_rma_analysis,model_rma_supplier_rma_analysis,,1,0,0,0
