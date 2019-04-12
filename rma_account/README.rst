@@ -23,7 +23,7 @@ Create an RMA:
 #. Request approval and approve.
 #. Click on RMA Lines button.
 #. Click on more and select an option: "Receive products", "Create Delivery
-   Order, Create Refund".
+Order, Create Refund".
 #. Go back to the RMA. Set the RMA to done if not further action is required.
 
 
