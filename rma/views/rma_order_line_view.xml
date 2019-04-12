@@ -189,7 +189,7 @@
             <field name="model">rma.order.line</field>
             <field name="arch" type="xml">
                 <form string="Rma Line" create="0">
-                    <header/>                
+                    <header/>
                     <sheet>
                         <div name="button_box" class="oe_right oe_button_box">
                             <button type="object"  name="action_view_in_shipments"
@@ -381,7 +381,7 @@
                 ('type','=', 'customer'),
                 ('customer_to_supplier','=', False)
                 ]</field>
-            <field name="context">{"search_default_assigned_to":uid}</field>
+            <field name="context">{}</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_rma_line_tree"/>
@@ -392,7 +392,7 @@
             <field name="res_model">rma.order.line</field>
             <field name="domain">[('state','in', ['approved', 'done']),
                 ('type','=', 'supplier')]</field>
-            <field name="context">{"search_default_assigned_to":uid, "supplier":1}</field>
+            <field name="context">{}</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_rma_line_supplier_tree"/>
