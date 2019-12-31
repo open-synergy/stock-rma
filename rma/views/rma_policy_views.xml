@@ -73,7 +73,7 @@
             name="RMA Policy"
             groups="rma.group_rma_manager"
             sequence="35"
-            parent="stock.menu_stock_configuration"
+            parent="rma_configuration_root_menu"
             action="rma_policy_action"/>
 
     </data>
