@@ -7,7 +7,7 @@
 
 {
     'name': 'RMA (Return Merchandise Authorization)',
-    'version': '8.0.2.4.0',
+    'version': '8.0.3.0.0',
     'license': 'AGPL-3',
     'category': 'RMA',
     'summary': 'Introduces the return merchandise authorization (RMA) process '
@@ -28,6 +28,7 @@
              'menu.xml',
              'views/rma_policy_field_views.xml',
              'views/rma_policy_views.xml',
+             'views/rma_route_template_views.xml',
              'views/rma_order_view.xml',
              'views/rma_operation_view.xml',
              'views/rma_order_line_view.xml',
