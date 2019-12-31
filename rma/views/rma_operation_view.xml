@@ -65,7 +65,7 @@
             name="RMA Operations"
             groups="rma.group_rma_manager"
             sequence="35"
-            parent="stock.menu_stock_configuration"
+            parent="rma_configuration_root_menu"
             action="action_rma_operation"/>
 
     </data>
