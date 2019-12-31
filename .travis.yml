@@ -8,6 +8,8 @@ cache:
 python:
   - "2.7"
 
+dist: trusty  
+
 addons:
   apt:
     packages:
