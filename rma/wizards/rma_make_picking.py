@@ -96,24 +96,18 @@ class RmaMakePicking(models.TransientModel):
     @api.multi
     def action_create_picking(self):
         self.ensure_one()
+
+        self._create_procurement()
+
+    @api.multi
+    def _create_procurement(self):
+        self.ensure_one()
+
         procurements = self.env["procurement.order"]
+
         for item in self.item_ids:
             procurements += item._create_procurement()
         procurements.run()
-        groups = []
-        for proc in procurements:
-            if proc.group_id:
-                groups.append(proc.group_id.id)
-        if len(groups):
-            pickings = self.env["stock.picking"].search(
-                [("group_id", "in", groups)])
-
-        action = self._get_action(pickings, procurements)
-        return action
-
-    @api.multi
-    def action_cancel(self):
-        return {"type": "ir.actions.act_window_close"}
 
 
 class RmaMakePickingItem(models.TransientModel):
@@ -271,7 +265,6 @@ class RmaMakePickingItem(models.TransientModel):
     @api.model
     def _create_procurement(self):
         procurement_data = self._prepare_procurement_data()
-        # create picking
         procurement = self.env["procurement.order"].create(procurement_data)
         return procurement
 
