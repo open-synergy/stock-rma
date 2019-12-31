@@ -57,7 +57,7 @@ class RmaOperation(models.Model):
     )
     active = fields.Boolean(
         string="Active",
-        required=True,
+        required=False,
         default=True,
     )
     code = fields.Char(
@@ -106,28 +106,6 @@ class RmaOperation(models.Model):
             ("rma_selectable", "=", True),
         ],
     )
-    customer_to_supplier = fields.Boolean(
-        string="The customer will send to the supplier",
-        default=False,
-    )
-    supplier_to_customer = fields.Boolean(
-        string="The supplier will send to the customer",
-        default=False,
-    )
-    in_warehouse_id = fields.Many2one(
-        comodel_name="stock.warehouse",
-        string="Inbound Warehouse",
-        default=lambda self: self._default_warehouse_id(),
-    )
-    out_warehouse_id = fields.Many2one(
-        comodel_name="stock.warehouse",
-        string="Outbound Warehouse",
-        default=lambda self: self._default_warehouse_id(),
-    )
-    location_id = fields.Many2one(
-        comodel_name="stock.location",
-        string="Send To This Company Location",
-    )
     type = fields.Selection(
         selection=[
             ("customer", "Customer"),
@@ -142,3 +120,21 @@ class RmaOperation(models.Model):
         inverse_name="operation_id",
         string="RMA lines",
     )
+    default_route_template_id = fields.Many2one(
+        string="Default Route Template",
+        comodel_name="rma.route_template",
+    )
+    allowed_route_template_ids = fields.Many2many(
+        string="Allowed Route Templates",
+        comodel_name="rma.route_template",
+        relation="rel_rma_operation_2_route_template",
+        column1="operation_id",
+        column2="route_template_id",
+    )
+
+    @api.multi
+    def _get_operation_policy(self):
+        return {
+            "receipt_policy_id": self.receipt_policy_id.id,
+            "delivery_policy_id": self.delivery_policy_id.id,
+        }

@@ -8,8 +8,6 @@
         <field name="receipt_policy_id" ref="rma.rma_policy_ordered_received"/>
         <field name="delivery_policy_id" ref="rma.rma_policy_received_delivered"/>
         <field name="type">customer</field>
-        <field name="in_route_id" ref="rma.route_rma_customer"/>
-        <field name="out_route_id" ref="rma.route_rma_customer"/>
     </record>
 
     <record id="rma_operation_supplier_replace" model="rma.operation">
@@ -19,8 +17,6 @@
         <field name="receipt_policy_id" ref="rma.rma_policy_ordered_received"/>
         <field name="delivery_policy_id" ref="rma.rma_policy_ordered_delivered"/>
         <field name="type">supplier</field>
-        <field name="in_route_id" ref="rma.route_rma_supplier"/>
-        <field name="out_route_id" ref="rma.route_rma_supplier"/>
     </record>
 
     <record id="rma_operation_customer_refund" model="rma.operation">
@@ -30,7 +26,6 @@
         <field name="receipt_policy_id" ref="rma.rma_policy_no"/>
         <field name="delivery_policy_id" ref="rma.rma_policy_no"/>
         <field name="type">customer</field>
-        <field name="in_route_id" ref="rma.route_rma_customer"/>
     </record>
 
     <record id="rma_operation_supplier_refund" model="rma.operation">
@@ -40,7 +35,6 @@
         <field name="receipt_policy_id" ref="rma.rma_policy_no"/>
         <field name="delivery_policy_id" ref="rma.rma_policy_no"/>
         <field name="type">supplier</field>
-        <field name="out_route_id" ref="rma.route_rma_supplier"/>
     </record>
 
     <record id="rma_operation_ds_replace" model="rma.operation">
@@ -50,7 +44,6 @@
         <field name="receipt_policy_id" ref="rma.rma_policy_ordered_received"/>
         <field name="delivery_policy_id" ref="rma.rma_policy_no"/>
         <field name="type">customer</field>
-        <field name="out_route_id" ref="rma.route_rma_dropship"/>
     </record>
 
     <record id="rma_operation_ds_replace_customer" model="rma.operation">
@@ -60,7 +53,6 @@
         <field name="receipt_policy_id" ref="rma.rma_policy_no"/>
         <field name="delivery_policy_id" ref="rma.rma_policy_received_delivered"/>
         <field name="type">customer</field>
-        <field name="out_route_id" ref="rma.route_rma_dropship"/>
     </record>
 
     <record id="rma_operation_ds_replace_supplier" model="rma.operation">
@@ -70,7 +62,6 @@
         <field name="receipt_policy_id" ref="rma.rma_policy_no"/>
         <field name="delivery_policy_id" ref="rma.rma_policy_received_delivered"/>
         <field name="type">supplier</field>
-        <field name="out_route_id" ref="rma.route_rma_dropship"/>
     </record>
 </data>
 </openerp>

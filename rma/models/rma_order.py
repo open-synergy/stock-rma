@@ -10,6 +10,7 @@ from openerp import api, fields, models
 
 class RmaOrder(models.Model):
     _name = "rma.order"
+    _description = "RMA Order"
     _inherit = ["mail.thread"]
 
     @api.model
@@ -44,6 +45,17 @@ class RmaOrder(models.Model):
     def _compute_line_count(self):
         for rec in self:
             rec.line_count = len(rec._get_valid_lines())
+
+    @api.multi
+    @api.depends(
+        "operation_id",
+    )
+    def _compute_allowed_route_template_ids(self):
+        for document in self:
+            result = []
+            if document.operation_id:
+                result = document.operation_id.allowed_route_template_ids.ids
+            document.allowed_route_template_ids = result
 
     name = fields.Char(
         string="Order Number",
@@ -105,6 +117,32 @@ class RmaOrder(models.Model):
         comodel_name="res.partner",
         string="Partner",
         required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+    operation_id = fields.Many2one(
+        string="Operation",
+        comodel_name="rma.operation",
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+    allowed_route_template_ids = fields.Many2many(
+        string="Allowed Route Template",
+        comodel_name="rma.route_template",
+        compute="_compute_allowed_route_template_ids",
+        store=False,
+    )
+    route_template_id = fields.Many2one(
+        string="Route Template",
+        comodel_name="rma.route_template",
         readonly=True,
         states={
             "draft": [
@@ -187,7 +225,7 @@ class RmaOrder(models.Model):
     def action_rma_to_approve(self):
         for rec in self:
             rec.write(self._prepare_to_approve_data())
-            # TODO:
+            # TODO: Remove
             pols = rec.mapped("rma_line_ids.product_id.rma_approval_policy")
             if not any(x != "one_step" for x in pols):
                 rec.write({"assigned_to": self.env.uid})
@@ -240,6 +278,15 @@ class RmaOrder(models.Model):
         """
         self.ensure_one()
         return self.rma_line_ids
+
+    @api.onchange(
+        "operation_id",
+    )
+    def onchange_route_template(self):
+        self.route_template_id = False
+        if self.operation_id and self.operation_id.default_route_template_id:
+            self.route_template_id = self.operation_id.\
+                default_route_template_id
 
     @api.multi
     def action_view_lines(self):
