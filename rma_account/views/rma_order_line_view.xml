@@ -1,113 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data>
-        <record id="view_rma_line_tree" model="ir.ui.view">
-            <field name="name">rma.order.line.tree</field>
-            <field name="model">rma.order.line</field>
-            <field name="inherit_id" ref="rma.view_rma_line_tree"/>
-            <field name="arch" type="xml">
-                <data>
-                    <xpath expr="//field[@name='price_unit']" position="before">
-                        <field name="qty_to_refund"/>
-                    </xpath>
-                </data>
-            </field>
-        </record>
-        <record id="view_rma_line_supplier_tree" model="ir.ui.view">
-            <field name="name">rma.order.line.supplier.tree</field>
-            <field name="model">rma.order.line</field>
-            <field name="inherit_id" ref="rma.view_rma_line_supplier_tree"/>
-            <field name="arch" type="xml">
-                <data>
-                    <xpath expr="//field[@name='price_unit']" position="before">
-                        <field name="qty_to_refund"/>
-                    </xpath>
-                </data>
-            </field>
-        </record>
-        <record id="view_rma_line_supplier_form" model="ir.ui.view">
-            <field name="name">rma.order.line.supplier.form</field>
-            <field name="model">rma.order.line</field>
-            <field name="inherit_id" ref="rma.view_rma_line_supplier_form"/>
-            <field name="arch" type="xml">
-                <button name="action_view_out_shipments" position="after">
-                     <button type="object"  name="action_view_refunds"
-                                class="oe_stat_button"
-                                icon="fa-pencil-square-o"
-                                groups="account.group_account_user">
-                            <field name="refund_count" widget="statinfo"
-                                   string="Refunds"/>
-                        </button>
-                </button>
-                <field name="operation_id" position="after">
-                    <field name="refund_policy_id" widget="selection"/>
-                    <field name="invoice_line_id" invisible="True"/>
-                </field>
-                <page name="stock" position="after">
-                    <page name="refunds" string="Refunds">
-                        <field name="refund_line_ids" nolabel="1"/>
-                    </page>
+<data>
+
+<record id="view_rma_line_tree" model="ir.ui.view">
+    <field name="name">rma.order.line.tree</field>
+    <field name="model">rma.order.line</field>
+    <field name="inherit_id" ref="rma.view_rma_line_tree"/>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='price_unit']" position="before">
+                <field name="qty_to_refund"/>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="view_rma_line_supplier_tree" model="ir.ui.view">
+    <field name="name">rma.order.line.supplier.tree</field>
+    <field name="model">rma.order.line</field>
+    <field name="inherit_id" ref="rma.view_rma_line_supplier_tree"/>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='price_unit']" position="before">
+                <field name="qty_to_refund"/>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+<record id="view_rma_line_supplier_form" model="ir.ui.view">
+    <field name="name">rma.order.line.supplier.form</field>
+    <field name="model">rma.order.line</field>
+    <field name="inherit_id" ref="rma.view_rma_line_supplier_form"/>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//button[@name='action_view_out_shipments']" position="after">
+                 <button type="object"  name="action_view_refunds"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            groups="account.group_account_user">
+                    <field name="refund_count" widget="statinfo" string="Refunds"/>
+                    </button>
+            </xpath>
+
+            <xpath expr="//field[@name='receipt_policy_id']" position="before">
+                <field name="refund_policy_id" widget="selection"/>
+                <field name="invoice_line_id" invisible="True"/>
+            </xpath>
+
+            <xpath expr="//page[@name='stock']" position="after">
+                <page name="refunds" string="Refunds">
+                    <field name="refund_line_ids" nolabel="1"/>
                 </page>
-                <field name="delivery_address_id" position="after">
-                    <field name="invoice_address_id"
-                           groups='rma.group_rma_delivery_invoice_address'/>
-                </field>
-                <group name="deliver">
-                    <group name="refund">
-                        <field name="qty_to_refund"/>
-                        <field name="qty_refunded"/>
-                    </group>
+            </xpath>
+
+            <xpath expr="//field[@name='delivery_address_id']" position="after">
+                <field name="invoice_address_id" groups='rma.group_rma_delivery_invoice_address'/>
+            </xpath>
+
+            <xpath expr="//group[@name='deliver']" position="after">
+                <group name="refund" colspan="1" col="2">
+                    <field name="qty_to_refund"/>
+                    <field name="qty_refunded"/>
                 </group>
-            </field>
-        </record>
+            </xpath>
+        </data>
+    </field>
+</record>
 
-        <record id="view_rma_line_form" model="ir.ui.view">
-            <field name="name">rma.order.line.form</field>
-            <field name="model">rma.order.line</field>
-            <field name="inherit_id" ref="rma.view_rma_line_form"/>
-            <field name="arch" type="xml">
-                <button name="action_view_out_shipments" position="after">
-                     <button type="object"  name="action_view_refunds"
-                                class="oe_stat_button"
-                                icon="fa-pencil-square-o"
-                                groups="account.group_account_user">
-                            <field name="refund_count" widget="statinfo"
-                                   string="Refunds"/>
-                        </button>
-                </button>
-                <field name="operation_id" position="after">
-                    <field name="refund_policy_id" widget="selection"/>
-                    <field name="invoice_line_id" invisible="True"/>
-                </field>
-                <page name="stock" position="after">
-                    <page name="refunds" string="Refunds">
-                        <field name="refund_line_ids" nolabel="1"/>
-                    </page>
-                </page>
-                <field name="delivery_address_id" position="after">
-                    <field name="invoice_address_id"
-                           groups='rma.group_rma_delivery_invoice_address'/>
-                </field>
-                <group name="deliver">
-                    <group name="refund">
-                        <field name="qty_to_refund"/>
-                        <field name="qty_refunded"/>
-                    </group>
-                </group>
-            </field>
-        </record>
+<record id="view_rma_line_form" model="ir.ui.view">
+    <field name="name">rma.order.line.form</field>
+    <field name="model">rma.order.line</field>
+    <field name="inherit_id" ref="rma.view_rma_line_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//button[@name='action_view_out_shipments']" position="after">
+            <button type="object"  name="action_view_refunds"
+                class="oe_stat_button"
+                icon="fa-pencil-square-o"
+                groups="account.group_account_user">
+                <field name="refund_count" widget="statinfo" string="Refunds"/>
+            </button>
+        </xpath>
 
-        <record id="view_rma_rma_line_filter" model="ir.ui.view">
-            <field name="name">rma.order.line.select</field>
-            <field name="model">rma.order.line</field>
-            <field name="inherit_id" ref="rma.view_rma_line_form"/>
-            <field name="arch" type="xml">
-                <field name="product_id" position="after">
-                    <filter name="to_refund" string="To Refund" domain="[('qty_to_refund', '>', 0)]"
-                                context="{'group_by':'partner_id'}"/>
-                </field>
-            </field>
-        </record>
+        <xpath expr="//field[@name='rma_supplier_policy_id']" position="after">
+            <field name="refund_policy_id" widget="selection"/>
+            <field name="invoice_line_id" invisible="True"/>
+        </xpath>
 
-    </data>
+        <xpath expr="//page[@name='stock']" position="after">
+            <page name="refunds" string="Refunds">
+                <field name="refund_line_ids" nolabel="1"/>
+            </page>
+        </xpath>
+
+        <xpath expr="//field[@name='delivery_address_id']" position="after">
+            <field name="invoice_address_id" groups='rma.group_rma_delivery_invoice_address'/>
+        </xpath>
+
+        <xpath expr="//group[@name='quantities_1']" position="inside">
+            <group name="deliver">
+                <field name="qty_to_refund"/>
+                <field name="qty_refunded"/>
+            </group>
+        </xpath>
+    </field>
+</record>
+
+<record id="view_rma_rma_line_filter" model="ir.ui.view">
+    <field name="name">rma.order.line.select</field>
+    <field name="model">rma.order.line</field>
+    <field name="inherit_id" ref="rma.view_rma_rma_line_filter"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='product_id']" position="after">
+            <filter name="to_refund" string="To Refund" domain="[('qty_to_refund', '>', 0)]" context="{'group_by':'partner_id'}"/>
+        </xpath>
+    </field>
+</record>
+
+</data>
 </openerp>
