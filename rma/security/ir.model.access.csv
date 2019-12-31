@@ -11,6 +11,7 @@ access_rma_operation_supplier_user,access_rma_operation,model_rma_operation,grou
 access_stock_config_settings,access_stock_config_settings,model_stock_config_settings,stock.group_stock_manager,1,1,1,1
 access_rma_policy_field,access_rma_policy_field,model_rma_policy_field,,1,0,0,0
 access_rma_policy,access_rma_policy,model_rma_policy,,1,1,1,1
+access_rma_route_template,access_rma_route_template,model_rma_route_template,,1,1,1,1
 access_rma_policy_rule,access_rma_policy_rule,model_rma_policy_rule,,1,1,1,1
 access_rma_customer_rma_analysis,access_rma_customer_rma_analysis,model_rma_customer_rma_analysis,,1,0,0,0
 access_rma_supplier_rma_analysis,access_rma_supplier_rma_analysis,model_rma_supplier_rma_analysis,,1,0,0,0
