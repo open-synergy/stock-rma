@@ -5,7 +5,7 @@
     <field name="name">rma.order.line.tree</field>
     <field name="model">rma.order.line</field>
     <field name="arch" type="xml">
-        <tree string="RMA Line" create="0">
+        <tree create="0">
             <field name="rma_id"/>
             <field name="state" invisible="1"/>
             <field name="date_rma"/>
@@ -18,6 +18,7 @@
             <field name="name"/>
             <field name="origin"/>
             <field name="operation_id"/>
+            <field name="route_template_id"/>
             <field name="supplier_address_id"/>
             <field name="uom_id" groups="product.group_uom"/>
             <field name="product_qty"/>
@@ -33,7 +34,7 @@
     <field name="name">rma.order.line.supplier.tree</field>
     <field name="model">rma.order.line</field>
     <field name="arch" type="xml">
-        <tree string="RMA Line" create="0">
+        <tree create="0">
             <field name="rma_id"/>
             <field name="state" invisible="1"/>
             <field name="date_rma"/>
@@ -46,6 +47,7 @@
             <field name="name"/>
             <field name="origin"/>
             <field name="operation_id" domain="[('type','=','supplier')]"/>
+            <field name="route_template_id"/>
             <field name="uom_id" groups="product.group_uom"/>
             <field name="currency_id"/>
             <field name="product_qty"/>
@@ -60,7 +62,7 @@
     <field name="name">rma.order.line.supplier.form</field>
     <field name="model">rma.order.line</field>
     <field name="arch" type="xml">
-        <form string="RMA Line" create="0">
+        <form create="0">
             <header/>
             <sheet>
                 <div name="button_box" class="oe_right oe_button_box">
@@ -105,6 +107,8 @@
                         <field name="date_rma"/>
                         <field name="date_deadline"/>
                         <field name="operation_id" domain="[('type','=','supplier')]"/>
+                        <field name="allowed_route_template_ids" widget="many2many_tags" invisible="1"/>
+                        <field name="route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/>
                     </group>
                 </group>
                 <notebook>
@@ -177,7 +181,7 @@
     <field name="name">rma.order.line.form</field>
     <field name="model">rma.order.line</field>
     <field name="arch" type="xml">
-        <form string="Rma Line" create="0">
+        <form create="0">
             <header/>
             <sheet>
                 <div name="button_box" class="oe_right oe_button_box">
@@ -227,6 +231,8 @@
                         <field name="date_rma"/>
                         <field name="date_deadline"/>
                         <field name="operation_id" domain="[('type','=','customer')]"/>
+                        <field name="allowed_route_template_ids" widget="many2many_tags" invisible="1"/>
+                        <field name="route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/>
                     </group>
                 </group>
                 <notebook>
@@ -301,7 +307,7 @@
     <field name="name">rma.order.line.select</field>
     <field name="model">rma.order.line</field>
     <field name="arch" type="xml">
-        <search string="Search RMA line">
+        <search>
             <field name="rma_id"/>
             <field name="partner_id"/>
             <field name="requested_by"/>

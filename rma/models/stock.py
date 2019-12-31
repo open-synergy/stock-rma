@@ -46,7 +46,7 @@ class StockMove(models.Model):
         return super(StockMove, self).create(vals)
 
     @api.multi
-    def _create_rma_line(self, rma):
+    def _create_rma_line(self, rma, operation=False, route_template=False):
         self.ensure_one()
         obj_line = self.env["rma.order.line"]
         if self.lot_ids:
@@ -55,16 +55,49 @@ class StockMove(models.Model):
                 for quant in self.quant_ids:
                     if quant.lot_id == lot:
                         qty += quant.qty
-                data = self._prepare_rma_line(rma, qty, lot=lot)
+                data = self._prepare_rma_line(
+                    rma=rma,
+                    qty=qty,
+                    lot=lot,
+                    operation=operation,
+                    route_template=route_template,
+                )
                 obj_line.with_context(default_rma_id=rma.id).create(data)
         else:
-            data = self._prepare_rma_line(rma, self.product_qty, lot=False)
+            data = self._prepare_rma_line(
+                rma=rma,
+                qty=self.product_qty,
+                lot=False,
+                operation=operation,
+                route_template=route_template,
+            )
             obj_line.with_context(default_rma_id=rma.id).create(data)
 
     @api.multi
-    def _prepare_rma_line(self, rma, qty, lot=False):
+    def _get_rma_operation(self, rma_type):
+        self.ensure_one()
         operation = self.product_id.product_tmpl_id._get_rma_operation(
-            rma.type)
+            rma_type)
+        if not operation:
+            raise UserError(_("Please define an operation first"))
+        return operation
+
+    @api.multi
+    def _get_rma_route_template(self, rma_type):
+        self.ensure_one()
+        route_template = False
+        if not route_template:
+            raise UserError(_("Please define an route template first"))
+        return route_template
+
+    @api.multi
+    def _prepare_rma_line(self, rma, qty, lot=False,
+                          operation=False, route_template=False):
+        self.ensure_one()
+
+        if not operation:
+            operation = self._get_rma_operation(rma.type)
+
         data = {
             "reference_move_id": self.id,
             "product_id": self.product_id.id,
@@ -73,30 +106,15 @@ class StockMove(models.Model):
             "origin": self.picking_id.name,
             "uom_id": self.product_id.uom_id.id,
             "operation_id": operation.id,
+            "route_template_id": route_template.id,
             "product_qty": qty,
             "delivery_address_id": self.picking_id.partner_id.id,
             "rma_id": rma.id
         }
 
-        if not operation:
-            raise UserError(_("Please define an operation first"))
+        data.update(operation._get_operation_policy())
 
-        if not operation.in_route_id or not operation.out_route_id:
-            route = self.env["stock.location.route"].search(
-                [("rma_selectable", "=", True)], limit=1)
-            if not route:
-                raise UserError(_("Please define an rma route"))
-        data.update(
-            {"in_route_id": operation.in_route_id.id,
-             "out_route_id": operation.out_route_id.id,
-             "receipt_policy_id": operation.receipt_policy_id.id,
-             "operation_id": operation.id,
-             "delivery_policy_id": operation.delivery_policy_id.id,
-             })
-        if operation.in_warehouse_id:
-            data["in_warehouse_id"] = operation.in_warehouse_id.id
-        if operation.out_warehouse_id:
-            data["out_warehouse_id"] = operation.out_warehouse_id.id
-        if operation.location_id:
-            data["location_id"] = operation.location_id.id
+        if route_template:
+            data.update(route_template._get_route_template_policy())
+
         return data

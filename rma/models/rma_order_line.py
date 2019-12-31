@@ -13,6 +13,7 @@ ops = {"=": operator.eq,
 
 class RmaOrderLine(models.Model):
     _name = "rma.order.line"
+    _description = "RMA Order Line"
     _rec_name = "rma_id"
 
     @api.model
@@ -169,6 +170,17 @@ class RmaOrderLine(models.Model):
         for rec in self:
             rec.procurement_count = len(rec.procurement_ids.filtered(
                 lambda p: p.state == "exception"))
+
+    @api.multi
+    @api.depends(
+        "operation_id",
+    )
+    def _compute_allowed_route_template_ids(self):
+        for document in self:
+            result = []
+            if document.operation_id:
+                result = document.operation_id.allowed_route_template_ids.ids
+            document.allowed_route_template_ids = result
 
     @api.model
     def _default_receipt_policy(self):
@@ -396,10 +408,20 @@ class RmaOrderLine(models.Model):
         required=True,
         default=lambda self: self._default_rma_supplier_policy(),
     )
+    allowed_route_template_ids = fields.Many2many(
+        string="Allowed Route Template",
+        comodel_name="rma.route_template",
+        compute="_compute_allowed_route_template_ids",
+        store=False,
+    )
+    route_template_id = fields.Many2one(
+        string="Route Template",
+        comodel_name="rma.route_template",
+    )
     in_route_id = fields.Many2one(
         comodel_name="stock.location.route",
         string="Inbound Route",
-        required=True,
+        required=False,
         domain=[
             ("rma_selectable", "=", True),
         ],
@@ -407,7 +429,7 @@ class RmaOrderLine(models.Model):
     out_route_id = fields.Many2one(
         comodel_name="stock.location.route",
         string="Outbound Route",
-        required=True,
+        required=False,
         domain=[
             ("rma_selectable", "=", True),
         ],
@@ -415,19 +437,19 @@ class RmaOrderLine(models.Model):
     in_warehouse_id = fields.Many2one(
         comodel_name="stock.warehouse",
         string="Inbound Warehouse",
-        required=True,
+        required=False,
         default=lambda self: self._default_warehouse_id(),
     )
     out_warehouse_id = fields.Many2one(
         comodel_name="stock.warehouse",
         string="Outbound Warehouse",
-        required=True,
+        required=False,
         default=lambda self: self._default_warehouse_id(),
     )
     location_id = fields.Many2one(
         comodel_name="stock.location",
         string="Send To This Company Location",
-        required=True,
+        required=False,
         default=lambda self: self._default_location_id(),
     )
     customer_rma_id = fields.Many2one(
@@ -532,29 +554,87 @@ class RmaOrderLine(models.Model):
         new_values = self._prepare_create_data(vals)
         return super(RmaOrderLine, self).create(new_values)
 
-    @api.onchange("operation_id")
-    def _onchange_operation_id(self):
-        result = {}
-        if not self.operation_id:
-            return result
-        self.receipt_policy_id = self.operation_id.receipt_policy_id
-        self.delivery_policy_id = self.operation_id.delivery_policy_id
-        self.in_warehouse_id = self.operation_id.in_warehouse_id
-        self.out_warehouse_id = self.operation_id.out_warehouse_id
-        self.location_id = self.operation_id.location_id or \
-            self.in_warehouse_id.lot_rma_id
-        self.customer_to_supplier = self.operation_id.customer_to_supplier
-        self.supplier_to_customer = self.operation_id.supplier_to_customer
-        self.in_route_id = self.operation_id.in_route_id
-        self.out_route_id = self.operation_id.out_route_id
-        return result
+    @api.onchange(
+        "operation_id",
+    )
+    def onchange_receipt_policy_id(self):
+        if self.operation_id:
+            self.receipt_policy_id = self.operation_id.receipt_policy_id
 
-    @api.onchange("customer_to_supplier", "type")
-    def _onchange_receipt_policy(self):
-        if self.type == "supplier" and self.customer_to_supplier:
-            self.receipt_policy = "no"
-        elif self.type == "customer" and self.supplier_to_customer:
-            self.delivery_policy = "no"
+    @api.onchange(
+        "operation_id",
+    )
+    def onchange_delivery_policy_id(self):
+        if self.operation_id:
+            self.delivery_policy_id = self.operation_id.delivery_policy_id
+
+    @api.onchange(
+        "route_template_id",
+    )
+    def onchange_in_warehouse_id(self):
+        if self.route_template_id:
+            self.in_warehouse_id = self.route_template_id.in_warehouse_id
+
+    @api.onchange(
+        "route_template_id",
+    )
+    def onchange_out_warehouse_id(self):
+        if self.route_template_id:
+            self.out_warehouse_id = self.route_template_id.out_warehouse_id
+
+    @api.onchange(
+        "route_template_id",
+    )
+    def onchange_location_id(self):
+        if self.route_template_id:
+            self.location_id = self.route_template_id.location_id or \
+                self.in_warehouse_id.lot_rma_id
+
+    @api.onchange(
+        "route_template_id",
+    )
+    def onchange_customer_to_supplier(self):
+        if self.route_template_id:
+            self.customer_to_supplier = self.route_template_id.\
+                customer_to_supplier
+
+    @api.onchange(
+        "route_template_id",
+    )
+    def onchange_supplier_to_customer(self):
+        if self.route_template_id:
+            self.supplier_to_customer = self.route_template_id.\
+                supplier_to_customer
+
+    @api.onchange(
+        "route_template_id",
+    )
+    def onchange_in_route_id(self):
+        if self.route_template_id:
+            self.in_route_id = self.route_template_id.in_route_id
+
+    @api.onchange(
+        "route_template_id",
+    )
+    def onchange_out_route_id(self):
+        if self.route_template_id:
+            self.out_route_id = self.route_template_id.out_route_id
+
+    @api.onchange(
+        "operation_id",
+    )
+    def onchange_route_template(self):
+        self.route_template_id = False
+        if self.operation_id and self.operation_id.default_route_template_id:
+            self.route_template_id = self.operation_id.\
+                default_route_template_id
+
+    # @api.onchange("customer_to_supplier", "type")
+    # def _onchange_receipt_policy(self):
+    #     if self.type == "supplier" and self.customer_to_supplier:
+    #         self.receipt_policy = "no"
+    #     elif self.type == "customer" and self.supplier_to_customer:
+    #         self.delivery_policy = "no"
 
     @api.onchange("product_id")
     def _onchange_product_id(self):

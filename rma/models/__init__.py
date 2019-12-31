@@ -11,6 +11,7 @@ from . import rma_policy_rule
 from . import rma_order
 from . import rma_order_line
 from . import rma_operation
+from . import rma_route_template
 from . import stock
 from . import stock_warehouse
 from . import product
