@@ -158,13 +158,12 @@ class RmaOrderLine(models.Model):
         compute="_compute_qty_to_deliver",
     )
 
-    @api.onchange("operation_id")
-    def _onchange_operation_id(self):
-        result = super(RmaOrderLine, self)._onchange_operation_id()
-        if not self.operation_id:
-            return result
-        self.refund_policy_id = self.operation_id.refund_policy_id
-        return result
+    @api.onchange(
+        "operation_id",
+    )
+    def onchange_refund_policy_id(self):
+        if self.operation_id:
+            self.refund_policy_id = self.operation_id.refund_policy_id
 
     @api.onchange("invoice_line_id")
     def _onchange_invoice_line_id(self):
