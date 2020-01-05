@@ -2,28 +2,21 @@
 
 <openerp>
 <data>
-    <record id="view_rma_add_sale" model="ir.ui.view">
-        <field name="name">rma.add.sale</field>
-        <field name="model">rma_add_sale</field>
-        <field name="arch" type="xml">
-            <form string="Select Sale Order from customer">
-                <separator string="Select Sale Order from customer"/>
-                <group>
-                    <field name="operation_id"/>
-                    <field name="partner_id"
-                           domain="[('customer','=',True)]"
-                           string="Customer"/>
-                </group>
-                <separator string="Select Sale Order Lines to Add"/>
-                <group>
-                    <field name="sale_id"
-                           domain="[
-                           ('partner_id','=',partner_id), (('state','not in',['draft','cancel']))]"
-                            context="{'partner_id': partner_id}"/>
-                </group>
-                <field name="sale_line_ids"
-                       domain="[('order_id', '=', sale_id)]"
-                       string="Sale Order Lines">
+<record id="view_rma_add_sale" model="ir.ui.view">
+    <field name="name">rma.add.sale</field>
+    <field name="model">rma_add_sale</field>
+    <field name="arch" type="xml">
+        <form>
+            <group name="header1" string="Select Sale Order from customer" colspan="4" col="2">
+                <field name="rma_id" invisible="1"/>
+                <field name="partner_id" invisible="1" domain="[('customer','=',True)]" string="Customer"/>
+                <field name="operation_id"/>
+                <field name="allowed_route_template_ids" widget="many2many_tags" invisible="1"/>
+                <field name="route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/>
+                <field name="sale_id"  domain="[('partner_id','=',partner_id), (('state','not in',['draft','cancel']))]" context="{'partner_id': partner_id}"/>
+            </group>
+            <group name="sale" string="Select Sale Order Lines to Add" colspan="4" col="2">
+                <field name="sale_line_ids" domain="[('order_id', '=', sale_id)]" string="Sale Order Lines">
                     <tree>
                         <field name="product_id" invisible="1"/>
                         <field name="order_id"/>
@@ -35,46 +28,43 @@
                         <field name="price_subtotal" sum="Total" widget="monetary"/>
                         <field name="state" invisible="1"/>
                     </tree>
-
                 </field>
-                <footer>
-                    <button
-                            string="Confirm"
-                            name="add_lines" type="object"
-                            class="oe_highlight"/>
-                    or
-                    <button name="action_cancel"
-                            string="Cancel" class="oe_link" special="cancel"/>
-                </footer>
-            </form>
-        </field>
-    </record>
+            </group>
+            <footer>
+                <button string="Confirm" name="add_lines" type="object" class="oe_highlight"/>
+                or
+                <button string="Cancel" class="oe_link" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
 
-    <record id="action_rma_add_sale" model="ir.actions.act_window">
-        <field name="name">Add Sale Order</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">rma_add_sale</field>
-        <field name="src_model">rma.order</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="view_id" ref="view_rma_add_sale"/>
-        <field name="groups_id" eval="[(4, ref('rma.group_rma_customer_user')), (4, ref('rma.group_rma_customer_user'))]"/>
-    </record>
+<record id="action_rma_add_sale" model="ir.actions.act_window">
+    <field name="name">Add Sale Order</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">rma_add_sale</field>
+    <field name="src_model">rma.order</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+    <field name="view_id" ref="view_rma_add_sale"/>
+    <field name="groups_id" eval="[(4, ref('rma.group_rma_customer_user')), (4, ref('rma.group_rma_customer_user'))]"/>
+</record>
 
 
-    <record id="view_rma_add_sale_form" model="ir.ui.view">
-        <field name="name">rma.order.line.form</field>
-        <field name="model">rma.order</field>
-        <field name="inherit_id" ref="rma.view_rma_form"/>
-        <field name="arch" type="xml">
-            <button name="action_rma_done" position="after">
-                <button name="%(action_rma_add_sale)d"
-                        string="Add From Sale Order"
-                        type="action"
-                        states="draft,to_approve"/>
-            </button>
-        </field>
-    </record>
+<record id="view_rma_add_sale_form" model="ir.ui.view">
+    <field name="name">rma.order.line.form</field>
+    <field name="model">rma.order</field>
+    <field name="inherit_id" ref="rma.view_rma_form"/>
+    <field name="arch" type="xml">
+        <button name="action_rma_done" position="after">
+            <button name="%(action_rma_add_sale)d"
+                    string="Add From Sale Order"
+                    type="action"
+                    context="{'default_operation_id': operation_id, 'default_route_template_id': route_template_id}"
+                    states="draft,to_approve"/>
+        </button>
+    </field>
+</record>
 </data>
 </openerp>
