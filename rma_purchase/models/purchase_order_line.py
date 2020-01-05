@@ -3,6 +3,7 @@
 # © 2015 Eezee-It, MONK Software, Vauxoo
 # © 2013 Camptocamp
 # © 2009-2013 Akretion,
+# Copyright 2020 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, models
@@ -10,49 +11,62 @@ from openerp.exceptions import Warning as UserError
 from openerp.tools.translate import _
 
 
-class PurchaserderLine(models.Model):
+class PurchaserOderLine(models.Model):
     _inherit = "purchase.order.line"
 
     @api.multi
-    def _create_rma_line_from_po_line(self, rma, operation=False):
+    def _create_rma_line_from_po_line(
+            self, rma, operation=False, route_template=False):
         self.ensure_one()
-        po_line = self.env["rma.order.line"].create(
-            self._prepare_rma_line_from_po_line(rma, operation))
+        data = self._prepare_rma_line_from_po_line(
+            rma=rma, operation=operation, route_template=route_template)
+        po_line = self.env["rma.order.line"].create(data)
         return po_line
 
     @api.multi
-    def _prepare_rma_line_from_po_line(self, rma, operation=False):
+    def _get_rma_operation(self, rma_type):
         self.ensure_one()
-        if not operation:
-            operation = self.product_id.product_tmpl_id._get_rma_operation(
-                rma.type)
-
+        operation = self.product_id.product_tmpl_id._get_rma_operation(
+            rma_type)
         if not operation:
             raise UserError(_("Please define an operation first"))
+        return operation
 
-        if not operation.in_route_id or not operation.out_route_id:
-            route = self.env["stock.location.route"].search(
-                [("rma_selectable", "=", True)], limit=1)
-            if not route:
-                raise UserError(_("Please define an rma route"))
+    @api.multi
+    def _get_rma_route_template(self, rma_type):
+        self.ensure_one()
+        route_template = False
+        if not route_template:
+            raise UserError(_("Please define an route template first"))
+        return route_template
+
+    @api.multi
+    def _prepare_rma_line_from_po_line(
+            self, rma, operation=False, route_template=False):
+        self.ensure_one()
+
+        if not operation:
+            operation = self._get_rma_operation(rma.type)
+
+        if not route_template:
+            route_template = self._get_rma_route_template(rma.type)
+
         data = {
             "purchase_order_line_id": self.id,
             "product_id": self.product_id.id,
             "origin": self.order_id.name,
             "uom_id": self.product_uom.id,
             "operation_id": operation.id,
+            "route_template_id": route_template.id,
             "product_qty": self.product_qty,
             "price_unit": self.price_unit,
             "currency_id": self.order_id.currency_id.id,
             "rma_id": rma.id,
-            "in_route_id": operation.in_route_id.id or route.id,
-            "out_route_id": operation.out_route_id.id or route.id,
-            "receipt_policy_id": operation.receipt_policy_id.id,
-            "location_id": operation.location_id.id or
-            self.env.ref("stock.stock_location_stock").id,
-            "refund_policy_id": operation.refund_policy_id.id,
-            "delivery_policy_id": operation.delivery_policy_id.id,
-            "out_warehouse_id": operation.out_warehouse_id.id,
-            "in_warehouse_id": operation.in_warehouse_id.id,
         }
+
+        data.update(operation._get_operation_policy())
+
+        if route_template:
+            data.update(route_template._get_route_template_policy())
+
         return data

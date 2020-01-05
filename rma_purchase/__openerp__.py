@@ -6,7 +6,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "RMA Purchase",
-    "version": "8.0.1.1.0",
+    "version": "8.0.2.0.0",
     "category": "RMA",
     "summary": "RMA from PO",
     "license": "AGPL-3",
@@ -22,5 +22,5 @@
         "wizards/rma_add_purchase.xml",
     ],
     "installable": True,
-    "auto_install": True,
+    "auto_install": False,
 }
