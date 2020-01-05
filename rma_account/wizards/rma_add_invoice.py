@@ -3,90 +3,92 @@
 # © 2015 Eezee-It, MONK Software, Vauxoo
 # © 2013 Camptocamp
 # © 2009-2013 Akretion,
+# Copyright 2020 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, fields, models
-from openerp.exceptions import ValidationError
 
 
 class RmaAddinvoice(models.TransientModel):
-    _name = 'rma_add_invoice'
-    _description = 'Wizard to add rma lines'
+    _name = "rma_add_invoice"
+    _description = "Wizard to add rma lines"
 
     @api.model
-    def default_get(self, fields):
-        res = super(RmaAddinvoice, self).default_get(fields)
-        rma_obj = self.env['rma.order']
-        rma_id = self.env.context['active_ids'] or []
-        active_model = self.env.context['active_model']
-        if not rma_id:
-            return res
-        assert active_model == 'rma.order', 'Bad context propagation'
+    def _default_rma_id(self):
+        return self.env.context.get("active_id", False)
 
-        rma = rma_obj.browse(rma_id)
-        res['rma_id'] = rma.id
-        res['partner_id'] = rma.partner_id.id
-        res['invoice_id'] = False
-        res['invoice_line_ids'] = False
-        return res
+    @api.multi
+    @api.depends(
+        "operation_id",
+    )
+    def _compute_allowed_route_template_ids(self):
+        for document in self:
+            result = []
+            if document.operation_id:
+                result = document.operation_id.allowed_route_template_ids.ids
+            document.allowed_route_template_ids = result
 
-    rma_id = fields.Many2one('rma.order', string='RMA Order', readonly=True,
-                             ondelete='cascade')
-    partner_id = fields.Many2one(comodel_name='res.partner', string='Partner',
-                                 readonly=True)
-    invoice_id = fields.Many2one(comodel_name='account.invoice',
-                                 string='Invoice')
-    invoice_line_ids = fields.Many2many('account.invoice.line',
-                                        'rma_add_invoice_add_line_rel',
-                                        'invoice_line_id',
-                                        'rma_add_invoice_id',
-                                        string='Invoice Lines')
+    rma_id = fields.Many2one(
+        string="RMA Order",
+        comodel_name="rma.order",
+        readonly=False,
+        ondelete="cascade",
+        default=lambda self: self._default_rma_id(),
+    )
+    partner_id = fields.Many2one(
+        string="Partner",
+        comodel_name="res.partner",
+        readonly=True,
+    )
+    operation_id = fields.Many2one(
+        string="RMA Operation",
+        comodel_name="rma.operation",
+    )
+    allowed_route_template_ids = fields.Many2many(
+        string="Allowed Route Template",
+        comodel_name="rma.route_template",
+        compute="_compute_allowed_route_template_ids",
+        store=False,
+    )
+    route_template_id = fields.Many2one(
+        string="RMA Route Template",
+        comodel_name="rma.route_template",
+    )
+    invoice_id = fields.Many2one(
+        string="Invoice",
+        comodel_name="account.invoice",
+    )
+    invoice_line_ids = fields.Many2many(
+        string="Invoice Lines",
+        comodel_name="account.invoice.line",
+        relation="rma_add_invoice_add_line_rel",
+        column1="invoice_line_id",
+        column2="rma_add_invoice_id",
+    )
 
-    def _prepare_rma_line_from_inv_line(self, line):
-        operation = line.product_id.product_tmpl_id._get_rma_operation(
-            self.rma_id.type)
-        data = {
-            'invoice_line_id': line.id,
-            'product_id': line.product_id.id,
-            'origin': line.invoice_id.number,
-            'uom_id': line.uom_id.id,
-            'operation_id': operation.id,
-            'product_qty': line.quantity,
-            'price_unit': line.invoice_id.currency_id.compute(
-                line.price_unit, line.currency_id, round=False),
-            'delivery_address_id': self.invoice_id.partner_id.id,
-            'invoice_address_id': self.invoice_id.partner_id.id,
-            'rma_id': self.rma_id.id
-        }
-        if not operation:
-            operation = self.env['rma.operation'].search(
-                [('type', '=', self.rma_id.type)], limit=1)
-            if not operation:
-                raise ValidationError("Please define an operation first")
-        if not operation.in_route_id or not operation.out_route_id:
-            route = self.env['stock.location.route'].search(
-                [('rma_selectable', '=', True)], limit=1)
-            if not route:
-                raise ValidationError("Please define an rma route")
-        data.update(
-            {'in_route_id': operation.in_route_id.id,
-             'out_route_id': operation.out_route_id.id,
-             'in_warehouse_id': operation.in_warehouse_id.id,
-             'out_warehouse_id': operation.out_warehouse_id.id,
-             'receipt_policy_id': operation.receipt_policy_id.id,
-             'location_id': operation.location_id.id,
-             'operation_id': operation.id,
-             'refund_policy_id': operation.refund_policy_id.id,
-             'delivery_policy_id': operation.delivery_policy_id.id
-             })
-        return data
+    @api.onchange(
+        "rma_id",
+    )
+    def onchange_partner_id(self):
+        self.partner_id = False
+        if self.rma_id:
+            self.partner_id = self.rma_id.partner_id
+
+    @api.onchange(
+        "operation_id",
+    )
+    def onchange_route_template(self):
+        self.route_template_id = False
+        if self.operation_id and self.operation_id.default_route_template_id:
+            self.route_template_id = self.operation_id.\
+                default_route_template_id
 
     @api.model
     def _get_rma_data(self):
         data = {
-            'date_rma': fields.Datetime.now(),
-            'delivery_address_id': self.invoice_id.partner_id.id,
-            'invoice_address_id': self.invoice_id.partner_id.id
+            "date_rma": fields.Datetime.now(),
+            "delivery_address_id": self.invoice_id.partner_id.id,
+            "invoice_address_id": self.invoice_id.partner_id.id
         }
         return data
 
@@ -99,14 +101,14 @@ class RmaAddinvoice(models.TransientModel):
 
     @api.multi
     def add_lines(self):
-        rma_line_obj = self.env['rma.order.line']
+        self.ensure_one()
         existing_invoice_lines = self._get_existing_invoice_lines()
         for line in self.invoice_line_ids:
-            # Load a PO line only once
             if line not in existing_invoice_lines:
-                data = self._prepare_rma_line_from_inv_line(line)
-                rma_line_obj.create(data)
+                line._create_rma_line(
+                    rma=self.rma_id, operation=self.operation_id,
+                    route_template=self.route_template_id)
         rma = self.rma_id
         data_rma = self._get_rma_data()
         rma.write(data_rma)
-        return {'type': 'ir.actions.act_window_close'}
+        return {"type": "ir.actions.act_window_close"}
