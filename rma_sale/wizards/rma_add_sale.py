@@ -13,32 +13,31 @@ class RmaAddSale(models.TransientModel):
     _description = "Wizard to add rma lines"
 
     @api.model
-    def default_get(self, fields):
-        res = super(RmaAddSale, self).default_get(fields)
-        rma_obj = self.env["rma.order"]
-        rma_id = self.env.context["active_ids"] or []
-        active_model = self.env.context["active_model"]
-        if not rma_id:
-            return res
-        assert active_model == "rma.order", "Bad context propagation"
+    def _default_rma_id(self):
+        return self.env.context.get("active_id", False)
 
-        rma = rma_obj.browse(rma_id)
-        res["rma_id"] = rma.id
-        res["partner_id"] = rma.partner_id.id
-        res["sale_id"] = False
-        res["sale_line_ids"] = False
-        return res
+    @api.multi
+    @api.depends(
+        "operation_id",
+    )
+    def _compute_allowed_route_template_ids(self):
+        for document in self:
+            result = []
+            if document.operation_id:
+                result = document.operation_id.allowed_route_template_ids.ids
+            document.allowed_route_template_ids = result
 
     rma_id = fields.Many2one(
         comodel_name="rma.order",
         string="RMA Order",
-        readonly=True,
+        readonly=False,
         ondelete="cascade",
+        default=lambda self: self._default_rma_id(),
     )
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner",
-        readonly=True,
+        readonly=False,
     )
     sale_id = fields.Many2one(
         comodel_name="sale.order",
@@ -57,6 +56,33 @@ class RmaAddSale(models.TransientModel):
         comodel_name="rma.operation",
         domain=[("type", "=", "customer")],
     )
+    allowed_route_template_ids = fields.Many2many(
+        string="Allowed Route Template",
+        comodel_name="rma.route_template",
+        compute="_compute_allowed_route_template_ids",
+        store=False,
+    )
+    route_template_id = fields.Many2one(
+        string="RMA Route Template",
+        comodel_name="rma.route_template",
+    )
+
+    @api.onchange(
+        "rma_id",
+    )
+    def onchange_partner_id(self):
+        self.partner_id = False
+        if self.rma_id:
+            self.partner_id = self.rma_id.partner_id
+
+    @api.onchange(
+        "operation_id",
+    )
+    def onchange_route_template(self):
+        self.route_template_id = False
+        if self.operation_id and self.operation_id.default_route_template_id:
+            self.route_template_id = self.operation_id.\
+                default_route_template_id
 
     @api.model
     def _get_rma_data(self):
@@ -79,9 +105,10 @@ class RmaAddSale(models.TransientModel):
         existing_sale_lines = self._get_existing_sale_lines()
         rma = self.rma_id
         for line in self.sale_line_ids:
-            # Load a PO line only once
             if line not in existing_sale_lines:
-                line._create_rma_line_from_so_line(rma, self.operation_id)
+                line._create_rma_line_from_so_line(
+                    rma=rma, operation=self.operation_id,
+                    route_template=self.route_template_id)
         data_rma = self._get_rma_data()
         rma.write(data_rma)
         return {"type": "ir.actions.act_window_close"}

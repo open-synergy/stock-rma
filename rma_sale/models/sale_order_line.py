@@ -20,14 +20,17 @@ class SaleOrderLine(models.Model):
     )
 
     @api.multi
-    def _create_rma_line_from_so_line(self, rma, operation=False):
+    def _create_rma_line_from_so_line(
+            self, rma, operation=False, route_template=False):
         self.ensure_one()
-        so_line = self.env["rma.order.line"].create(
-            self._prepare_rma_line_from_so_line(rma, operation))
+        data = self._prepare_rma_line_from_so_line(
+            rma=rma, operation=operation, route_template=route_template)
+        so_line = self.env["rma.order.line"].create(data)
         return so_line
 
     @api.multi
     def _prepare_order_line_procurement(self, group_id=False):
+        self.ensure_one()
         # TODO: Review
         vals = super(SaleOrderLine, self)._prepare_order_line_procurement(
             group_id=group_id)
@@ -37,40 +40,51 @@ class SaleOrderLine(models.Model):
         return vals
 
     @api.multi
-    def _prepare_rma_line_from_so_line(self, rma, operation=False):
+    def _get_rma_operation(self, rma_type):
         self.ensure_one()
-        if not operation:
-            operation = self.product_id.product_tmpl_id._get_rma_operation(
-                rma.type)
+        operation = self.product_id.product_tmpl_id._get_rma_operation(
+            rma_type)
         if not operation:
             raise UserError(_("Please define an operation first"))
+        return operation
 
-        if not operation.in_route_id or not operation.out_route_id:
-            route = self.env["stock.location.route"].search(
-                [("rma_selectable", "=", True)], limit=1)
-            if not route:
-                raise UserError(_("Please define an rma route"))
+    @api.multi
+    def _get_rma_route_template(self, rma_type):
+        self.ensure_one()
+        route_template = False
+        if not route_template:
+            raise UserError(_("Please define an route template first"))
+        return route_template
+
+    @api.multi
+    def _prepare_rma_line_from_so_line(
+            self, rma, operation=False, route_template=False):
+        self.ensure_one()
+
+        if not operation:
+            operation = self._get_rma_operation(rma.type)
+
+        if not route_template:
+            route_template = self._get_rma_route_template(rma.type)
+
         data = {
             "sale_line_id": self.id,
             "product_id": self.product_id.id,
             "origin": self.order_id.name,
             "uom_id": self.product_uom.id,
             "operation_id": operation.id,
+            "route_template_id": route_template.id,
             "product_qty": self.product_uom_qty,
             "delivery_address_id": self.order_id.partner_id.id,
             "invoice_address_id": self.order_id.partner_id.id,
             "currency_id": self.order_id.currency_id.id,
             "price_unit": self.price_unit,
             "rma_id": rma.id,
-            "in_route_id": operation.in_route_id.id or route.id,
-            "out_route_id": operation.out_route_id.id or route.id,
-            "receipt_policy_id": operation.receipt_policy_id.id,
-            "location_id": operation.location_id.id or
-            self.env.ref("stock.stock_location_stock").id,
-            "refund_policy_id": operation.refund_policy_id.id,
-            "delivery_policy_id": operation.delivery_policy_id.id,
-            "sale_policy_id": operation.sale_policy_id.id,
-            "out_warehouse_id": operation.out_warehouse_id.id,
-            "in_warehouse_id": operation.in_warehouse_id.id,
         }
+
+        data.update(operation._get_operation_policy())
+
+        if route_template:
+            data.update(route_template._get_route_template_policy())
+
         return data
