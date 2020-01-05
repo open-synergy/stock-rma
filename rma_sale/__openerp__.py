@@ -3,11 +3,12 @@
 # © 2015 Eezee-It, MONK Software, Vauxoo
 # © 2013 Camptocamp
 # © 2009-2013 Akretion,
+# Copyright 2020 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
     "name": "RMA Sale",
-    "version": "8.0.2.3.0",
+    "version": "8.0.3.0.0",
     "license": "AGPL-3",
     "category": "RMA",
     "summary": "Links RMA with Sales Orders",
