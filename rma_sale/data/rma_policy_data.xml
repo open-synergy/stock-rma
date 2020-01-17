@@ -34,13 +34,13 @@
     </record>
     <record id="rma_policy_rule_received_sold_1" model="rma.policy_rule">
         <field name="sequence" eval="1"/>
-        <field name="operator">+</field>
+        <field name="operator">-</field>
         <field name="policy_field_id" ref="rma_sale.rma_policy_field_sold"/>
         <field name="rma_policy_id" ref="rma_sale.rma_policy_received_sold"/>
     </record>
     <record id="rma_policy_rule_received_sold_2" model="rma.policy_rule">
         <field name="sequence" eval="1"/>
-        <field name="operator">-</field>
+        <field name="operator">+</field>
         <field name="policy_field_id" ref="rma.rma_policy_field_received"/>
         <field name="rma_policy_id" ref="rma_sale.rma_policy_received_sold"/>
     </record>
