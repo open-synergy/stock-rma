@@ -102,6 +102,13 @@ class RmaOrderLine(models.Model):
         default=0,
     )
 
+    @api.onchange(
+        "operation_id",
+    )
+    def onchange_sale_policy_id(self):
+        if self.operation_id:
+            self.sale_policy_id = self.operation_id.sale_policy_id
+
     @api.multi
     def action_view_sale_order(self):
         # TODO: Review
