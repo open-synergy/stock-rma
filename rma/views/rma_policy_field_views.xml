@@ -1,66 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
-        <record id="rma_route_template_tree" model="ir.ui.view">
-            <field name="name">rma.route_template.tree</field>
-            <field name="model">rma.route_template</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="name"/>
-                    <field name="code"/>
-                </tree>
-            </field>
-        </record>
+<odoo>
+  <record id="rma_route_template_tree" model="ir.ui.view">
+      <field name="name">rma.route_template.tree</field>
+      <field name="model">rma.route_template</field>
+      <field name="arch" type="xml">
+          <tree>
+              <field name="name"/>
+              <field name="code"/>
+          </tree>
+      </field>
+  </record>
 
-        <record id="rma_route_template_form" model="ir.ui.view">
-            <field name="name">rma.route_template.form</field>
-            <field name="model">rma.route_template</field>
-            <field name="arch" type="xml">
-                <form>
-                    <header/>
-                    <group colspan="4" col="2">
-                        <group name="group_1">
-                            <field name="name"/>
-                            <field name="code"/>
-                            <field name="active"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page name="inbound" string="Inbound">
-                            <group name="inbound_1" colspan="4" col="2">
-                                <field name="in_route_id"/>
-                                <field name="in_warehouse_id"/>
-                                <field name="location_id" domain="[('usage', '=', 'internal')]"/>
-                                <field name="customer_to_supplier"/>
-                            </group>
-                        </page>
-                        <page name="outbound" string="Onbound">
-                            <group name="onbound_1" colspan="4" col="2">
-                                <field name="out_route_id"/>
-                                <field name="out_warehouse_id"/>
-                                <field name="supplier_to_customer"/>
-                            </group>
-                        </page>
-                        <page name="note" string="Note">
-                            <field name="note"/>
-                        </page>
-                    </notebook>
-                </form>
-            </field>
-        </record>
+  <record id="rma_route_template_form" model="ir.ui.view">
+      <field name="name">rma.route_template.form</field>
+      <field name="model">rma.route_template</field>
+      <field name="arch" type="xml">
+          <form>
+              <header/>
+              <group name="group_1" colspan="4" col="2">
+                  <field name="name"/>
+                  <field name="code"/>
+                  <field name="active"/>
+              </group>
+              <notebook>
+                  <page name="inbound" string="Inbound">
+                      <group name="inbound_1" colspan="4" col="2">
+                          <field name="in_route_id"/>
+                          <field name="in_warehouse_id"/>
+                          <field name="location_id" domain="[('usage', '=', 'internal')]"/>
+                          <field name="customer_to_supplier"/>
+                      </group>
+                  </page>
+                  <page name="outbound" string="Onbound">
+                      <group name="onbound_1" colspan="4" col="2">
+                          <field name="out_route_id"/>
+                          <field name="out_warehouse_id"/>
+                          <field name="supplier_to_customer"/>
+                      </group>
+                  </page>
+                  <page name="note" string="Note">
+                      <field name="note"/>
+                  </page>
+              </notebook>
+          </form>
+      </field>
+  </record>
 
-        <record id="rma_route_template_action" model="ir.actions.act_window">
-            <field name="name">RMA Route Template</field>
-            <field name="res_model">rma.route_template</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
+  <record id="rma_route_template_action" model="ir.actions.act_window">
+      <field name="name">RMA Route Template</field>
+      <field name="res_model">rma.route_template</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+  </record>
 
-        <menuitem id="rma_route_template_menu"
-            name="RMA Route Template"
-            sequence="35"
-            parent="rma_configuration_root_menu"
-            action="rma_route_template_action"/>
-
-    </data>
-</openerp>
+  <menuitem id="rma_route_template_menu"
+      name="RMA Route Template"
+      sequence="35"
+      parent="rma_configuration_root_menu"
+      action="rma_route_template_action"/>
+</odoo>

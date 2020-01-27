@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<openerp>
-<data>
+<odoo>
     <record id="view_rma_add_stock_move_customer" model="ir.ui.view">
         <field name="name">rma.add.stock.move.customer</field>
         <field name="model">rma_add_stock_move</field>
@@ -21,7 +20,7 @@
                         <field name="product_id"/>
                         <field name="product_uom_qty"/>
                         <field name="product_uom" string="Unit of Measure" groups="product.group_uom"/>
-                        <field name="product_packaging" domain="[('product_tmpl_id','=',product_tmpl_id)]" groups="product.group_stock_packaging"/>
+                        <field name="product_packaging" domain="[('product_id','=',product_id)]" groups="product.group_stock_packaging"/>
                         <field name="picking_id"/>
                         <field name="location_id" groups="stock.group_locations"/>
                         <field name="location_dest_id" groups="stock.group_locations"/>
@@ -130,5 +129,4 @@
             </button>
         </field>
     </record>
-</data>
-</openerp>
+</odoo>

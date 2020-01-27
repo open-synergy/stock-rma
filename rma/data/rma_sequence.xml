@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data noupdate="1">
-    <record id="seq_type_rma" model="ir.sequence.type">
-        <field name="name">Customer RMA</field>
-        <field name="code">rma.order.customer</field>
-    </record>
-        
+<odoo noupdate="1">
     <record id="rma_seq" model="ir.sequence">
         <field name="name">Customer RMA sequence</field>
         <field name="code">rma.order.customer</field>
@@ -14,11 +8,6 @@
         <field eval="1" name="number_next"/>
         <field eval="1" name="number_increment"/>
     </record>
-    
-    <record id="seq_type_supplier_rma" model="ir.sequence.type">
-        <field name="name">Supplier RMA</field>
-        <field name="code">rma.order.supplier</field>
-    </record>    
 
     <record id="rma_supplier_seq" model="ir.sequence">
         <field name="name">Supplier RMA sequence</field>
@@ -29,11 +18,6 @@
         <field eval="1" name="number_increment"/>
     </record>
 
-    <record id="seq_type_rma_line" model="ir.sequence.type">
-        <field name="name">Customer RMA Line sequence</field>
-        <field name="code">rma.order.line.customer</field>
-    </record>
-    
     <record id="rma_line_seq" model="ir.sequence">
         <field name="name">Customer RMA Line sequence</field>
         <field name="code">rma.order.line.customer</field>
@@ -42,11 +26,6 @@
         <field eval="1" name="number_next"/>
         <field eval="1" name="number_increment"/>
     </record>
-    
-    <record id="seq_type_rma_line_supplier" model="ir.sequence.type">
-        <field name="name">Supplier RMA Line sequence</field>
-        <field name="code">rma.order.line.supplier</field>
-    </record>    
 
     <record id="rma_line_supplier_seq" model="ir.sequence">
         <field name="name">Supplier RMA Line sequence</field>
@@ -56,5 +35,4 @@
         <field eval="1" name="number_next"/>
         <field eval="1" name="number_increment"/>
     </record>
-</data>
-</openerp>
+</odoo>

@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-# © 2017 Eficent Business and IT Consulting Services S.L.
-# © 2015 Eezee-It, MONK Software, Vauxoo
-# © 2013 Camptocamp
-# © 2009-2013 Akretion,
+# Copyright 2020 OpenSynergy Indonesia
+# Copyright 2017 Eficent Business and IT Consulting Services S.L.
+# Copyright 2015 Eezee-It, MONK Software, Vauxoo
+# Copyright 2013 Camptocamp
+# Copyright 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import time
-from openerp import models, fields, api, _
-from openerp.exceptions import ValidationError
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT as DT_FORMAT
-import openerp.addons.decimal_precision as dp
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT as DT_FORMAT
+import odoo.addons.decimal_precision as dp
 
 
 class RmaMakePicking(models.TransientModel):
@@ -96,18 +96,18 @@ class RmaMakePicking(models.TransientModel):
     @api.multi
     def action_create_picking(self):
         self.ensure_one()
-
         self._create_procurement()
+        return True
 
     @api.multi
     def _create_procurement(self):
         self.ensure_one()
 
-        procurements = self.env["procurement.order"]
+        # procurements = self.env["procurement.order"]
 
         for item in self.item_ids:
-            procurements += item._create_procurement()
-        procurements.run()
+            item._create_procurement()
+        # procurements.run()
 
 
 class RmaMakePickingItem(models.TransientModel):
@@ -186,6 +186,7 @@ class RmaMakePickingItem(models.TransientModel):
     )
     product_id = fields.Many2one(
         comodel_name="product.product",
+        related="line_id.product_id",
         string="Product",
         readonly=True,
     )
@@ -265,8 +266,16 @@ class RmaMakePickingItem(models.TransientModel):
     @api.model
     def _create_procurement(self):
         procurement_data = self._prepare_procurement_data()
-        procurement = self.env["procurement.order"].create(procurement_data)
-        return procurement
+        self.env["procurement.group"].run(
+            product_id=procurement_data["product_id"],
+            product_qty=procurement_data["product_qty"],
+            product_uom=procurement_data["product_uom"],
+            location_id=procurement_data["location_id"],
+            name=procurement_data["origin"],
+            origin=procurement_data["origin"],
+            values=procurement_data,
+        )
+        return True
 
     @api.multi
     def _prepare_procurement_data(self):
@@ -277,18 +286,16 @@ class RmaMakePickingItem(models.TransientModel):
         delivery = self.delivery_address_id
         procurement_data = {
             "name": line.rma_id.name,
-            "group_id": group.id,
+            "group_id": group,
             "origin": line.rma_id.name,
-            "warehouse_id": wh and wh.id or False,
+            "warehouse_id": wh,
             "date_planned": time.strftime(DT_FORMAT),
-            "product_id": self.product_id.id,
+            "product_id": self.product_id,
             "product_qty": self.qty,
-            "partner_dest_id": delivery and delivery.id or False,
-            "product_uom": line.product_id.product_tmpl_id.uom_id.id,
-            "location_id": self.location_id and self.location_id.id or False,
+            "partner_dest_id": delivery,
+            "product_uom": line.product_id.product_tmpl_id.uom_id,
+            "location_id": self.location_id,
             "rma_line_id": line.id,
+            "route_ids": self.route_id
         }
-        if self.route_id:
-            procurement_data.update({
-                "route_ids": [(4, self.route_id.id)]})
         return procurement_data

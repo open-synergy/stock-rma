@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
-# © 2017 Eficent Business and IT Consulting Services S.L.
-# © 2015 Eezee-It, MONK Software, Vauxoo
-# © 2013 Camptocamp
-# © 2009-2013 Akretion,
+# Copyright 2020 OpenSynergy Indonesia
+# Copyright 2017 Eficent Business and IT Consulting Services S.L.
+# Copyright 2015 Eezee-It, MONK Software, Vauxoo
+# Copyright 2013 Camptocamp
+# Copyright 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import api, fields, models
+from odoo import api, fields, models
 
 
 class RmaOrder(models.Model):
@@ -22,18 +22,28 @@ class RmaOrder(models.Model):
     @api.multi
     def _compute_in_shipment_count(self):
         for rec in self:
-            rec.in_shipment_count = len(rec.rma_line_ids.mapped(
-                "procurement_ids.move_ids").filtered(
-                lambda m: m.location_dest_id.usage == "internal").mapped(
-                "picking_id"))
+            picking_ids = []
+            for line in rec.rma_line_ids:
+                for move in line.move_ids:
+                    if move.location_dest_id.usage == 'internal':
+                        picking_ids.append(move.picking_id.id)
+                    else:
+                        if line.customer_to_supplier:
+                            picking_ids.append(move.picking_id.id)
+                shipments = list(set(picking_ids))
+                line.in_shipment_count = len(shipments)
 
     @api.multi
     def _compute_out_shipment_count(self):
+        picking_ids = []
         for rec in self:
-            rec.out_shipment_count = len(rec.rma_line_ids.mapped(
-                "procurement_ids.move_ids").filtered(
-                lambda m: m.location_id.usage == "internal").mapped(
-                "picking_id"))
+            for line in rec.rma_line_ids:
+                for move in line.move_ids:
+                    if move.location_dest_id.usage in ('supplier', 'customer'):
+                        if not line.customer_to_supplier:
+                            picking_ids.append(move.picking_id.id)
+                shipments = list(set(picking_ids))
+                line.out_shipment_count = len(shipments)
 
     @api.multi
     def _compute_supplier_line_count(self):
@@ -94,8 +104,8 @@ class RmaOrder(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("to_approve", "To Approve"),
-            ("approved", "Approved"),
+            ("to_approve", "Waiting for Approval"),
+            ("approved", "In Progress"),
             ("done", "Done"),
         ],
         string="State",
@@ -225,11 +235,6 @@ class RmaOrder(models.Model):
     def action_rma_to_approve(self):
         for rec in self:
             rec.write(self._prepare_to_approve_data())
-            # TODO: Remove
-            pols = rec.mapped("rma_line_ids.product_id.rma_approval_policy")
-            if not any(x != "one_step" for x in pols):
-                rec.write({"assigned_to": self.env.uid})
-                rec.action_rma_approve()
         return True
 
     @api.multi

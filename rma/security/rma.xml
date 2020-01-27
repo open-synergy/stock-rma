@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data noupdate="0">
+<odoo noupdate="0">
 
         <record model="ir.module.category" id="module_category_rma">
             <field name="name">RMA</field>
@@ -34,5 +33,4 @@
             <field name="users" eval="[(4, ref('base.user_root'))]"/>
         </record>
 
-    </data>
-</openerp>
+</odoo>

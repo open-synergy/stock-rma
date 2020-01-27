@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<openerp>
-<data>
+<odoo>
     <record id="view_rma_picking" model="ir.ui.view">
         <field name="name">rma_picking</field>
         <field name="model">rma_make_picking.wizard</field>
@@ -66,6 +65,7 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="view_id" ref="view_rma_picking"/>
+        <field name="binding_model_id" ref="model_rma_order_line" />
         <field name="groups_id" eval="[(4, ref('stock.group_stock_user'))]"/>
         <field name="context">{'picking_type': 'incoming'}</field>
     </record>
@@ -79,6 +79,7 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="view_id" ref="view_rma_picking_out"/>
+        <field name="binding_model_id" ref="model_rma_order_line" />
         <field name="groups_id" eval="[(4, ref('stock.group_stock_user'))]"/>
         <field name="context">{'picking_type': 'outgoing'}</field>
     </record>
@@ -114,24 +115,4 @@
                 </xpath>
         </field>
     </record>
-
-    <record model="ir.values" id="values_action_rma_picking_in">
-        <field name="model_id" ref="model_rma_order_line"/>
-        <field name="name">Create Incoming Shipment</field>
-        <field name="key2">client_action_multi</field>
-        <field name="value" eval="'ir.actions.act_window,' + str(ref('action_rma_picking_in'))" />
-        <field name="key">action</field>
-        <field name="model">rma.order.line</field>
-    </record>
-
-    <record model="ir.values" id="values_action_rma_picking_out">
-        <field name="model_id" ref="model_rma_order_line"/>
-        <field name="name">Create Delivery</field>
-        <field name="key2">client_action_multi</field>
-        <field name="value"
-               eval="'ir.actions.act_window,' + str(ref('action_rma_picking_out'))" />
-        <field name="key">action</field>
-        <field name="model">rma.order.line</field>
-    </record>
-</data>
-</openerp>
+</odoo>

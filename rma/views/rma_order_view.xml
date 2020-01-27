@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
+<odoo>
 
 <record id="view_rma_tree" model="ir.ui.view">
     <field name="name">rma.order.tree</field>
@@ -47,7 +46,7 @@
         <form>
             <header>
                 <button name="action_rma_to_approve" type="object"
-                        string="Request Approval"
+                        string="Confirm"
                         attrs="{'invisible':[('state', '!=', 'draft')]}"
                         class="oe_highlight" groups="rma.group_rma_customer_user"/>
                 <button name="action_rma_approve" type="object"
@@ -56,7 +55,7 @@
                 <button name="action_rma_done" type="object"
                         string="Done"
                         class="oe_highlight"
-                        attrs="{'invisible':[('state', 'in', ('done', 'draft'))]}"
+                        attrs="{'invisible':[('state', '!=', 'approved')]}"
                         groups="rma.group_rma_customer_user"/>
                 <button name="action_rma_draft" type="object"
                         string="Back to Draft"
@@ -115,7 +114,7 @@
                     <group name="group_1_2" colspan="1" col="2">
                         <field name="operation_id" domain="[('type','=','customer')]"/>
                         <field name="allowed_route_template_ids" widget="many2many_tags" invisible="1"/>
-                        <field name="route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/>
+                        <field name="route_template_id" domain="[('id','in',allowed_route_template_ids)]"/>
                         <field name="assigned_to"/>
                         <field name="requested_by"/>
                     </group>
@@ -164,7 +163,7 @@
         <form>
             <header>
                 <button name="action_rma_to_approve" type="object"
-                        string="Request Approval"
+                        string="Confirm"
                         attrs="{'invisible':[('state', '!=', 'draft')]}"
                         class="oe_highlight"
                         groups="rma.group_rma_supplier_user"/>
@@ -173,7 +172,7 @@
                         attrs="{'invisible':[('state', '!=', 'to_approve')]}" class="oe_highlight" groups="rma.group_rma_supplier_user"/>
                 <button name="action_rma_done" type="object"
                         string="Done"
-                        attrs="{'invisible':[('state', 'in', ('done', 'draft'))]}"
+                        attrs="{'invisible':[('state', '!=', 'approved')]}"
                         class="oe_highlight"
                         groups="rma.group_rma_manager"/>
                 <button name="action_rma_draft" type="object"
@@ -225,7 +224,7 @@
                     <group name="group_1_2" colspan="1" col="2">
                         <field name="operation_id" domain="[('type','=','customer')]"/>
                         <field name="allowed_route_template_ids" widget="many2many_tags" invisible="1"/>
-                        <field name="route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/>
+                        <field name="route_template_id" domain="[('id','in',allowed_route_template_ids)]"/>
                         <field name="assigned_to"/>
                         <field name="requested_by"/>
                     </group>
@@ -364,5 +363,4 @@
     sequence="30"
     parent="stock.menu_stock_config_settings"/>
 
-</data>
-</openerp>
+</odoo>
