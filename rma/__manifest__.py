@@ -11,17 +11,12 @@
     "version": "11.0.1.0.0",
     "license": "AGPL-3",
     "category": "RMA",
-    "summary": "Introduces the return merchandise authorization (RMA) process "
-               "in Odoo",
     "author": "Akretion, Camptocamp, Eezee-it, MONK Software, Vauxoo, Eficent,"
               "Odoo Community Association (OCA)",
     "website": "http://www.github.com/OCA/rma",
     "depends": [
         "stock",
         "mail",
-    ],
-    "demo": [
-        "demo/stock_demo.xml",
     ],
     "data": [
         "security/rma.xml",
