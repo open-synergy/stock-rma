@@ -1,80 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data>
-        <record id="rma_policy_tree" model="ir.ui.view">
-            <field name="name">rma.policy.tree</field>
-            <field name="model">rma.policy</field>
-            <field name="arch" type="xml">
-                <tree string="RMA Policy">
-                    <field name="name"/>
-                    <field name="rma_type"/>
-                </tree>
-            </field>
-        </record>
+<odoo>
+  <record id="rma_policy_tree" model="ir.ui.view">
+      <field name="name">rma.policy.tree</field>
+      <field name="model">rma.policy</field>
+      <field name="arch" type="xml">
+          <tree string="RMA Policy">
+              <field name="name"/>
+              <field name="rma_type"/>
+          </tree>
+      </field>
+  </record>
 
-        <record id="rma_policy_form" model="ir.ui.view">
-            <field name="name">rma.policy.form</field>
-            <field name="model">rma.policy</field>
-            <field name="arch" type="xml">
-                <form string="RMA Policy">
-                    <group colspan="4" col="2">
-                        <group name="group_1">
-                            <field name="name"/>
-                            <field name="active"/>
-                            <field name="rma_type"/>
-                            <field name="receipt_policy_ok"/>
-                            <field name="delivery_policy_ok"/>
-                            <field name="rma_supplier_policy_ok"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page name="page_rule" string="Policy Rule">
-                            <field name="policy_rule_ids" colspan="4" nolabel="1">
-                                <tree editable="top">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="operator"/>
-                                    <field name="policy_field_id" widget="selection"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
-                </form>
-            </field>
-        </record>
+  <record id="rma_policy_form" model="ir.ui.view">
+      <field name="name">rma.policy.form</field>
+      <field name="model">rma.policy</field>
+      <field name="arch" type="xml">
+          <form string="RMA Policy">
+              <group colspan="4" col="2">
+                  <group name="group_1">
+                      <field name="name"/>
+                      <field name="active"/>
+                      <field name="rma_type"/>
+                      <field name="receipt_policy_ok"/>
+                      <field name="delivery_policy_ok"/>
+                      <field name="rma_supplier_policy_ok"/>
+                  </group>
+              </group>
+              <notebook>
+                  <page name="page_rule" string="Policy Rule">
+                      <field name="policy_rule_ids" colspan="4" nolabel="1">
+                          <tree editable="top">
+                              <field name="sequence" widget="handle"/>
+                              <field name="operator"/>
+                              <field name="policy_field_id" widget="selection"/>
+                          </tree>
+                      </field>
+                  </page>
+              </notebook>
+          </form>
+      </field>
+  </record>
 
-        <record id="rma_policy_view_search" model="ir.ui.view">
-            <field name="name">rma.policy.search</field>
-            <field name="model">rma.policy</field>
-            <field name="arch" type="xml">
-                <search>
-                    <field name="name"/>
-                    <group name="grp_rma_type" string="RMA Type">
-                        <filter name="filter_rma_customer" string="Customer" domain="[('rma_type','=','customer')]"/>
-                        <filter name="filter_rma_supplier" string="Supplier" domain="[('rma_type','=','supplier')]"/>
-                        <filter name="filter_rma_both" string="Both" domain="[('rma_type','=','both')]"/>
-                    </group>
-                    <group name="grp_applicability" string="Applicable On">
-                        <filter name="filter_receipt" string="Receipt Policy" domain="[('receipt_policy_ok','=',1)]"/>
-                        <filter name="filter_delivery" string="Delivery Policy" domain="[('delivery_policy_ok','=',1)]"/>
-                        <filter name="filter_rma_supplier" string="RMA Supplier Policy" domain="[('rma_supplier_policy_ok','=',1)]"/>
-                    </group>
-                </search>
-            </field>
-        </record>
+  <record id="rma_policy_view_search" model="ir.ui.view">
+      <field name="name">rma.policy.search</field>
+      <field name="model">rma.policy</field>
+      <field name="arch" type="xml">
+          <search>
+              <field name="name"/>
+              <group name="grp_rma_type" string="RMA Type">
+                  <filter name="filter_rma_customer" string="Customer" domain="[('rma_type','=','customer')]"/>
+                  <filter name="filter_rma_supplier" string="Supplier" domain="[('rma_type','=','supplier')]"/>
+                  <filter name="filter_rma_both" string="Both" domain="[('rma_type','=','both')]"/>
+              </group>
+              <group name="grp_applicability" string="Applicable On">
+                  <filter name="filter_receipt" string="Receipt Policy" domain="[('receipt_policy_ok','=',1)]"/>
+                  <filter name="filter_delivery" string="Delivery Policy" domain="[('delivery_policy_ok','=',1)]"/>
+                  <filter name="filter_rma_supplier" string="RMA Supplier Policy" domain="[('rma_supplier_policy_ok','=',1)]"/>
+              </group>
+          </search>
+      </field>
+  </record>
 
-        <record id="rma_policy_action" model="ir.actions.act_window">
-            <field name="name">RMA Policy</field>
-            <field name="res_model">rma.policy</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
+  <record id="rma_policy_action" model="ir.actions.act_window">
+      <field name="name">RMA Policy</field>
+      <field name="res_model">rma.policy</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+  </record>
 
-        <menuitem id="rma_policy_menu"
-            name="RMA Policy"
-            groups="rma.group_rma_manager"
-            sequence="35"
-            parent="rma_configuration_root_menu"
-            action="rma_policy_action"/>
-
-    </data>
-</openerp>
+  <menuitem id="rma_policy_menu"
+      name="RMA Policy"
+      groups="rma.group_rma_manager"
+      sequence="35"
+      parent="rma_configuration_root_menu"
+      action="rma_policy_action"/>
+</odoo>

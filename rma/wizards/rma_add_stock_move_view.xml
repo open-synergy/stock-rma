@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<openerp>
-<data>
+<odoo>
     <record id="view_rma_add_stock_move_customer" model="ir.ui.view">
         <field name="name">rma.add.stock.move.customer</field>
         <field name="model">rma_add_stock_move</field>
@@ -130,5 +129,4 @@
             </button>
         </field>
     </record>
-</data>
-</openerp>
+</odoo>

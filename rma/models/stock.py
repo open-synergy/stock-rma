@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# © 2017 Eficent Business and IT Consulting Services S.L.
-# © 2015 Eezee-It, MONK Software, Vauxoo
-# © 2013 Camptocamp
-# © 2009-2013 Akretion,
+# Copyright 2020 OpenSynergy Indonesia
+# Copyright 2017 Eficent Business and IT Consulting Services S.L.
+# Copyright 2015 Eezee-It, MONK Software, Vauxoo
+# Copyright 2013 Camptocamp
+# Copyright 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, fields, models
@@ -38,11 +39,11 @@ class StockMove(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get("procurement_id"):
-            procurement = self.env["procurement.order"].browse(
-                vals["procurement_id"])
-            if procurement.rma_line_id:
-                vals["rma_line_id"] = procurement.rma_line_id.id
+        # if vals.get("procurement_id"):
+        #     procurement = self.env["procurement.order"].browse(
+        #         vals["procurement_id"])
+        #     if procurement.rma_line_id:
+        #         vals["rma_line_id"] = procurement.rma_line_id.id
         return super(StockMove, self).create(vals)
 
     @api.multi

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 Opensynergy Indonesia
+<!-- Copyright 2020 Opensynergy Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 
-<openerp>
-<data>
+<odoo>
 
 <record id="customer_rma_analysis_view_search" model="ir.ui.view">
     <field name="name">rma.customer_rma_analysis search</field>
@@ -141,5 +140,4 @@
     action="customer_rma_analysis_action"
     sequence="10" />
 
-</data>
-</openerp>
+</odoo>
