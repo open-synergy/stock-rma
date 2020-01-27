@@ -1,65 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
-<record id="rma_operation_tree" model="ir.ui.view">
-    <field name="name">rma.operation.tree</field>
-    <field name="model">rma.operation</field>
-    <field name="arch" type="xml">
-        <tree>
-            <field name="code"/>
-            <field name="name"/>
-            <field name="receipt_policy_id"/>
-            <field name="delivery_policy_id"/>
-        </tree>
-    </field>
-</record>
+<odoo>
+  <record id="rma_operation_tree" model="ir.ui.view">
+      <field name="name">rma.operation.tree</field>
+      <field name="model">rma.operation</field>
+      <field name="arch" type="xml">
+          <tree>
+              <field name="code"/>
+              <field name="name"/>
+              <field name="receipt_policy_id"/>
+              <field name="delivery_policy_id"/>
+          </tree>
+      </field>
+  </record>
 
-<record id="rma_operation_form" model="ir.ui.view">
-    <field name="name">rma.operation.form</field>
-    <field name="model">rma.operation</field>
-    <field name="arch" type="xml">
-        <form>
-            <header/>
-            <group name="header" colspan="4" col="2">
-                <field name="code"/>
-                <field name="name"/>
-                <field name="type"/>
-                <field name="active"/>
-            </group>
-            <notebook>
-                <page name="rma_policy" string="RMA Policies">
-                    <group name="rma_policy" colspan="4" col="2">
-                        <field name="receipt_policy_id" widget="selection"/>
-                        <field name="delivery_policy_id" widget="selection"/>
-                        <field name="rma_supplier_policy_id" widget="selection"
-                            attrs="{'invisible':[('type', '=', 'supplier')]}"/>
-                    </group>
-                </page>
-                <page name="route_template" string="Route Templates">
-                    <group name="route_template_1" colspan="4" col="2">
-                        <field name="default_route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/>
-                        <field name="allowed_route_template_ids" colspan="2" nolabel="1"/>
-                    </group>
-                </page>
-            </notebook>
-        </form>
-    </field>
-</record>
+  <record id="rma_operation_form" model="ir.ui.view">
+      <field name="name">rma.operation.form</field>
+      <field name="model">rma.operation</field>
+      <field name="arch" type="xml">
+          <form>
+              <header/>
+              <group name="header" colspan="4" col="2">
+                  <field name="code"/>
+                  <field name="name"/>
+                  <field name="type"/>
+                  <field name="active"/>
+              </group>
+              <notebook>
+                  <page name="rma_policy" string="RMA Policies">
+                      <group name="rma_policy" colspan="4" col="2">
+                          <field name="receipt_policy_id" widget="selection"/>
+                          <field name="delivery_policy_id" widget="selection"/>
+                          <field name="rma_supplier_policy_id" widget="selection"
+                              attrs="{'invisible':[('type', '=', 'supplier')]}"/>
+                      </group>
+                  </page>
+                  <page name="route_template" string="Route Templates">
+                      <group name="route_template_1" colspan="4" col="2">
+                          <field name="default_route_template_id"/>
+                          <!-- <field name="default_route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/> -->
+                          <field name="allowed_route_template_ids" colspan="2" nolabel="1"/>
+                      </group>
+                  </page>
+              </notebook>
+          </form>
+      </field>
+  </record>
 
-<record id="action_rma_operation" model="ir.actions.act_window">
-    <field name="name">Operations</field>
-    <field name="res_model">rma.operation</field>
-    <field name="view_type">form</field>
-    <field name="view_mode">tree,form</field>
-    <field name="view_id" ref="rma_operation_tree"/>
-</record>
+  <record id="action_rma_operation" model="ir.actions.act_window">
+      <field name="name">Operations</field>
+      <field name="res_model">rma.operation</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="rma_operation_tree"/>
+  </record>
 
-<menuitem id="menu_rma_operation"
-    name="RMA Operations"
-    groups="rma.group_rma_manager"
-    sequence="35"
-    parent="rma_configuration_root_menu"
-    action="action_rma_operation"/>
-
-</data>
-</openerp>
+  <menuitem id="menu_rma_operation"
+      name="RMA Operations"
+      groups="rma.group_rma_manager"
+      sequence="35"
+      parent="rma_configuration_root_menu"
+      action="action_rma_operation"/>
+</odoo>

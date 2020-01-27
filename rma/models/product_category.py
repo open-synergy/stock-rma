@@ -1,27 +1,17 @@
-# -*- coding: utf-8 -*-
+# Copyright 2020 OpenSynergy Indonesia
 # Copyright 2017 Eficent Business and IT Consulting Services S.L.
+# Copyright 2015 Eezee-It, MONK Software, Vauxoo
+# Copyright 2013 Camptocamp
+# Copyright 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import fields, models, api
+from odoo import fields, models, api
 
 
 class ProductCategory(models.Model):
+    _name = "product.category"
     _inherit = "product.category"
 
-    rma_approval_policy = fields.Selection(
-        selection=[
-            ('one_step', 'One step'),
-            ('two_step', 'Two steps'),
-        ],
-        string="RMA Approval Policy",
-        required=True,
-        default='one_step',
-        help="Options: \n "
-             "* One step: Always auto-approve RMAs that only contain "
-             "products within categories with this policy.\n"
-             "* Two steps: A RMA containing a product within a category with "
-             "this policy will request the RMA manager approval.",
-    )
     rma_customer_operation_id = fields.Many2one(
         comodel_name="rma.operation",
         string="Customer RMA Operation",

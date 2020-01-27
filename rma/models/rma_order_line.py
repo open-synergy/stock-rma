@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-# © 2017 Eficent Business and IT Consulting Services S.L.
-# © 2015 Eezee-It, MONK Software, Vauxoo
-# © 2013 Camptocamp
-# © 2009-2013 Akretion,
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from openerp import api, fields, models
-from openerp.addons import decimal_precision as dp
+# Copyright (C) 2017 Eficent Business and IT Consulting Services S.L.
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
+
+from odoo import api, fields, models
+from odoo.addons import decimal_precision as dp
 import operator
 ops = {"=": operator.eq,
        "!=": operator.ne}
@@ -43,18 +40,26 @@ class RmaOrderLine(models.Model):
     @api.multi
     def _compute_in_shipment_count(self):
         for line in self:
-            moves = line.procurement_ids.mapped("move_ids").filtered(
-                lambda m: m.location_dest_id.usage == "internal")
-            pickings = moves.mapped("picking_id")
-            line.in_shipment_count = len(pickings)
+            picking_ids = []
+            for move in line.move_ids:
+                if move.location_dest_id.usage == "internal":
+                    picking_ids.append(move.picking_id.id)
+                else:
+                    if line.customer_to_supplier:
+                        picking_ids.append(move.picking_id.id)
+            shipments = list(set(picking_ids))
+            line.in_shipment_count = len(shipments)
 
     @api.multi
     def _compute_out_shipment_count(self):
+        picking_ids = []
         for line in self:
-            moves = line.procurement_ids.mapped("move_ids").filtered(
-                lambda m: m.location_dest_id.usage != "internal")
-            pickings = moves.mapped("picking_id")
-            line.out_shipment_count = len(pickings)
+            for move in line.move_ids:
+                if move.location_dest_id.usage in ("supplier", "customer"):
+                    if not line.customer_to_supplier:
+                        picking_ids.append(move.picking_id.id)
+            shipments = list(set(picking_ids))
+            line.out_shipment_count = len(shipments)
 
     @api.multi
     def _get_rma_move_qty(self, states, direction="in"):
@@ -65,18 +70,18 @@ class RmaOrderLine(models.Model):
                 op = ops["="]
             else:
                 op = ops["!="]
-            for move in rec.procurement_ids.mapped("move_ids").filtered(
+            for move in rec.move_ids.filtered(
                     lambda m: m.state in states and op(m.location_id.usage,
                                                        rec.type)):
-                qty += product_obj._compute_qty_obj(
-                    move.product_uom, move.product_uom_qty,
-                    rec.uom_id)
+                qty += product_obj._compute_quantity(
+                    move.product_uom_qty, rec.uom_id)
             return qty
 
     @api.multi
     @api.depends(
         "move_ids",
-        "move_ids.state", "type",
+        "move_ids.state",
+        "type",
     )
     def _compute_qty_incoming(self):
         for rec in self:
@@ -86,7 +91,8 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "move_ids", "move_ids.state",
+        "move_ids",
+        "move_ids.state",
         "type",
     )
     def _compute_qty_received(self):
@@ -96,7 +102,8 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "move_ids", "move_ids.state",
+        "move_ids",
+        "move_ids.state",
         "type",
     )
     def _compute_qty_outgoing(self):
@@ -107,7 +114,8 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "move_ids", "move_ids.state",
+        "move_ids",
+        "move_ids.state",
         "type",
     )
     def _compute_qty_delivered(self):
@@ -133,10 +141,14 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "receipt_policy_id", "delivery_policy_id",
-        "rma_supplier_policy_id", "type",
-        "product_qty", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma",
+        "receipt_policy_id",
+        "delivery_policy_id",
+        "rma_supplier_policy_id",
+        "type",
+        "product_qty",
+        "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
     )
     def _compute_qty_to_receive(self):
         for rec in self:
@@ -144,10 +156,14 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "receipt_policy_id", "delivery_policy_id",
-        "rma_supplier_policy_id", "type",
-        "product_qty", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma",
+        "receipt_policy_id",
+        "delivery_policy_id",
+        "rma_supplier_policy_id",
+        "type",
+        "product_qty",
+        "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
     )
     def _compute_qty_to_deliver(self):
         for rec in self:
@@ -155,21 +171,25 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "receipt_policy_id", "delivery_policy_id",
-        "rma_supplier_policy_id", "type",
-        "product_qty", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma",
+        "receipt_policy_id",
+        "delivery_policy_id",
+        "rma_supplier_policy_id",
+        "type",
+        "product_qty",
+        "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
     )
     def _compute_qty_supplier_rma(self):
         for rec in self:
             rec.qty_to_supplier_rma = rec.rma_supplier_policy_id.\
                 _compute_quantity(rec)
 
-    @api.multi
-    def _compute_procurement_count(self):
-        for rec in self:
-            rec.procurement_count = len(rec.procurement_ids.filtered(
-                lambda p: p.state == "exception"))
+    # @api.multi
+    # def _compute_procurement_count(self):
+    #     for rec in self:
+    #         rec.procurement_count = len(rec.procurement_ids.filtered(
+    #             lambda p: p.state == "exception"))
 
     @api.multi
     @api.depends(
@@ -321,12 +341,12 @@ class RmaOrderLine(models.Model):
             ],
         },
     )
-    procurement_count = fields.Integer(
-        compute=_compute_procurement_count,
-        string="# of Procurements",
-        copy=False,
-        default=0,
-    )
+    # procurement_count = fields.Integer(
+    #     compute=_compute_procurement_count,
+    #     string="# of Procurements",
+    #     copy=False,
+    #     default=0,
+    # )
     in_shipment_count = fields.Integer(
         compute=_compute_in_shipment_count,
         string="# of Shipments",
@@ -349,18 +369,18 @@ class RmaOrderLine(models.Model):
         readonly=True,
         copy=False,
     )
-    procurement_ids = fields.One2many(
-        comodel_name="procurement.order",
-        inverse_name="rma_line_id",
-        string="Procurements",
-        readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
-        copy=False,
-    )
+    # procurement_ids = fields.One2many(
+    #     comodel_name="procurement.order",
+    #     inverse_name="rma_line_id",
+    #     string="Procurements",
+    #     readonly=True,
+    #     states={
+    #         "draft": [
+    #             ("readonly", False),
+    #         ],
+    #     },
+    #     copy=False,
+    # )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         string="Currency",
@@ -629,14 +649,16 @@ class RmaOrderLine(models.Model):
             self.route_template_id = self.operation_id.\
                 default_route_template_id
 
-    # @api.onchange("customer_to_supplier", "type")
-    # def _onchange_receipt_policy(self):
-    #     if self.type == "supplier" and self.customer_to_supplier:
-    #         self.receipt_policy = "no"
-    #     elif self.type == "customer" and self.supplier_to_customer:
-    #         self.delivery_policy = "no"
+    @api.onchange("customer_to_supplier", "type")
+    def _onchange_receipt_policy(self):
+        if self.type == "supplier" and self.customer_to_supplier:
+            self.receipt_policy = "no"
+        elif self.type == "customer" and self.supplier_to_customer:
+            self.delivery_policy = "no"
 
-    @api.onchange("product_id")
+    @api.onchange(
+        "product_id",
+    )
     def _onchange_product_id(self):
         self.product_qty = 1
         if self.product_id:
@@ -652,7 +674,9 @@ class RmaOrderLine(models.Model):
                 "lot_id": [("product_id", "=", self.product_id.id)]}}
         return {"domain": {"lot_id": []}}
 
-    @api.onchange("lot_id")
+    @api.onchange(
+        "lot_id",
+    )
     def _onchange_lot_id(self):
         product = self.lot_id.product_id
         if product:
@@ -713,19 +737,19 @@ class RmaOrderLine(models.Model):
             result["res_id"] = shipments[0]
         return result
 
-    @api.multi
-    def action_view_procurements(self):
-        action = self.env.ref(
-            "procurement.procurement_exceptions")
-        result = action.read()[0]
-        procurements = self.procurement_ids.filtered(
-            lambda p: p.state == "exception").ids
-        # choose the view_mode accordingly
-        if len(procurements) != 1:
-            result["domain"] = "[('id', 'in', " + \
-                               str(procurements) + ")]"
-        elif len(procurements) == 1:
-            res = self.env.ref("procurement.procurement_form_view", False)
-            result["views"] = [(res and res.id or False, "form")]
-            result["res_id"] = procurements[0]
-        return result
+    # @api.multi
+    # def action_view_procurements(self):
+    #     action = self.env.ref(
+    #         "procurement.procurement_exceptions")
+    #     result = action.read()[0]
+    #     procurements = self.procurement_ids.filtered(
+    #         lambda p: p.state == "exception").ids
+    #     # choose the view_mode accordingly
+    #     if len(procurements) != 1:
+    #         result["domain"] = "[('id', 'in', " + \
+    #                            str(procurements) + ")]"
+    #     elif len(procurements) == 1:
+    #         res = self.env.ref("procurement.procurement_form_view", False)
+    #         result["views"] = [(res and res.id or False, "form")]
+    #         result["res_id"] = procurements[0]
+    #     return result
