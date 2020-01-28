@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
-# © 2017 Eficent Business and IT Consulting Services S.L.
-# © 2015 Eezee-It, MONK Software, Vauxoo
-# © 2013 Camptocamp
-# © 2009-2013 Akretion,
 # Copyright 2020 OpenSynergy Indonesia
+# Copyright 2017 Eficent Business and IT Consulting Services S.L.
+# Copyright 2015 Eezee-It, MONK Software, Vauxoo
+# Copyright 2013 Camptocamp
+# Copyright 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
     "name": "RMA Sale",
-    "version": "8.0.3.1.0",
+    "version": "11.0.1.0.0",
     "license": "AGPL-3",
     "category": "RMA",
-    "summary": "Links RMA with Sales Orders",
     "author": "Akretion, Camptocamp, Eezee-it, MONK Software, Vauxoo, Eficent,"
               "Odoo Community Association (OCA)",
     "website": "http://www.github.com/OCA/rma",

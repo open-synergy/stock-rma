@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<openerp>
-<data>
+<odoo>
 <record id="view_rma_add_sale" model="ir.ui.view">
     <field name="name">rma.add.sale</field>
     <field name="model">rma_add_sale</field>
@@ -66,5 +65,4 @@
         </button>
     </field>
 </record>
-</data>
-</openerp>
+</odoo>
