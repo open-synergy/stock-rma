@@ -54,6 +54,8 @@ Contributors
 * Cyril Gaudin <cyril.gaudin@camptocamp.com>
 * Jordi Ballester Alomar <jordi.ballester@eficent.com>
 * Aaron Henriquez <ahenriquez@eficent.com>
+* Michael Viriyananda <viriyananda.michael@gmail.com>
+* Andhitia Rama <andhitia.r@gmail.com>
 
 
 Maintainer

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# © 2017 Eficent Business and IT Consulting Services S.L.
-# © 2015 Eezee-It, MONK Software, Vauxoo
-# © 2013 Camptocamp
-# © 2009-2013 Akretion,
+# Copyright 2020 OpenSynergy Indonesia
+# Copyright 2017 Eficent Business and IT Consulting Services S.L.
+# Copyright 2015 Eezee-It, MONK Software, Vauxoo
+# Copyright 2013 Camptocamp
+# Copyright 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, fields, models
@@ -16,10 +17,10 @@ class RmaOrderLine(models.Model):
 
     @api.model
     def _default_invoice_address(self):
-        partner_id = self.env.context.get("partner_id", False)
+        partner_id = self.env.context.get("partner_id")
         if partner_id:
             return self.env["res.partner"].browse(partner_id)
-        return False
+        return self.env["res.partner"]
 
     @api.model
     def _default_refund_policy(self):
@@ -43,10 +44,16 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "receipt_policy_id", "delivery_policy_id",
-        "rma_supplier_policy_id", "refund_policy_id", "type",
-        "product_qty", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma", "qty_refunded",
+        "receipt_policy_id",
+        "delivery_policy_id",
+        "rma_supplier_policy_id",
+        "refund_policy_id",
+        "type",
+        "product_qty",
+        "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
+        "qty_refunded",
     )
     def _compute_qty_to_refund(self):
         for rec in self:
@@ -55,8 +62,11 @@ class RmaOrderLine(models.Model):
     @api.multi
     @api.depends(
         "receipt_policy_id",
-        "product_qty", "type", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma",
+        "product_qty",
+        "type",
+        "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
         "qty_refunded",
     )
     def _compute_qty_to_receive(self):
@@ -66,8 +76,11 @@ class RmaOrderLine(models.Model):
     @api.multi
     @api.depends(
         "receipt_policy_id",
-        "product_qty", "type", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma",
+        "product_qty",
+        "type",
+        "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
         "qty_refunded",
     )
     def _compute_qty_to_deliver(self):
@@ -77,8 +90,10 @@ class RmaOrderLine(models.Model):
     @api.multi
     @api.depends(
         "receipt_policy_id",
-        "product_qty", "type", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma",
+        "product_qty",
+        "type", "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
         "qty_refunded",
     )
     def _compute_qty_supplier_rma(self):
@@ -96,7 +111,7 @@ class RmaOrderLine(models.Model):
     invoice_address_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner invoice address",
-        default="_default_invoice_address",
+        default=_default_invoice_address,
         help="Invoice address for current rma order.",
     )
     refund_count = fields.Integer(
