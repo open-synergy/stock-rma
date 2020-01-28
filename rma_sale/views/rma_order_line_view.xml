@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
-
+<odoo>
 <record id="view_rma_line_tree" model="ir.ui.view">
     <field name="name">rma.order.line.tree</field>
     <field name="model">rma.order.line</field>
@@ -38,7 +36,7 @@
                 <button type="object"  name="action_view_sale_order"
                         class="oe_stat_button"
                         icon="fa-strikethrough"
-                        groups="base.group_sale_salesman">
+                        groups="sales_team.group_sale_salesman">
                         <field name="sales_count" widget="statinfo"
                                string="Sales Orders"/>
                 </button>
@@ -74,7 +72,7 @@
                 <button type="object"  name="action_view_sale_order"
                         class="oe_stat_button"
                         icon="fa-strikethrough"
-                        groups="base.group_sale_salesman">
+                        groups="sales_team.group_sale_salesman">
                         <field name="sales_count" widget="statinfo" string="Sales Orders"/>
                 </button>
             </xpath>
@@ -125,5 +123,4 @@
 </field>
 </record>
 
-</data>
-</openerp>
+</odoo>
