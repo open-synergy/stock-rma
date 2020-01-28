@@ -97,18 +97,18 @@ class RmaMakePicking(models.TransientModel):
     @api.multi
     def action_create_picking(self):
         self.ensure_one()
+        # self._create_procurement()
+        return True
 
-        self._create_procurement()
-
-    @api.multi
-    def _create_procurement(self):
-        self.ensure_one()
-
-        procurements = self.env["procurement.order"]
-
-        for item in self.item_ids:
-            procurements += item._create_procurement()
-        procurements.run()
+    # @api.multi
+    # def _create_procurement(self):
+    #     self.ensure_one()
+    #
+    #     procurements = self.env["procurement.order"]
+    #
+    #     for item in self.item_ids:
+    #         procurements += item._create_procurement()
+    #     procurements.run()
 
 
 class RmaMakePickingItem(models.TransientModel):

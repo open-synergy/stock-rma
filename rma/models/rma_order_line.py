@@ -1,10 +1,5 @@
-# -*- coding: utf-8 -*-
-# Copyright 2020 OpenSynergy Indonesia
-# Copyright 2017 Eficent Business and IT Consulting Services S.L.
-# Copyright 2015 Eezee-It, MONK Software, Vauxoo
-# Copyright 2013 Camptocamp
-# Copyright 2009-2013 Akretion,
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# Copyright (C) 2017 Eficent Business and IT Consulting Services S.L.
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
 
 from openerp import api, fields, models
 from openerp.addons import decimal_precision as dp
@@ -47,7 +42,7 @@ class RmaOrderLine(models.Model):
         for line in self:
             picking_ids = []
             for move in line.move_ids:
-                if move.location_dest_id.usage == 'internal':
+                if move.location_dest_id.usage == "internal":
                     picking_ids.append(move.picking_id.id)
                 else:
                     if line.customer_to_supplier:
@@ -60,7 +55,7 @@ class RmaOrderLine(models.Model):
         picking_ids = []
         for line in self:
             for move in line.move_ids:
-                if move.location_dest_id.usage in ('supplier', 'customer'):
+                if move.location_dest_id.usage in ("supplier", "customer"):
                     if not line.customer_to_supplier:
                         picking_ids.append(move.picking_id.id)
             shipments = list(set(picking_ids))
@@ -75,18 +70,18 @@ class RmaOrderLine(models.Model):
                 op = ops["="]
             else:
                 op = ops["!="]
-            # for move in rec.procurement_ids.mapped("move_ids").filtered(
-            #         lambda m: m.state in states and op(m.location_id.usage,
-            #                                            rec.type)):
-            #     qty += product_obj._compute_qty_obj(
-            #         move.product_uom, move.product_uom_qty,
-            #         rec.uom_id)
+            for move in rec.move_ids.filtered(
+                    lambda m: m.state in states and op(m.location_id.usage,
+                                                       rec.type)):
+                qty += product_obj._compute_quantity(
+                    move.product_uom_qty, rec.uom_id)
             return qty
 
     @api.multi
     @api.depends(
         "move_ids",
-        "move_ids.state", "type",
+        "move_ids.state",
+        "type",
     )
     def _compute_qty_incoming(self):
         for rec in self:
@@ -96,7 +91,8 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "move_ids", "move_ids.state",
+        "move_ids",
+        "move_ids.state",
         "type",
     )
     def _compute_qty_received(self):
@@ -106,7 +102,8 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "move_ids", "move_ids.state",
+        "move_ids",
+        "move_ids.state",
         "type",
     )
     def _compute_qty_outgoing(self):
@@ -117,7 +114,8 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "move_ids", "move_ids.state",
+        "move_ids",
+        "move_ids.state",
         "type",
     )
     def _compute_qty_delivered(self):
@@ -143,10 +141,14 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "receipt_policy_id", "delivery_policy_id",
-        "rma_supplier_policy_id", "type",
-        "product_qty", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma",
+        "receipt_policy_id",
+        "delivery_policy_id",
+        "rma_supplier_policy_id",
+        "type",
+        "product_qty",
+        "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
     )
     def _compute_qty_to_receive(self):
         for rec in self:
@@ -154,10 +156,14 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "receipt_policy_id", "delivery_policy_id",
-        "rma_supplier_policy_id", "type",
-        "product_qty", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma",
+        "receipt_policy_id",
+        "delivery_policy_id",
+        "rma_supplier_policy_id",
+        "type",
+        "product_qty",
+        "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
     )
     def _compute_qty_to_deliver(self):
         for rec in self:
@@ -165,10 +171,14 @@ class RmaOrderLine(models.Model):
 
     @api.multi
     @api.depends(
-        "receipt_policy_id", "delivery_policy_id",
-        "rma_supplier_policy_id", "type",
-        "product_qty", "qty_received",
-        "qty_delivered", "qty_in_supplier_rma",
+        "receipt_policy_id",
+        "delivery_policy_id",
+        "rma_supplier_policy_id",
+        "type",
+        "product_qty",
+        "qty_received",
+        "qty_delivered",
+        "qty_in_supplier_rma",
     )
     def _compute_qty_supplier_rma(self):
         for rec in self:
@@ -639,14 +649,16 @@ class RmaOrderLine(models.Model):
             self.route_template_id = self.operation_id.\
                 default_route_template_id
 
-    # @api.onchange("customer_to_supplier", "type")
-    # def _onchange_receipt_policy(self):
-    #     if self.type == "supplier" and self.customer_to_supplier:
-    #         self.receipt_policy = "no"
-    #     elif self.type == "customer" and self.supplier_to_customer:
-    #         self.delivery_policy = "no"
+    @api.onchange("customer_to_supplier", "type")
+    def _onchange_receipt_policy(self):
+        if self.type == "supplier" and self.customer_to_supplier:
+            self.receipt_policy = "no"
+        elif self.type == "customer" and self.supplier_to_customer:
+            self.delivery_policy = "no"
 
-    @api.onchange("product_id")
+    @api.onchange(
+        "product_id",
+    )
     def _onchange_product_id(self):
         self.product_qty = 1
         if self.product_id:
@@ -662,7 +674,9 @@ class RmaOrderLine(models.Model):
                 "lot_id": [("product_id", "=", self.product_id.id)]}}
         return {"domain": {"lot_id": []}}
 
-    @api.onchange("lot_id")
+    @api.onchange(
+        "lot_id",
+    )
     def _onchange_lot_id(self):
         product = self.lot_id.product_id
         if product:

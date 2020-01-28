@@ -9,6 +9,6 @@
 from . import (
     rma_add_stock_move,
     rma_make_picking,
-    stock_config_settings,
+    res_config_settings,
     rma_order_line_make_supplier_rma,
 )

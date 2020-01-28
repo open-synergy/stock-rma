@@ -94,20 +94,20 @@
                              invisible="context.get('hide_title',False)"/>
                   </h1>
                   </div>
-                  <group name="group_1" colspan="4" col="2">
-                      <group name="group_1_1" colspan="1" col="2">
+                  <group name="group_1" col="2">
+                      <group name="group_1_1" col="2">
                           <field name="product_id"/>
                           <field name="lot_id"/>
                           <field name="product_qty"/>
                           <field name="uom_id" groups="product.group_uom"/>
                           <field name="price_unit"/>
                       </group>
-                      <group name="group_1_2" colspan="1" col="2">
+                      <group name="group_1_2" col="2">
                           <field name="date_rma"/>
                           <field name="date_deadline"/>
                           <field name="operation_id" domain="[('type','=','supplier')]"/>
                           <field name="allowed_route_template_ids" widget="many2many_tags" invisible="1"/>
-                          <field name="route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/>
+                          <field name="route_template_id" domain="[('id','in',allowed_route_template_ids)]"/>
                       </group>
                   </group>
                   <notebook>
@@ -115,38 +115,36 @@
                           <field name="description" nolabel="1"/>
                       </page>
                       <page name="operation" string="Operation">
-                          <group name="operation_1" colspan="4" col="2">
+                          <group name="operation_1" col="2">
                               <field name="receipt_policy_id" widget="selection"/>
                               <field name="delivery_policy_id" widget="selection"/>
                               <field name="rma_supplier_policy_id" widget="selection"/>
                           </group>
                       </page>
                       <page name="route" string="Routes">
-                          <group name="route_1" colspan="4" col="2">">
-                              <group name="inbound" string="Inbound">
-                                  <field name="in_warehouse_id"/>
-                                  <field name="location_id" domain="[('usage','=','internal')]"/>
-                                  <field name="in_route_id"/>
-                                  <field name="supplier_to_customer"/>
-                              </group>
-                              <group name="outbound" string="Outbound">
-                                  <field name="out_warehouse_id"/>
-                                  <field name="delivery_address_id" groups='rma.group_rma_delivery_invoice_address'/>
-                                  <field name="out_route_id"/>
-                              </group>
+                          <group name="inbound" string="Inbound">
+                              <field name="in_warehouse_id"/>
+                              <field name="location_id" domain="[('usage','=','internal')]"/>
+                              <field name="in_route_id"/>
+                              <field name="supplier_to_customer"/>
+                          </group>
+                          <group name="outbound" string="Outbound">
+                              <field name="out_warehouse_id"/>
+                              <field name="delivery_address_id" groups='rma.group_rma_delivery_invoice_address'/>
+                              <field name="out_route_id"/>
                           </group>
                       </page>
                       <page name="stock" string="Stock Moves">
                           <field name="move_ids" nolabel="1" readonly="1"/>
                       </page>
                       <page name="quantities" string="Quantities">
-                          <group name="quantities_1" colspan="4" col="3">
-                              <group name="receive" colspan="1" col="2">
+                          <group name="quantities_1" col="3">
+                              <group name="receive" col="2">
                                   <field name="qty_to_receive"/>
                                   <field name="qty_incoming"/>
                                   <field name="qty_received"/>
                               </group>
-                              <group name="deliver" colspan="1" col="2">
+                              <group name="deliver" col="2">
                                   <field name="qty_to_deliver"/>
                                   <field name="qty_outgoing"/>
                                   <field name="qty_delivered"/>
@@ -154,18 +152,18 @@
                           </group>
                       </page>
                       <page name="other" string="Other Info">
-                          <group name="other_1" colspan="4" col="1">
-                              <group name="general" string="General" colspan="1" col="2">
+                          <group name="other_1" col="1">
+                              <group name="general" string="General" col="2">
                                   <field name="name"/>
                                   <field name="origin"/>
                                   <field name="reference_move_id"/>
                                   <field name="state" invisible="1"/>
                               </group>
-                              <group name="contact" string="Contact" colspan="1" col="2">
+                              <group name="contact" string="Contact" col="2">
                                   <field name="requested_by" readonly="1"/>
                                   <field name="assigned_to" readonly="1"/>
                               </group>
-                              <group name="company" string="Company" colspan="1" col="2" groups="base.group_multi_company">
+                              <group name="company" string="Company" col="2" groups="base.group_multi_company">
                                   <field name="company_id"/>
                               </group>
                           </group>
@@ -218,80 +216,78 @@
                                  invisible="context.get('hide_title',False)"/>
                       </h1>
                   </div>
-                  <group name="group_1" colspan="4" col="2">
-                      <group name="group_1_1" colspan="1" col="2">
+                  <group name="group_1" col="2">
+                      <group name="group_1_1" col="2">
                           <field name="product_id"/>
                           <field name="lot_id"/>
                           <field name="product_qty"/>
                           <field name="uom_id" groups="product.group_uom"/>
                           <field name="price_unit"/>
                       </group>
-                      <group name="group_1_2" colspan="1" col="2">
+                      <group name="group_1_2" col="2">
                           <field name="date_rma"/>
                           <field name="date_deadline"/>
                           <field name="operation_id" domain="[('type','=','customer')]"/>
                           <field name="allowed_route_template_ids" widget="many2many_tags" invisible="1"/>
-                          <field name="route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/>
+                          <field name="route_template_id" domain="[('id','in',allowed_route_template_ids)]"/>
                       </group>
                   </group>
                   <notebook>
                       <page name="operation" string="Operation">
-                          <group name="operation_1" colspan="4" col="2">
+                          <group name="operation_1" col="2">
                               <field name="receipt_policy_id" widget="selection"/>
                               <field name="delivery_policy_id" widget="selection"/>
                               <field name="rma_supplier_policy_id" widget="selection"/>
                           </group>
                       </page>
                       <page name="route" string="Routes">
-                          <group name="route_1" colspan="4" col="2">">
-                              <group name="inbound" string="Inbound">
-                                  <field name="in_warehouse_id"/>
-                                  <field name="location_id" domain="[('usage','=','internal')]"/>
-                                  <field name="in_route_id"/>
-                                  <field name="customer_to_supplier"/>
-                                  <field name="supplier_address_id" attrs="{'required':[('customer_to_supplier','=',True)],}"/>
-                              </group>
-                              <group name="outbound" string="Outbound">
-                                  <field name="out_warehouse_id"/>
-                                  <field name="delivery_address_id" groups='rma.group_rma_delivery_invoice_address'/>
-                                  <field name="out_route_id"/>
-                              </group>
+                          <group name="inbound" string="Inbound">
+                              <field name="in_warehouse_id"/>
+                              <field name="location_id" domain="[('usage','=','internal')]"/>
+                              <field name="in_route_id"/>
+                              <field name="customer_to_supplier"/>
+                              <field name="supplier_address_id" attrs="{'required':[('customer_to_supplier','=',True)]}"/>
+                          </group>
+                          <group name="outbound" string="Outbound">
+                              <field name="out_warehouse_id"/>
+                              <field name="delivery_address_id" groups='rma.group_rma_delivery_invoice_address'/>
+                              <field name="out_route_id"/>
                           </group>
                       </page>
                       <page name="stock" string="Stock Moves">
                           <field name="move_ids" nolabel="1" readonly="1"/>
                       </page>
                       <page name="quantities" string="Quantities">
-                          <group name="quantities_1" colspan="4" col="3">
-                              <group name="receive" colspan="1" col="2">
+                          <group name="quantities_1" col="3">
+                              <group name="receive" col="2">
                                   <field name="qty_to_receive"/>
                                   <field name="qty_incoming"/>
                                   <field name="qty_received"/>
                               </group>
-                              <group name="deliver" colspan="1" col="2">
+                              <group name="deliver" col="2">
                                   <field name="qty_to_deliver"/>
                                   <field name="qty_outgoing"/>
                                   <field name="qty_delivered"/>
                               </group>
-                              <group name="supplier_rma" colspan="1" col="2">
+                              <group name="supplier_rma" col="2">
                                   <field name="qty_to_supplier_rma"/>
                                   <field name="qty_in_supplier_rma"/>
                               </group>
                           </group>
                       </page>
                       <page name="other" string="Other Info">
-                          <group name="other_1" colspan="4" col="1">
-                              <group name="general" string="General" colspan="1" col="2">
+                          <group name="other_1" col="1">
+                              <group name="general" string="General" col="2">
                                   <field name="name"/>
                                   <field name="origin"/>
                                   <field name="reference_move_id"/>
                                   <field name="state" invisible="1"/>
                               </group>
-                              <group name="contact" string="Contact" colspan="1" col="2">
+                              <group name="contact" string="Contact" col="2">
                                   <field name="requested_by" readonly="1"/>
                                   <field name="assigned_to" readonly="1"/>
                               </group>
-                              <group name="company" string="Company" colspan="1" col="2" groups="base.group_multi_company">
+                              <group name="company" string="Company" col="2" groups="base.group_multi_company">
                                   <field name="company_id"/>
                               </group>
                           </group>

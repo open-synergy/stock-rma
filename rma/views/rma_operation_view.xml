@@ -36,7 +36,8 @@
                   </page>
                   <page name="route_template" string="Route Templates">
                       <group name="route_template_1" colspan="4" col="2">
-                          <field name="default_route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/>
+                          <field name="default_route_template_id"/>
+                          <!-- <field name="default_route_template_id" domain="[('id','in',allowed_route_template_ids[0][2])]"/> -->
                           <field name="allowed_route_template_ids" colspan="2" nolabel="1"/>
                       </group>
                   </page>
