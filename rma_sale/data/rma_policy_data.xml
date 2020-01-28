@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
+<odoo noupdate="1">
     <record id="rma.rma_policy_no" model="rma.policy">
         <field name="name">Not Required</field>
         <field name="sale_policy_ok" eval="1"/>
     </record>
-</data>
-
-<data noupdate="1">
     <record id="rma_policy_ordered_sold" model="rma.policy">
         <field name="name">Based on Ordered - Sold</field>
         <field name="active" eval="1"/>
@@ -44,5 +40,4 @@
         <field name="policy_field_id" ref="rma.rma_policy_field_received"/>
         <field name="rma_policy_id" ref="rma_sale.rma_policy_received_sold"/>
     </record>
-</data>
-</openerp>
+</odoo>
