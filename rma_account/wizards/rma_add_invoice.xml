@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<openerp>
-<data>
+<odoo>
 <record id="view_rma_add_invoice" model="ir.ui.view">
     <field name="name">rma.add.invoice</field>
     <field name="model">rma_add_invoice</field>
@@ -81,5 +80,4 @@
     </field>
 </record>
 
-</data>
-</openerp>
+</odoo>

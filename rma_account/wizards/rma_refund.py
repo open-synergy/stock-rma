@@ -1,14 +1,14 @@
-# -*- coding: utf-8 -*-
-# © 2017 Eficent Business and IT Consulting Services S.L.
-# © 2015 Eezee-It, MONK Software, Vauxoo
-# © 2013 Camptocamp
-# © 2009-2013 Akretion,
+# Copyright 2020 OpenSynergy Indonesia
+# Copyright 2017 Eficent Business and IT Consulting Services S.L.
+# Copyright 2015 Eezee-It, MONK Software, Vauxoo
+# Copyright 2013 Camptocamp
+# Copyright 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api
-from openerp.exceptions import Warning as UserError
-from openerp.tools.translate import _
-import openerp.addons.decimal_precision as dp
+from odoo import models, fields, api
+from odoo.exceptions import Warning as UserError
+from odoo.tools.translate import _
+import odoo.addons.decimal_precision as dp
 
 
 class RmaRefund(models.TransientModel):

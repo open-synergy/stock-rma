@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
+<odoo>
 <record id="view_rma_form" model="ir.ui.view">
     <field name="name">rma.order.form</field>
     <field name="model">rma.order</field>
     <field name="inherit_id" ref="rma.view_rma_form"/>
     <field name="arch" type="xml">
-        <data>
             <xpath expr="//button[@name='action_view_out_shipments']" position="after">
                 <button type="object"  name="action_view_invoice_refund"
                         class="oe_stat_button"
@@ -21,16 +19,14 @@
                     <field name="invoice_count" widget="statinfo" string="Origin Inv"/>
                 </button>
             </xpath>
-        </data>
     </field>
 </record>
 
 <record id="view_rma_supplier_form" model="ir.ui.view">
     <field name="name">rma.order.supplier.form</field>
     <field name="model">rma.order</field>
-    <field name="inherit_id" ref="rma.view_rma_form"/>
+    <field name="inherit_id" ref="rma.view_rma_supplier_form"/>
     <field name="arch" type="xml">
-        <data>
             <xpath expr="//button[@name='action_view_out_shipments']" position="after">
                 <button type="object"  name="action_view_invoice_refund"
                          class="oe_stat_button"
@@ -45,9 +41,7 @@
                     <field name="invoice_count" widget="statinfo" string="Origin Inv"/>
                 </button>
             </xpath>
-        </data>
     </field>
 </record>
 
-</data>
-</openerp>
+</odoo>
