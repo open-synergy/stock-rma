@@ -7,10 +7,11 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, fields, models
+from odoo.exceptions import UserError
 
 
-class ProcurementOrder(models.Model):
-    _inherit = "procurement.order"
+class ProcurementRule(models.Model):
+    _inherit = "procurement.rule"
 
     rma_line_id = fields.Many2one(
         comodel_name="rma.order.line",
@@ -18,32 +19,28 @@ class ProcurementOrder(models.Model):
         ondelete="set null",
     )
 
-    @api.model
-    def _run_move_create(self, procurement):
-        res = super(ProcurementOrder, self)._run_move_create(procurement)
-        if procurement.rma_line_id:
-            line = procurement.rma_line_id
-            res["rma_line_id"] = line.id
+
+    def _get_stock_move_values(self, product_id, product_qty, product_uom,
+                               location_id, name, origin, values, group_id):
+        res = super(ProcurementRule, self)._get_stock_move_values(product_id,
+                                                                  product_qty,
+                                                                  product_uom,
+                                                                  location_id,
+                                                                  name, origin,
+                                                                  values,
+                                                                  group_id)
+        if 'rma_line_id' in values:
+            line = self.env['rma.order.line'].browse(values.get('rma_line_id'))
+            res['rma_line_id'] = line.id
             if line.delivery_address_id:
-                res["partner_id"] = line.delivery_address_id.id
+                res['partner_id'] = line.delivery_address_id.id
             else:
-                res["partner_id"] = line.rma_id.partner_id.id
+                res['partner_id'] = line.rma_id.partner_id.id
             dest_loc = self.env["stock.location"].browse([
                 res["location_dest_id"]])[0]
             if dest_loc.usage == "internal":
-                if not line.currency_id:
-                    price = line.price_unit
-                elif line.currency_id and line.currency_id == \
-                        line.rma_id.company_id.currency_id:
-                    price = line.price_unit
-                elif line.currency_id and line.currency_id != \
-                        line.rma_id.company_id.currency_id:
-                    price = line.currency_id.compute(
-                        line.price_unit,
-                        line.rma_id.company_id.currency_id)
-                res["price_unit"] = price
+                res["price_unit"] = line.price_unit
         return res
-
 
 class ProcurementGroup(models.Model):
     _inherit = "procurement.group"

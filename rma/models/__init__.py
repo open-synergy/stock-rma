@@ -18,5 +18,5 @@ from . import (
     stock_warehouse,
     product,
     product_category,
-    # procurement,
+    procurement,
 )
