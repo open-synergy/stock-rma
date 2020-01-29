@@ -6,10 +6,10 @@
 # Copyright 2009-2013 Akretion,
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api
-from openerp.exceptions import Warning as UserError
-from openerp.tools.translate import _
-import openerp.addons.decimal_precision as dp
+from odoo import models, fields, api
+from odoo.exceptions import Warning as UserError
+from odoo.tools.translate import _
+import odoo.addons.decimal_precision as dp
 
 
 class RmaRefund(models.TransientModel):
