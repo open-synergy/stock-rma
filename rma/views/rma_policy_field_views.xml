@@ -17,12 +17,10 @@
       <field name="arch" type="xml">
           <form>
               <header/>
-              <group colspan="4" col="2">
-                  <group name="group_1">
-                      <field name="name"/>
-                      <field name="code"/>
-                      <field name="active"/>
-                  </group>
+              <group name="group_1" colspan="4" col="2">
+                  <field name="name"/>
+                  <field name="code"/>
+                  <field name="active"/>
               </group>
               <notebook>
                   <page name="inbound" string="Inbound">
