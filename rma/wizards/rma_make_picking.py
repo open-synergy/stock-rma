@@ -7,10 +7,10 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import time
-from openerp import models, fields, api, _
-from openerp.exceptions import ValidationError
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT as DT_FORMAT
-import openerp.addons.decimal_precision as dp
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT as DT_FORMAT
+import odoo.addons.decimal_precision as dp
 
 
 class RmaMakePicking(models.TransientModel):
