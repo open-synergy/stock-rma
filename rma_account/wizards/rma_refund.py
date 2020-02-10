@@ -152,20 +152,19 @@ class RmaRefund(models.TransientModel):
             "origin": order.name,
             "reference": False,
             "date_invoice": date_invoice,
-            "period_id": self._get_period(date_invoice).id,
-            "account_id": commercial_partner.property_account_receivable.id,
+            "account_id": commercial_partner.property_account_receivable_id.id,
             "journal_id": journal.id,
             "type": order.type == "customer" and "out_refund" or "in_refund",
             "partner_id": partner.id,
             "currency_id": self.env.user.company_id.currency_id.id,
-            "payment_term": False,
-            "fiscal_position":
-                partner.property_account_position.id,
+            "payment_term_id": False,
+            "fiscal_position_id":
+                partner.property_account_position_id.id,
         }
         for line in self.item_ids:
             lines.append((0, 0,
                           line._prepare_refund_line()))
-        values["invoice_line"] = lines
+        values["invoice_line_ids"] = lines
 
         return values
 
@@ -255,15 +254,15 @@ class RmaRefundItem(models.TransientModel):
         product = self.product_id
         categ = product.categ_id
         if line.type == "customer":
-            if product.property_account_income:
-                return product.property_account_income
-            if categ.property_account_income_categ:
-                return categ.property_account_income_categ
+            if product.property_account_income_id:
+                return product.property_account_income_id
+            if categ.property_account_income_categ_id:
+                return categ.property_account_income_categ_id
         else:
-            if product.property_account_expense:
-                return product.property_account_expense
-            if categ.property_account_income_categ:
-                return categ.property_account_expense_categ
+            if product.property_account_expense_id:
+                return product.property_account_expense_id
+            if categ.property_account_expense_categ_id:
+                return categ.property_account_expense_categ_id
         str_warning = _("No account defined for %s") % (product.name)
         raise UserError(str_warning)
 
@@ -276,7 +275,7 @@ class RmaRefundItem(models.TransientModel):
             "origin": self.rma_id.name,
             "account_id": account.id,
             "price_unit": self.line_id.price_unit,
-            "uos_id": self.line_id.uom_id.id,
+            "uom_id": self.line_id.uom_id.id,
             "product_id": self.product_id.id,
             "rma_line_id": self.line_id.id,
             "quantity": self.qty_to_refund,
