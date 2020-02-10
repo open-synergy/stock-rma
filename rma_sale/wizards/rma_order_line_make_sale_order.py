@@ -168,11 +168,13 @@ class RmaLineMakeSaleOrderItem(models.TransientModel):
         comodel_name="product.product",
         string="Product",
         readonly=True,
+        related="line_id.product_id",
     )
     name = fields.Char(
         string="Description",
         required=True,
         readonly=True,
+        related="product_id.name",
     )
     product_qty = fields.Float(
         string="Quantity to sell",
