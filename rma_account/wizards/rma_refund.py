@@ -125,9 +125,9 @@ class RmaRefund(models.TransientModel):
     def _get_journal(self, order):
         obj_journal = self.env["account.journal"]
         if order.type == "customer":
-            domain = [("type", "=", "sale_refund")]
+            domain = [("type", "=", "sale")]
         else:
-            domain = [("type", "=", "purchase_refund")]
+            domain = [("type", "=", "purchase")]
         journal = obj_journal.search(domain, limit=1)
         if not journal:
             raise UserError(_("No journal defined"))
