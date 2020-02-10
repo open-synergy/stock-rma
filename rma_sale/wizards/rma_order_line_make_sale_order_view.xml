@@ -29,12 +29,12 @@
                          </field>
                      </group>
                      <newline/>
-                     <gfooter>
+                     <footer>
                          <button name="make_sale_order"
                                  string="Create Sales Quotation" type="object"
                                  class="oe_highlight"/>
                          <button special="cancel" string="Cancel" class="oe_link"/>
-                     </gfooter>
+                     </footer>
                 </form>
             </field>
         </record>
