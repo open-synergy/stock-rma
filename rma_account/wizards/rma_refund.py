@@ -204,6 +204,7 @@ class RmaRefundItem(models.TransientModel):
         comodel_name="product.product",
         string="Product",
         readonly=True,
+        related="line_id.product_id",
     )
     name = fields.Char(
         string="Description",
