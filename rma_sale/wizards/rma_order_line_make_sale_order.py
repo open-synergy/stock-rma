@@ -86,6 +86,7 @@ class RmaLineMakeSaleOrder(models.TransientModel):
             "partner_id": customer.id,
             "warehouse_id": out_warehouse.id,
             "company_id": company.id,
+            "name": "New",
         }
         return data
 
