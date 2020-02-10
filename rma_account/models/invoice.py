@@ -15,7 +15,7 @@ class AccountInvoice(models.Model):
     @api.one
     def _compute_rma_count(self):
         rma_list = []
-        for invl in self.invoice_line:
+        for invl in self.invoice_line_ids:
             for rmal in invl.rma_line_ids:
                 rma_list.append(rmal.rma_id.id)
         self.rma_count = len(list(set(rma_list)))
