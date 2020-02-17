@@ -167,8 +167,8 @@ class RmaLineMakeSaleOrderItem(models.TransientModel):
     product_id = fields.Many2one(
         comodel_name="product.product",
         string="Product",
-        readonly=True,
-        related="line_id.product_id",
+        readonly=False,
+        related=False,
     )
     name = fields.Char(
         string="Description",
