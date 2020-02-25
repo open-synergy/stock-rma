@@ -221,8 +221,8 @@ class RmaOrderLine(models.Model):
             invoice_ids.append(inv_line.invoice_id.id)
         # choose the view_mode accordingly
         if len(invoice_ids) != 1:
-            result["domain"] = "[('id', 'in', ' + \
-                               str(invoice_ids) + ')]"
+            result["domain"] = "[('id', 'in', " + \
+                               str(invoice_ids) + ")]"
         elif len(invoice_ids) == 1:
             res = self.env.ref("account.invoice_supplier_form", False)
             result["views"] = [(res and res.id or False, "form")]

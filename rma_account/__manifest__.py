@@ -7,7 +7,7 @@
 
 {
     "name": "RMA Account",
-    "version": "11.0.1.2.0",
+    "version": "11.0.1.2.1",
     "license": "AGPL-3",
     "category": "RMA",
     "author": "Akretion, Camptocamp, Eezee-it, MONK Software, Vauxoo, Eficent,"
