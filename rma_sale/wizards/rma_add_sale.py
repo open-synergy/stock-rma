@@ -106,9 +106,10 @@ class RmaAddSale(models.TransientModel):
         rma = self.rma_id
         for line in self.sale_line_ids:
             if line not in existing_sale_lines:
-                line._create_rma_line_from_so_line(
+                rma_line = line._create_rma_line_from_so_line(
                     rma=rma, operation=self.operation_id,
                     route_template=self.route_template_id)
+                rma_line.onchange_sale_policy_id()
         data_rma = self._get_rma_data()
         rma.write(data_rma)
         return {"type": "ir.actions.act_window_close"}
