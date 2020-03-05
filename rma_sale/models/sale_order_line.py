@@ -73,6 +73,7 @@ class SaleOrderLine(models.Model):
             "origin": self.order_id.name,
             "uom_id": self.product_uom.id,
             "operation_id": operation.id,
+            "sale_policy_id": operation.sale_policy_id.id,
             "route_template_id": route_template.id,
             "product_qty": self.product_uom_qty,
             "delivery_address_id": self.order_id.partner_id.id,
